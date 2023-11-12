@@ -1,9 +1,9 @@
-﻿namespace Assignment_v1.Training.Training
+﻿namespace Assignment_v1.Training
 {
     internal interface ITrainingService
     {
-        void AddTraining(Training training);
-        void EditTraining(Training training);
-        void DeleteTraining(int trainingID);
+        void Add(Training training);
+        void Edit(Training training);
+        void Delete(int trainingID);
     }
 }

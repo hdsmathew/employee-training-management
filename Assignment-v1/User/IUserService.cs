@@ -1,10 +1,10 @@
-﻿namespace Assignment_v1.User.User
+﻿namespace Assignment_v1.User
 {
     internal interface IUserService
     {
-        void RegisterUser(User user);
-        void LoginUser(User user);
-        void LogoutUser(User user);
-        void UpdateUser(User user);
+        void Login(User user);
+        void Logout(User user);
+        void Register(User user);
+        void Update(User user);
     }
 }

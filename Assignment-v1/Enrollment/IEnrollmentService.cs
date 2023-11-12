@@ -2,8 +2,8 @@
 {
     internal interface IEnrollmentService
     {
-        void SubmitEnrollment(Enrollment enrollment);
-        void HandleEnrollment(Enrollment enrollment);
+        void Process(Enrollment enrollment);
+        void Submit(Enrollment enrollment);
         void ValidateEnrollments();
     }
 }
