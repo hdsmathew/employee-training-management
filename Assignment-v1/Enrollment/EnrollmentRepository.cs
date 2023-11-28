@@ -9,29 +9,29 @@
             _enrollmentDAL = enrollmentDAL;
         }
 
-        public void Add(Enrollment enrollment)
+        public bool Add(Enrollment enrollment)
         {
-            throw new NotImplementedException();
+            return _enrollmentDAL.Add(enrollment);
         }
 
-        public void Delete(int enrollmentID)
+        public bool Delete(int enrollmentID)
         {
-            throw new NotImplementedException();
+            return _enrollmentDAL.Delete(enrollmentID);
         }
 
         public Enrollment Get(int enrollmentID)
         {
-            throw new NotImplementedException();
+            return _enrollmentDAL.Get(enrollmentID);
         }
 
         public IEnumerable<Enrollment> GetAll()
         {
-            throw new NotImplementedException();
+            return _enrollmentDAL.GetAll();
         }
 
-        public void Update(Enrollment enrollment)
+        public bool Update(Enrollment enrollment)
         {
-            throw new NotImplementedException();
+            return _enrollmentDAL.Update(enrollment);
         }
     }
 }

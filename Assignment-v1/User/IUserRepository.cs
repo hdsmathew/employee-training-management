@@ -2,10 +2,10 @@
 {
     internal interface IUserRepository
     {
-        void Add(User user);
-        void Delete(int userID);
+        bool Add(User user);
+        bool Delete(int userID);
         User Get(int userID);
         IEnumerable<User> GetAll();
-        void Update(User user);
+        bool Update(User user);
     }
 }

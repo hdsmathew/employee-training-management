@@ -9,29 +9,29 @@
             _userDAL = userDAL;
         }
 
-        public void Add(User user)
+        public bool Add(User user)
         {
-            throw new NotImplementedException();
+            return _userDAL.Add(user);
         }
 
-        public void Delete(int userID)
+        public bool Delete(int userID)
         {
-            throw new NotImplementedException();
+            return _userDAL.Delete(userID);
         }
 
         public User Get(int userID)
         {
-            throw new NotImplementedException();
+            return _userDAL.Get(userID);
         }
 
         public IEnumerable<User> GetAll()
         {
-            throw new NotImplementedException();
+            return _userDAL.GetAll();
         }
 
-        public void Update(User user)
+        public bool Update(User user)
         {
-            throw new NotImplementedException();
+            return _userDAL.Update(user);
         }
     }
 }

@@ -2,10 +2,10 @@
 {
     internal interface IEnrollmentRepository
     {
-        void Add(Enrollment enrollment);
-        void Delete(int enrollmentID);
+        bool Add(Enrollment enrollment);
+        bool Delete(int enrollmentID);
         Enrollment Get(int enrollmentID);
         IEnumerable<Enrollment> GetAll();
-        void Update(Enrollment enrollment);
+        bool Update(Enrollment enrollment);
     }
 }

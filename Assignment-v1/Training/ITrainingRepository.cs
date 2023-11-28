@@ -2,10 +2,10 @@
 {
     internal interface ITrainingRepository
     {
-        void Add(Training training);
-        void Delete(int trainingID);
+        bool Add(Training training);
+        bool Delete(int trainingID);
         Training Get(int trainingID);
         IEnumerable<Training> GetAll();
-        void Update(Training training);
+        bool Update(Training training);
     }
 }

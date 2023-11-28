@@ -9,29 +9,29 @@
             _trainingDAL = trainingDAL;
         }
 
-        public void Add(Training training)
+        public bool Add(Training training)
         {
-            throw new NotImplementedException();
+            return _trainingDAL.Add(training);
         }
 
-        public void Delete(int trainingID)
+        public bool Delete(int trainingID)
         {
-            throw new NotImplementedException();
+            return _trainingDAL.Delete(trainingID);
         }
 
         public Training Get(int trainingID)
         {
-            throw new NotImplementedException();
+            return _trainingDAL.Get(trainingID);
         }
 
         public IEnumerable<Training> GetAll()
         {
-            throw new NotImplementedException();
+            return _trainingDAL.GetAll();
         }
 
-        public void Update(Training training)
+        public bool Update(Training training)
         {
-            throw new NotImplementedException();
+            return _trainingDAL.Update(training);
         }
     }
 }
