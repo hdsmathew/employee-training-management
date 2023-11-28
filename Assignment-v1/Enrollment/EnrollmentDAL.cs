@@ -39,7 +39,7 @@ namespace Assignment_v1.Enrollment
                 new SqlParameter("@ID", enrollmentID)
             };
 
-            return _dbUtil.ModifyDataDelete(deleteQuery, parameters);
+            return _dbUtil.ModifyData(deleteQuery, parameters);
         }
 
         public Enrollment Get(int enrollmentID)
