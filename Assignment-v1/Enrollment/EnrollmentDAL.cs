@@ -1,17 +1,18 @@
 ﻿using Assignment_v1.Common;
 using System.Data;
 using System.Data.SqlClient;
-using System.Data.SqlTypes;
 
 namespace Assignment_v1.Enrollment
 {
     internal class EnrollmentDAL : IEnrollmentDAL
     {
         private readonly DbUtil _dbUtil;
+        private readonly MapperBase<Enrollment> _enrollmentMapper;
 
-        public EnrollmentDAL(DbUtil dbUtil)
+        public EnrollmentDAL(DbUtil dbUtil, MapperBase<Enrollment> enrollmentMapper)
         {
             _dbUtil = dbUtil;
+            _enrollmentMapper = enrollmentMapper;
         }
 
         public bool Add(Enrollment enrollment)
@@ -49,46 +50,18 @@ namespace Assignment_v1.Enrollment
             {
                 new SqlParameter("@ID", enrollmentID)
             };
-
             DataRow dataRow = _dbUtil.GetData(selectQuery, parameters).Rows[0];
-            Enrollment enrollment = new Enrollment()
-            {
-                ID = enrollmentID,
-                EmployeeID = Convert.ToInt32(dataRow["employeeID"]),
-                TrainingID = Convert.ToInt32(dataRow["trainingID"]),
-                Status = (EnrollmentStatusEnum)dataRow["status"],
-                Message = dataRow["message"].ToString(),
-                RequestDate = Convert.ToDateTime(dataRow["requestDate"]),
-                ResponseDate = Convert.ToDateTime(dataRow["responseDate"])
-            };
 
-            return enrollment;
+            return _enrollmentMapper.MapRowToObject(dataRow);
         }
 
         public IEnumerable<Enrollment> GetAll()
         {
             string selectQuery = "SELECT * FROM Enrollment";
             List<SqlParameter> parameters = new List<SqlParameter>();
-
             DataTable dataTable = _dbUtil.GetData(selectQuery, parameters);
-            List<Enrollment> enrollments = new List<Enrollment>();
-            foreach (DataRow dataRow in dataTable.Rows)
-            {
-                Enrollment enrollment = new Enrollment()
-                {
-                    ID = enrollmentID,
-                    EmployeeID = Convert.ToInt32(dataRow["employeeID"]),
-                    TrainingID = Convert.ToInt32(dataRow["trainingID"]),
-                    Status = (EnrollmentStatusEnum)dataRow["status"],
-                    Message = dataRow["message"].ToString(),
-                    RequestDate = Convert.ToDateTime(dataRow["requestDate"]),
-                    ResponseDate = Convert.ToDateTime(dataRow["responseDate"])
-                };
 
-                enrollments.Add(enrollment);
-            }
-
-            return enrollments;
+            return _enrollmentMapper.MapTableToObjects(dataTable);
         }
 
         public bool Update(Enrollment enrollment)
