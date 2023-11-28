@@ -2,12 +2,12 @@
 {
     internal class Enrollment
     {
-        private int _ID;
-        private int _employeeID;
-        private int _trainingID;
-        private string _status;
-        private string _message;
-        private DateTime _requestDate;
-        private DateTime _responseDate;
+        public int ID { get; set; }
+        public int EmployeeID { get; set; }
+        public int TrainingID { get; set; }
+        public EnrollmentStatusEnum Status { get; set; }
+        public string Message { get; set; }
+        public DateTime RequestDate { get; set; }
+        public DateTime ResponseDate { get; set; }
     }
 }
