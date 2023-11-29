@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.Common
 {
-    internal abstract class MapperBase<T>
+    public abstract class MapperBase<T>
     {
         public abstract T MapRowToObject(Dictionary<string, object> row);
 

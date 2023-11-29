@@ -3,7 +3,7 @@ using System.Data.SqlClient;
 
 namespace Assignment_v1.User
 {
-    internal class UserDAL : IUserDAL
+    public class UserDAL : IUserDAL
     {
         private readonly DbUtil _dbUtil;
         private readonly MapperBase<User> _userMapper;

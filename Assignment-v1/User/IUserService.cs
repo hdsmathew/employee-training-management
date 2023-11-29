@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.User
 {
-    internal interface IUserService
+    public interface IUserService
     {
         void Login(User user);
         void Logout(User user);

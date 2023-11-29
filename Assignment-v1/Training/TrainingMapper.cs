@@ -1,9 +1,8 @@
 ﻿using Assignment_v1.Common;
-using System.Data;
 
 namespace Assignment_v1.Training
 {
-    internal class TrainingMapper : MapperBase<Training>
+    public class TrainingMapper : MapperBase<Training>
     {
         public override Training MapRowToObject(Dictionary<string, object> row)
         {

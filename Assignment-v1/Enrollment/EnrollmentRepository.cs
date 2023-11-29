@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.Enrollment
 {
-    internal class EnrollmentRepository : IEnrollmentRepository
+    public class EnrollmentRepository : IEnrollmentRepository
     {
         private readonly IEnrollmentDAL _enrollmentDAL;
 

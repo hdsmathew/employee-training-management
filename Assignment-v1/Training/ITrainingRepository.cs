@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.Training
 {
-    internal interface ITrainingRepository
+    public interface ITrainingRepository
     {
         bool Add(Training training);
         bool Delete(int trainingID);

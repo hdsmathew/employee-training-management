@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.User
 {
-    internal class UserRepository : IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly IUserDAL _userDAL;
 

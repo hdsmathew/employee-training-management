@@ -2,7 +2,7 @@
 
 namespace Assignment_v1.Common
 {
-    internal class DbUtil
+    public class DbUtil
     {
         private readonly string _connectionString;
 

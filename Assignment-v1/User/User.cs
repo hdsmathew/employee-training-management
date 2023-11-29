@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.User
 {
-    internal class User
+    public class User
     {
         public int ID { get; set; }
         public UserRoleEnum Role { get; set; }

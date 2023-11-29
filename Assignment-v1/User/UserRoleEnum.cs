@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.User
 {
-    internal enum UserRoleEnum
+    public enum UserRoleEnum
     {
         Admin = 0,
         Manager = 1,

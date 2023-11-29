@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.Enrollment
 {
-    internal interface IEnrollmentDAL
+    public interface IEnrollmentDAL
     {
         bool Add(Enrollment enrollment);
         bool Delete(int enrollmentID);

@@ -3,7 +3,7 @@ using System.Data.SqlClient;
 
 namespace Assignment_v1.Training
 {
-    internal class TrainingDAL : ITrainingDAL
+    public class TrainingDAL : ITrainingDAL
     {
         private readonly DbUtil _dbUtil;
         private readonly MapperBase<Training> _trainingMapper;

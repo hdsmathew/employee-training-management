@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.Training
 {
-    internal class Training
+    public class Training
     {
         public int ID { get; set; }
         public string Name { get; set; }

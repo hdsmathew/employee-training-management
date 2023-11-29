@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.Training
 {
-    internal interface ITrainingService
+    public interface ITrainingService
     {
         void Add(Training training);
         void Edit(Training training);

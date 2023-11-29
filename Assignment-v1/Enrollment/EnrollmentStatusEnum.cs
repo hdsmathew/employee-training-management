@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.Enrollment
 {
-    internal enum EnrollmentStatusEnum
+    public enum EnrollmentStatusEnum
     {
         Pending = 0,
         Approved = 1,

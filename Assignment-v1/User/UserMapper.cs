@@ -2,7 +2,7 @@
 
 namespace Assignment_v1.User
 {
-    internal class UserMapper : MapperBase<User>
+    public class UserMapper : MapperBase<User>
     {
         public override User MapRowToObject(Dictionary<string, object> row)
         {

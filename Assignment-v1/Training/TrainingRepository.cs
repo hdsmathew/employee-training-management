@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.Training
 {
-    internal class TrainingRepository : ITrainingRepository
+    public class TrainingRepository : ITrainingRepository
     {
         private readonly ITrainingDAL _trainingDAL;
 

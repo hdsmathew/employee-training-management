@@ -1,9 +1,8 @@
 ﻿using Assignment_v1.Common;
-using System.Data;
 
 namespace Assignment_v1.Enrollment
 {
-    internal class EnrollmentMapper : MapperBase<Enrollment>
+    public class EnrollmentMapper : MapperBase<Enrollment>
     {
         public override Enrollment MapRowToObject(Dictionary<string, object> row)
         {

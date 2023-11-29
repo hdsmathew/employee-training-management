@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.Enrollment
 {
-    internal class Enrollment
+    public class Enrollment
     {
         public int ID { get; set; }
         public int EmployeeID { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.User
 {
-    internal interface IUserDAL
+    public interface IUserDAL
     {
         bool Add(User user);
         bool Delete(int userID);

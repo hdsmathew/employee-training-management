@@ -3,7 +3,7 @@ using System.Data.SqlClient;
 
 namespace Assignment_v1.Enrollment
 {
-    internal class EnrollmentDAL : IEnrollmentDAL
+    public class EnrollmentDAL : IEnrollmentDAL
     {
         private readonly DbUtil _dbUtil;
         private readonly MapperBase<Enrollment> _enrollmentMapper;

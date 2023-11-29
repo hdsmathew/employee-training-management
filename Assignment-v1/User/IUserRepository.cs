@@ -1,6 +1,6 @@
 ﻿namespace Assignment_v1.User
 {
-    internal interface IUserRepository
+    public interface IUserRepository
     {
         bool Add(User user);
         bool Delete(int userID);
