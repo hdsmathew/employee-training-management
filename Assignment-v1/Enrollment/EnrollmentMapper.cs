@@ -5,17 +5,17 @@ namespace Assignment_v1.Enrollment
 {
     internal class EnrollmentMapper : MapperBase<Enrollment>
     {
-        public override Enrollment MapRowToObject(DataRow dataRow)
+        public override Enrollment MapRowToObject(Dictionary<string, object> row)
         {
             Enrollment enrollment = new Enrollment()
             {
-                ID = Convert.ToInt32(dataRow["ID"]),
-                EmployeeID = Convert.ToInt32(dataRow["employeeID"]),
-                TrainingID = Convert.ToInt32(dataRow["trainingID"]),
-                Status = (EnrollmentStatusEnum)dataRow["status"],
-                Message = dataRow["message"].ToString(),
-                RequestDate = Convert.ToDateTime(dataRow["requestDate"]),
-                ResponseDate = Convert.ToDateTime(dataRow["responseDate"])
+                ID = Convert.ToInt32(row["ID"]),
+                EmployeeID = Convert.ToInt32(row["employeeID"]),
+                TrainingID = Convert.ToInt32(row["trainingID"]),
+                Status = (EnrollmentStatusEnum)row["status"],
+                Message = row["message"].ToString(),
+                RequestDate = Convert.ToDateTime(row["requestDate"]),
+                ResponseDate = Convert.ToDateTime(row["responseDate"])
             };
 
             return enrollment;

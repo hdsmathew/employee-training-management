@@ -1,5 +1,4 @@
 ﻿using System.Data.SqlClient;
-using System.Data;
 
 namespace Assignment_v1.Common
 {
@@ -12,19 +11,33 @@ namespace Assignment_v1.Common
             _connectionString = connectionString;
         }
 
-        public DataTable GetData(string sqlQuery, List<SqlParameter> queryParameters)
+        public IEnumerable<Dictionary<string, object>> GetData(string sqlQuery, List<SqlParameter> queryParameters)
         {
-            DataTable dataTable = null;
+            List<Dictionary<string, object>> entityTable = new List<Dictionary<string, object>>();
 
             using (SqlConnection connection = new SqlConnection(_connectionString))
             using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, connection))
             {
                 sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                SqlDataAdapter sqlDataAdapter = new SqlDataAdapter(sqlCommand);
-                sqlDataAdapter.Fill(dataTable);
+                connection.Open();
 
-                return dataTable;
+                using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        Dictionary<string, object> row = new Dictionary<string, object>();
+
+                        for (int i = 0; i < reader.FieldCount; i++)
+                        {
+                            row[reader.GetName(i)] = reader.GetValue(i);
+                        }
+
+                        entityTable.Add(row);
+                    }
+                }
             }
+
+            return entityTable;
         }
 
         public bool ModifyData(string sqlQuery, List<SqlParameter> queryParameters)

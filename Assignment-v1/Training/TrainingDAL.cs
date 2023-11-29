@@ -1,5 +1,4 @@
 ﻿using Assignment_v1.Common;
-using System.Data;
 using System.Data.SqlClient;
 
 namespace Assignment_v1.Training
@@ -48,18 +47,18 @@ namespace Assignment_v1.Training
             {
                 new SqlParameter("@ID", trainingID)
             };
-            DataRow dataRow = _dbUtil.GetData(selectQuery, parameters).Rows[0];
+            Dictionary<string, object> row = _dbUtil.GetData(selectQuery, parameters).First();
 
-            return _trainingMapper.MapRowToObject(dataRow);
+            return _trainingMapper.MapRowToObject(row);
         }
 
         public IEnumerable<Training> GetAll()
         {
             string selectQuery = "SELECT * FROM Training";
             List<SqlParameter> parameters = new List<SqlParameter>();
-            DataTable dataTable = _dbUtil.GetData(selectQuery, parameters);
+            IEnumerable<Dictionary<string, object>> entityTable = _dbUtil.GetData(selectQuery, parameters);
 
-            return _trainingMapper.MapTableToObjects(dataTable);
+            return _trainingMapper.MapTableToObjects(entityTable);
         }
 
         public bool Update(Training training)

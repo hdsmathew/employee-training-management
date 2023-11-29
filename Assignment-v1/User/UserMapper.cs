@@ -1,22 +1,21 @@
 ﻿using Assignment_v1.Common;
-using System.Data;
 
 namespace Assignment_v1.User
 {
     internal class UserMapper : MapperBase<User>
     {
-        public override User MapRowToObject(DataRow dataRow)
+        public override User MapRowToObject(Dictionary<string, object> row)
         {
             User user = new User
             {
-                ID = Convert.ToInt32(dataRow["ID"]),
-                Role = (UserRoleEnum)dataRow["role"],
-                Email = dataRow["email"].ToString(),
-                Password = dataRow["password"].ToString(),
-                Name = dataRow["name"].ToString(),
-                NIC = dataRow["NIC"].ToString(),
-                Phone = dataRow["phone"].ToString(),
-                DeptID = Convert.ToInt32(dataRow["deptID"])
+                ID = Convert.ToInt32(row["ID"]),
+                Role = (UserRoleEnum)row["role"],
+                Email = row["email"].ToString(),
+                Password = row["password"].ToString(),
+                Name = row["name"].ToString(),
+                NIC = row["NIC"].ToString(),
+                Phone = row["phone"].ToString(),
+                DeptID = Convert.ToInt32(row["deptID"])
             };
 
             return user;

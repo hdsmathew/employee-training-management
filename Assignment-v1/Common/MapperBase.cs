@@ -1,17 +1,15 @@
-﻿using System.Data;
-
-namespace Assignment_v1.Common
+﻿namespace Assignment_v1.Common
 {
     internal abstract class MapperBase<T>
     {
-        public abstract T MapRowToObject(DataRow dataRow);
+        public abstract T MapRowToObject(Dictionary<string, object> row);
 
-        public IEnumerable<T> MapTableToObjects(DataTable table)
+        public IEnumerable<T> MapTableToObjects(IEnumerable<Dictionary<string, object>> entityTable)
         {
             List<T> entities = new List<T>();
-            foreach (DataRow dataRow in table.Rows)
+            foreach (Dictionary<string, object> row in entityTable)
             {
-                T entity = MapRowToObject(dataRow);
+                T entity = MapRowToObject(row);
                 entities.Add(entity);
             }
 

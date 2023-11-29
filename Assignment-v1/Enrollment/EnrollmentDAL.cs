@@ -1,5 +1,4 @@
 ﻿using Assignment_v1.Common;
-using System.Data;
 using System.Data.SqlClient;
 
 namespace Assignment_v1.Enrollment
@@ -50,18 +49,18 @@ namespace Assignment_v1.Enrollment
             {
                 new SqlParameter("@ID", enrollmentID)
             };
-            DataRow dataRow = _dbUtil.GetData(selectQuery, parameters).Rows[0];
+            Dictionary<string, object> row = _dbUtil.GetData(selectQuery, parameters).First();
 
-            return _enrollmentMapper.MapRowToObject(dataRow);
+            return _enrollmentMapper.MapRowToObject(row);
         }
 
         public IEnumerable<Enrollment> GetAll()
         {
             string selectQuery = "SELECT * FROM Enrollment";
             List<SqlParameter> parameters = new List<SqlParameter>();
-            DataTable dataTable = _dbUtil.GetData(selectQuery, parameters);
+            IEnumerable<Dictionary<string, object>> entityTable = _dbUtil.GetData(selectQuery, parameters);
 
-            return _enrollmentMapper.MapTableToObjects(dataTable);
+            return _enrollmentMapper.MapTableToObjects(entityTable);
         }
 
         public bool Update(Enrollment enrollment)
