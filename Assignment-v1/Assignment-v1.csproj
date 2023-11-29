@@ -4,8 +4,6 @@
     <OutputType>Library</OutputType>
     <TargetFramework>net472</TargetFramework>
     <RootNamespace>Assignment_v1</RootNamespace>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
   </PropertyGroup>
 
   <ItemGroup>

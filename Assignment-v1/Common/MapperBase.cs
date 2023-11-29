@@ -1,4 +1,6 @@
-﻿namespace Assignment_v1.Common
+﻿using System.Collections.Generic;
+
+namespace Assignment_v1.Common
 {
     public abstract class MapperBase<T>
     {

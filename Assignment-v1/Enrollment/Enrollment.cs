@@ -1,4 +1,6 @@
-﻿namespace Assignment_v1.Enrollment
+﻿using System;
+
+namespace Assignment_v1.Enrollment
 {
     public class Enrollment
     {

@@ -1,4 +1,6 @@
-﻿namespace Assignment_v1.Training
+﻿using System;
+
+namespace Assignment_v1.Training
 {
     public class Training
     {

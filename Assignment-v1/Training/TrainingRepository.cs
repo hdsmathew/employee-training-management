@@ -1,4 +1,6 @@
-﻿namespace Assignment_v1.Training
+﻿using System.Collections.Generic;
+
+namespace Assignment_v1.Training
 {
     public class TrainingRepository : ITrainingRepository
     {

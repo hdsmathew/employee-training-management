@@ -1,5 +1,7 @@
 ﻿using Assignment_v1.Common;
+using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 
 namespace Assignment_v1.Training
 {

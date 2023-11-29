@@ -1,4 +1,6 @@
-﻿namespace Assignment_v1.User
+﻿using System.Collections.Generic;
+
+namespace Assignment_v1.User
 {
     public class UserRepository : IUserRepository
     {

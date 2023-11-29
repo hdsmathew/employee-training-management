@@ -1,4 +1,6 @@
-﻿namespace Assignment_v1.Enrollment
+﻿using System.Collections.Generic;
+
+namespace Assignment_v1.Enrollment
 {
     public interface IEnrollmentDAL
     {
