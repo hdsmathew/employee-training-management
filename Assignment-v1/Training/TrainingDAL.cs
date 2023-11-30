@@ -10,7 +10,7 @@ namespace Assignment_v1.Training
         private readonly DbUtil _dbUtil;
         private readonly MapperBase<Training> _trainingMapper;
 
-        public TrainingDAL(DbUtil dbUtil, MapperBase<Training> trainingMapper)
+        public TrainingDAL(DbUtil dbUtil, TrainingMapper trainingMapper)
         {
             _dbUtil = dbUtil;
             _trainingMapper = trainingMapper;

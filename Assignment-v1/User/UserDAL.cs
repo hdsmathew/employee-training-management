@@ -10,7 +10,7 @@ namespace Assignment_v1.User
         private readonly DbUtil _dbUtil;
         private readonly MapperBase<User> _userMapper;
 
-        public UserDAL(DbUtil dbUtil, MapperBase<User> userMapper)
+        public UserDAL(DbUtil dbUtil, UserMapper userMapper)
         {
             _dbUtil = dbUtil;
             _userMapper = userMapper;

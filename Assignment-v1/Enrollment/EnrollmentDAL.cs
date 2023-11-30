@@ -10,7 +10,7 @@ namespace Assignment_v1.Enrollment
         private readonly DbUtil _dbUtil;
         private readonly MapperBase<Enrollment> _enrollmentMapper;
 
-        public EnrollmentDAL(DbUtil dbUtil, MapperBase<Enrollment> enrollmentMapper)
+        public EnrollmentDAL(DbUtil dbUtil, EnrollmentMapper enrollmentMapper)
         {
             _dbUtil = dbUtil;
             _enrollmentMapper = enrollmentMapper;
