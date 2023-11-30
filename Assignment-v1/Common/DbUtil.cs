@@ -20,8 +20,8 @@ namespace Assignment_v1.Common
             using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, connection))
             {
                 sqlCommand.Parameters.AddRange(queryParameters.ToArray());
+                
                 connection.Open();
-
                 using (SqlDataReader reader = sqlCommand.ExecuteReader())
                 {
                     while (reader.Read())
@@ -39,6 +39,18 @@ namespace Assignment_v1.Common
             }
 
             return entityTable;
+        }
+
+        public object ExecuteScalar(string sqlQuery, List<SqlParameter> queryParameters)
+        {
+            using (SqlConnection connection = new SqlConnection(_connectionString))
+            using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, connection))
+            {
+                sqlCommand.Parameters.AddRange(queryParameters.ToArray());
+
+                connection.Open();
+                return sqlCommand.ExecuteScalar();
+            }
         }
 
         public bool ModifyData(string sqlQuery, List<SqlParameter> queryParameters)

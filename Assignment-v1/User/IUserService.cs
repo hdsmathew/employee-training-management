@@ -2,9 +2,9 @@
 {
     public interface IUserService
     {
-        void Login(User user);
+        User Login(int userID, string password);
         void Logout(User user);
-        void Register(User user);
+        int Register(User user);
         void Update(User user);
     }
 }

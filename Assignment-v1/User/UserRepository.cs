@@ -11,7 +11,7 @@ namespace Assignment_v1.User
             _userDAL = userDAL;
         }
 
-        public bool Add(User user)
+        public int Add(User user)
         {
             return _userDAL.Add(user);
         }
@@ -19,6 +19,11 @@ namespace Assignment_v1.User
         public bool Delete(int userID)
         {
             return _userDAL.Delete(userID);
+        }
+
+        public bool Exists(User user)
+        {
+            return _userDAL.Exists(user);
         }
 
         public User Get(int userID)
