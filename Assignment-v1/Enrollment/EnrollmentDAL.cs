@@ -18,7 +18,7 @@ namespace Assignment_v1.Enrollment
 
         public bool Add(Enrollment enrollment)
         {
-            string insertQuery = "INSERT INTO Enrollment (employeeID, trainingID, status, message, requestDate, responseDate) " +
+            string insertQuery = "INSERT INTO tbl_enrollment (employeeID, trainingID, status, message, requestDate, responseDate) " +
                                     "VALUES (@employeeID, @trainingID, @status, @message, @requestDate, @responseDate)";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
@@ -35,7 +35,7 @@ namespace Assignment_v1.Enrollment
 
         public bool Delete(int enrollmentID)
         {
-            string deleteQuery = "DELETE FROM Enrollment WHERE ID = @ID";
+            string deleteQuery = "DELETE FROM tbl_enrollment WHERE ID = @ID";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@ID", enrollmentID)
@@ -46,7 +46,7 @@ namespace Assignment_v1.Enrollment
 
         public Enrollment Get(int enrollmentID)
         {
-            string selectQuery = "SELECT * FROM Enrollment WHERE ID + @ID";
+            string selectQuery = "SELECT * FROM tbl_enrollment WHERE ID + @ID";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@ID", enrollmentID)
@@ -58,7 +58,7 @@ namespace Assignment_v1.Enrollment
 
         public IEnumerable<Enrollment> GetAll()
         {
-            string selectQuery = "SELECT * FROM Enrollment";
+            string selectQuery = "SELECT * FROM tbl_enrollment";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<Dictionary<string, object>> entityTable = _dbUtil.GetData(selectQuery, parameters);
 
@@ -67,7 +67,7 @@ namespace Assignment_v1.Enrollment
 
         public bool Update(Enrollment enrollment)
         {
-            string updateQuery = "UPDATE Enrollment SET " +
+            string updateQuery = "UPDATE tbl_enrollment SET " +
                                     "employeeID = @employeeID" +
                                     ", trainingID = @trainingID" +
                                     ", status = @status" +

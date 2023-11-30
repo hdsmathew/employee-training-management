@@ -18,7 +18,7 @@ namespace Assignment_v1.Training
 
         public bool Add(Training training)
         {
-            string insertQuery = "INSERT INTO Training (name, preferredDeptID, seatsAvailable, registrationDeadline) " +
+            string insertQuery = "INSERT INTO tbl_training (name, preferredDeptID, seatsAvailable, registrationDeadline) " +
                                     "VALUES (@name, @preferredDeptID, @seatsAvailable, @registrationDeadline)";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
@@ -33,7 +33,7 @@ namespace Assignment_v1.Training
 
         public bool Delete(int trainingID)
         {
-            string deleteQuery = "DELETE FROM Training WHERE ID = @ID";
+            string deleteQuery = "DELETE FROM tbl_training WHERE ID = @ID";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@ID", trainingID)
@@ -44,7 +44,7 @@ namespace Assignment_v1.Training
 
         public Training Get(int trainingID)
         {
-            string selectQuery = "SELECT * FROM Training WHERE ID = @ID";
+            string selectQuery = "SELECT * FROM tbl_training WHERE ID = @ID";
             List<SqlParameter> parameters = new List<SqlParameter>
             {
                 new SqlParameter("@ID", trainingID)
@@ -56,7 +56,7 @@ namespace Assignment_v1.Training
 
         public IEnumerable<Training> GetAll()
         {
-            string selectQuery = "SELECT * FROM Training";
+            string selectQuery = "SELECT * FROM tbl_training";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<Dictionary<string, object>> entityTable = _dbUtil.GetData(selectQuery, parameters);
 
@@ -65,7 +65,7 @@ namespace Assignment_v1.Training
 
         public bool Update(Training training)
         {
-            string updateQuery = "UPDATE Training SET " +
+            string updateQuery = "UPDATE tbl_training SET " +
                                     "name = @name" +
                                     ", preferredDeptID = @preferredDeptID" +
                                     ", seatsAvailable = @seatsAvailable" +

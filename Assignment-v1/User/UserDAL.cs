@@ -19,7 +19,7 @@ namespace Assignment_v1.User
 
         public int Add(User user)
         {
-            string insertQuery = "INSERT INTO User (role, email, password, name, NIC, phone, deptID, managerID) " +
+            string insertQuery = "INSERT INTO tbl_user (role, email, password, name, NIC, phone, deptID, managerID) " +
                                     "VALUES (@role, @email, @password, @name, @NIC, @phone, @deptID, @managerID); " +
                                     "SELECT SCOPE_IDENTITY()";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -39,7 +39,7 @@ namespace Assignment_v1.User
 
         public bool Delete(int userID)
         {
-            string deleteQuery = "DELETE FROM User WHERE ID = @ID";
+            string deleteQuery = "DELETE FROM tbl_user WHERE ID = @ID";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@ID", userID)
@@ -50,7 +50,7 @@ namespace Assignment_v1.User
 
         public bool Exists(User user)
         {
-            string selectQuery = "SELECT COUNT(*) FROM User WHERE " +
+            string selectQuery = "SELECT COUNT(*) FROM tbl_user WHERE " +
                                     "email =  @email OR " +
                                     "NIC =  @NIC OR " +
                                     "phone =  @phone";
@@ -68,7 +68,7 @@ namespace Assignment_v1.User
 
         public User Get(int userID)
         {
-            string selectQuery = "SELECT * FROM User WHERE ID = @ID";
+            string selectQuery = "SELECT * FROM tbl_user WHERE ID = @ID";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@ID", userID)
@@ -80,7 +80,7 @@ namespace Assignment_v1.User
 
         public IEnumerable<User> GetAll()
         {
-            string selectQuery = "SELECT * FROM User";
+            string selectQuery = "SELECT * FROM tbl_user";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<Dictionary<string, object>> entityTable = _dbUtil.GetData(selectQuery, parameters);
 
@@ -89,7 +89,7 @@ namespace Assignment_v1.User
 
         public bool Update(User user)
         {
-            string updateQuery = "UPDATE User SET " +
+            string updateQuery = "UPDATE tbl_user SET " +
                                     "role =  @role" +
                                     ", email =  @email" +
                                     ", password =  @password" +
