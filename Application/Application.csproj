@@ -52,7 +52,9 @@
     <Compile Include="Services\TrainingService.cs" />
     <Compile Include="Services\UserService.cs" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Common\" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Core\Domain.csproj">
       <Project>{D0ED62A0-811D-4BDF-9EEE-58FD95EF7DF1}</Project>

@@ -70,8 +70,8 @@ namespace Infrastructure.DAL
         {
             string selectQuery = "SELECT * FROM tbl_training";
             List<SqlParameter> parameters = new List<SqlParameter>();
-            IEnumerable<Dictionary<string, object>> entityTable = _dbUtil.ExecuteReader(selectQuery, parameters);
-            return _trainingMapper.MapTableToObjects(entityTable);
+            IEnumerable<Dictionary<string, object>> entityDicts = _dbUtil.ExecuteReader(selectQuery, parameters);
+            return _trainingMapper.MapTableToObjects(entityDicts);
         }
 
         public bool Update(Training training)
