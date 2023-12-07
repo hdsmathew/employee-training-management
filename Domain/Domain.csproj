@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{1508A936-C8A5-48BD-8A73-EA7BAFB4DBF8}</ProjectGuid>
+    <ProjectGuid>{7AFF568C-087E-418D-88C1-C3FA8E5FF93C}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Core.Application</RootNamespace>
-    <AssemblyName>Application</AssemblyName>
+    <RootNamespace>Core.Domain</RootNamespace>
+    <AssemblyName>Domain</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -41,22 +41,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\MapperBase.cs" />
+    <Compile Include="Enrollment\Enrollment.cs" />
+    <Compile Include="Enrollment\EnrollmentMapper.cs" />
+    <Compile Include="Enrollment\EnrollmentStatusEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repositories\IEnrollmentRepository.cs" />
-    <Compile Include="Repositories\ITrainingRepository.cs" />
-    <Compile Include="Repositories\IUserRepository.cs" />
-    <Compile Include="Services\EnrollmentService.cs" />
-    <Compile Include="Services\IEnrollmentService.cs" />
-    <Compile Include="Services\ITrainingService.cs" />
-    <Compile Include="Services\IUserService.cs" />
-    <Compile Include="Services\TrainingService.cs" />
-    <Compile Include="Services\UserService.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Domain\Domain.csproj">
-      <Project>{7aff568c-087e-418d-88c1-c3fa8e5ff93c}</Project>
-      <Name>Domain</Name>
-    </ProjectReference>
+    <Compile Include="Training\Training.cs" />
+    <Compile Include="Training\TrainingMapper.cs" />
+    <Compile Include="User\User.cs" />
+    <Compile Include="User\UserMapper.cs" />
+    <Compile Include="User\UserRoleEnum.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

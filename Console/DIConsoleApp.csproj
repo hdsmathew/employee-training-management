@@ -111,8 +111,8 @@
       <Project>{1508a936-c8a5-48bd-8a73-ea7bafb4dbf8}</Project>
       <Name>Application</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Core\Domain.csproj">
-      <Project>{d0ed62a0-811d-4bdf-9eee-58fd95ef7df1}</Project>
+    <ProjectReference Include="..\Domain\Domain.csproj">
+      <Project>{7aff568c-087e-418d-88c1-c3fa8e5ff93c}</Project>
       <Name>Domain</Name>
     </ProjectReference>
     <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
