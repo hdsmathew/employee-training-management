@@ -5,10 +5,10 @@ namespace Core.Application.Repositories
 {
     public interface IEnrollmentRepository
     {
-        bool Add(Enrollment enrollment);
-        bool Delete(int enrollmentID);
+        int Add(Enrollment enrollment);
+        int Delete(int enrollmentID);
         Enrollment Get(int enrollmentID);
         IEnumerable<Enrollment> GetAll();
-        bool Update(Enrollment enrollment);
+        int Update(Enrollment enrollment);
     }
 }

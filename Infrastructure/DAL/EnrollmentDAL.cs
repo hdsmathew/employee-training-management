@@ -17,7 +17,7 @@ namespace Infrastructure.DAL
             _enrollmentMapper = enrollmentMapper;
         }
 
-        public bool Add(Enrollment enrollment)
+        public int Add(Enrollment enrollment)
         {
             string insertQuery = "INSERT INTO tbl_enrollment (employeeID, trainingID, status, message, requestDate, responseDate) " +
                                     "VALUES (@employeeID, @trainingID, @status, @message, @requestDate, @responseDate)";
@@ -33,7 +33,7 @@ namespace Infrastructure.DAL
             return _dbUtil.ExecuteNonQuery(insertQuery, parameters);
         }
 
-        public bool Delete(int enrollmentID)
+        public int Delete(int enrollmentID)
         {
             string deleteQuery = "DELETE FROM tbl_enrollment WHERE ID = @ID";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -62,7 +62,7 @@ namespace Infrastructure.DAL
             return _enrollmentMapper.MapTableToObjects(entityDicts);
         }
 
-        public bool Update(Enrollment enrollment)
+        public int Update(Enrollment enrollment)
         {
             string updateQuery = "UPDATE tbl_enrollment SET " +
                                     "employeeID = @employeeID" +

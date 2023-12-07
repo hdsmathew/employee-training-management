@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
             return _trainingDAL.Add(training);
         }
 
-        public bool Delete(int trainingID)
+        public int Delete(int trainingID)
         {
             return _trainingDAL.Delete(trainingID);
         }
@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
             return _trainingDAL.GetAll();
         }
 
-        public bool Update(Training training)
+        public int Update(Training training)
         {
             return _trainingDAL.Update(training);
         }

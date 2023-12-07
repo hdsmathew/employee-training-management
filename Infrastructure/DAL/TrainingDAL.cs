@@ -33,7 +33,7 @@ namespace Infrastructure.DAL
             return Convert.ToInt32(_dbUtil.ExecuteScalar(insertQuery, parameters));
         }
 
-        public bool Delete(int trainingID)
+        public int Delete(int trainingID)
         {
             string deleteQuery = "DELETE FROM tbl_training WHERE ID = @ID";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -74,7 +74,7 @@ namespace Infrastructure.DAL
             return _trainingMapper.MapTableToObjects(entityDicts);
         }
 
-        public bool Update(Training training)
+        public int Update(Training training)
         {
             string updateQuery = "UPDATE tbl_training SET " +
                                     "name = @name" +

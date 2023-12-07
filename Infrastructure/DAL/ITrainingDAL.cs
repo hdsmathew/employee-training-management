@@ -6,10 +6,10 @@ namespace Infrastructure.DAL
     public interface ITrainingDAL
     {
         int Add(Training training);
-        bool Delete(int trainingID);
+        int Delete(int trainingID);
         Training Get(int trainingID);
         bool ExistsByName(string name);
         IEnumerable<Training> GetAll();
-        bool Update(Training training);
+        int Update(Training training);
     }
 }

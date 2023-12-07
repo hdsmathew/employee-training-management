@@ -5,11 +5,11 @@ namespace Core.Application.Repositories
 {
     public interface IUserRepository
     {
-        bool Add(User user);
-        bool Delete(int userID);
-        bool Exists(User user);
+        int Add(User user);
+        int Delete(int userID);
+        bool ExistsByEmail(string email);
         User Get(int userID);
         IEnumerable<User> GetAll();
-        bool Update(User user);
+        int Update(User user);
     }
 }

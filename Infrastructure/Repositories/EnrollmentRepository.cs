@@ -14,12 +14,12 @@ namespace Infrastructure.Repositories
             _enrollmentDAL = enrollmentDAL;
         }
 
-        public bool Add(Enrollment enrollment)
+        public int Add(Enrollment enrollment)
         {
             return _enrollmentDAL.Add(enrollment);
         }
 
-        public bool Delete(int enrollmentID)
+        public int Delete(int enrollmentID)
         {
             return _enrollmentDAL.Delete(enrollmentID);
         }
@@ -34,7 +34,7 @@ namespace Infrastructure.Repositories
             return _enrollmentDAL.GetAll();
         }
 
-        public bool Update(Enrollment enrollment)
+        public int Update(Enrollment enrollment)
         {
             return _enrollmentDAL.Update(enrollment);
         }

@@ -14,19 +14,19 @@ namespace Infrastructure.Repositories
             _userDAL = userDAL;
         }
 
-        public bool Add(User user)
+        public int Add(User user)
         {
             return _userDAL.Add(user);
         }
 
-        public bool Delete(int userID)
+        public int Delete(int userID)
         {
             return _userDAL.Delete(userID);
         }
 
-        public bool Exists(User user)
+        public bool ExistsByEmail(string email)
         {
-            return _userDAL.Exists(user);
+            return _userDAL.ExistsByEmail(email);
         }
 
         public User Get(int userID)
@@ -39,7 +39,7 @@ namespace Infrastructure.Repositories
             return _userDAL.GetAll();
         }
 
-        public bool Update(User user)
+        public int Update(User user)
         {
             return _userDAL.Update(user);
         }
