@@ -41,6 +41,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Response.cs" />
+    <Compile Include="Models\Error.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\IEnrollmentRepository.cs" />
     <Compile Include="Repositories\ITrainingRepository.cs" />

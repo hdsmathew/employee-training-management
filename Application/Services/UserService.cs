@@ -1,4 +1,5 @@
-﻿using Core.Application.Repositories;
+﻿using Core.Application.Models;
+using Core.Application.Repositories;
 using Core.Domain.User;
 using System;
 
@@ -13,38 +14,66 @@ namespace Core.Application.Services
             _userRepository = userRepository;
         }
 
-        public User Login(int userID, string password)
+        public Response<User> Login(int userID, string password)
         {
-            User user = _userRepository.Get(userID);
-            if (IsAuthenticated(user, password))
+            Response<User> response = new Response<User>();
+            try
             {
-                return user;
+                response.Entity = _userRepository.Get(userID);
             }
-            throw new Exception("Invalid user id or password.");
-        }
-
-        public void Logout(User user)
-        {
-            throw new NotImplementedException();
-        }
-
-        public bool Register(User user)
-        {
-            if (_userRepository.Exists(user))
+            catch (Exception ex)
             {
-                throw new Exception("User already exists.");
+                response.AddError(new Error()
+                {
+                    Message = "Unable to login. Try again later.",
+                    Exception = ex
+                });
             }
-            return _userRepository.Add(user);
+            return response;
         }
 
-        public void Update(User user)
+        public Response<User> Register(User user)
         {
-            throw new NotImplementedException();
+            Response<User> response = new Response<User>();
+            try
+            {
+                if (_userRepository.ExistsByEmail(user.Email))
+                {
+                    response.AddError(new Error()
+                    {
+                        Message = $"User with email: {user.Email} already exists."
+                    });
+                    return response;
+                }
+                response.AddedRows = _userRepository.Add(user);
+            }
+            catch (Exception ex)
+            {
+                response.AddError(new Error()
+                {
+                    Message = "Registration failed. Try again later.",
+                    Exception = ex
+                });
+            }
+            return response;
         }
 
-        private bool IsAuthenticated(User user, string password)
+        public Response<User> Update(User user)
         {
-            return user != null && user.Password.Equals(password);
+            Response<User> response = new Response<User>();
+            try
+            {
+                response.UpdatedRows = _userRepository.Update(user);
+            }
+            catch (Exception ex)
+            {
+                response.AddError(new Error()
+                {
+                    Message = $"Unable to update user with Id: {user.ID}",
+                    Exception = ex
+                });
+            }
+            return response;
         }
     }
 }
