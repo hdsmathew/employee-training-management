@@ -21,8 +21,7 @@ namespace Infrastructure.DAL
         public int Add(Training training)
         {
             string insertQuery = "INSERT INTO tbl_training (name, preferredDeptID, seatsAvailable, registrationDeadline) " +
-                                    "VALUES (@name, @preferredDeptID, @seatsAvailable, @registrationDeadline)" +
-                                    "SELECT SCOPE_IDENTITY()";
+                                    "VALUES (@name, @preferredDeptID, @seatsAvailable, @registrationDeadline)";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@name", training.Name),
@@ -30,7 +29,7 @@ namespace Infrastructure.DAL
                 new SqlParameter("@seatsAvailable", training.SeatsAvailable),
                 new SqlParameter("@registrationeDeadline", training.RegistrationDeadline)
             };
-            return Convert.ToInt32(_dbUtil.ExecuteScalar(insertQuery, parameters));
+            return _dbUtil.ExecuteNonQuery(insertQuery, parameters);
         }
 
         public int Delete(int trainingID)
