@@ -29,6 +29,11 @@ namespace Infrastructure.Repositories
             return _enrollmentDAL.Delete(enrollmentID);
         }
 
+        public bool Exists(int employeeID, int trainingID)
+        {
+            return _enrollmentDAL.Exists(employeeID, trainingID);
+        }
+
         public Enrollment Get(int enrollmentID)
         {
             EnrollmentEntity enrollmentEntity = _enrollmentDAL.Get(enrollmentID);

@@ -1,5 +1,7 @@
-﻿using Core.Application.Repositories;
+﻿using Core.Application.Models;
+using Core.Application.Repositories;
 using Core.Domain.Enrollment;
+using System;
 
 namespace Core.Application.Services
 {
@@ -12,17 +14,51 @@ namespace Core.Application.Services
             _enrollmentRepository = enrollmentRepository;
         }
 
-        public void Process(Enrollment enrollment)
+        public Response<Enrollment> Process(Enrollment enrollment)
         {
-            throw new System.NotImplementedException();
+            Response<Enrollment> response = new Response<Enrollment>();
+            try
+            {
+                response.UpdatedRows = _enrollmentRepository.Update(enrollment);
+            }
+            catch (Exception ex)
+            {
+                response.AddError(new Error()
+                {
+                    Message = "Unable to process enrollment. Try again later.",
+                    Exception = ex
+                });
+            }
+            return response;
         }
 
-        public void Submit(Enrollment enrollment)
+        public Response<Enrollment> Submit(Enrollment enrollment)
         {
-            throw new System.NotImplementedException();
+            Response<Enrollment> response = new Response<Enrollment>();
+            try
+            {
+                if (_enrollmentRepository.Exists(enrollment.EmployeeID, enrollment.TrainingID))
+                {
+                    response.AddError(new Error()
+                    {
+                        Message = $"User already has a pending enrollment submission."
+                    });
+                    return response;
+                }
+                response.AddedRows = _enrollmentRepository.Add(enrollment);
+            }
+            catch (Exception ex)
+            {
+                response.AddError(new Error()
+                {
+                    Message = "Training registration failed. Try again later.",
+                    Exception = ex
+                });
+            }
+            return response;
         }
 
-        public void ValidateEnrollments()
+        public Response<Enrollment> ValidateApprovedEnrollments()
         {
             throw new System.NotImplementedException();
         }

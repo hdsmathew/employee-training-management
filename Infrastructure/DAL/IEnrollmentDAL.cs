@@ -7,6 +7,7 @@ namespace Infrastructure.DAL
     {
         int Add(EnrollmentEntity enrollment);
         int Delete(int enrollmentID);
+        bool Exists(int employeeID, int trainingID);
         EnrollmentEntity Get(int enrollmentID);
         IEnumerable<EnrollmentEntity> GetAll();
         int Update(EnrollmentEntity enrollment);
