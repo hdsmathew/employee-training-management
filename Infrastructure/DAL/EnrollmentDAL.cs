@@ -1,5 +1,6 @@
-﻿using Core.Domain.Common;
-using Core.Domain.Enrollment;
+﻿using Core.Domain.Enrollment;
+using Infrastructure.Common;
+using Infrastructure.Entities;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Infrastructure.DAL
     public class EnrollmentDAL : IEnrollmentDAL
     {
         private readonly DbUtil _dbUtil;
-        private readonly MapperBase<Enrollment> _enrollmentMapper;
+        private readonly MapperBase<Enrollment, EnrollmentEntity> _enrollmentMapper;
 
         public EnrollmentDAL(DbUtil dbUtil, EnrollmentMapper enrollmentMapper)
         {
@@ -17,7 +18,7 @@ namespace Infrastructure.DAL
             _enrollmentMapper = enrollmentMapper;
         }
 
-        public int Add(Enrollment enrollment)
+        public int Add(EnrollmentEntity enrollment)
         {
             string insertQuery = "INSERT INTO tbl_enrollment (employeeID, trainingID, status, message, requestDate, responseDate) " +
                                     "VALUES (@employeeID, @trainingID, @status, @message, @requestDate, @responseDate)";
@@ -43,7 +44,7 @@ namespace Infrastructure.DAL
             return _dbUtil.ExecuteNonQuery(deleteQuery, parameters);
         }
 
-        public Enrollment Get(int enrollmentID)
+        public EnrollmentEntity Get(int enrollmentID)
         {
             string selectQuery = "SELECT * FROM tbl_enrollment WHERE ID + @ID";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -51,18 +52,18 @@ namespace Infrastructure.DAL
                 new SqlParameter("@ID", enrollmentID)
             };
             Dictionary<string, object> row = _dbUtil.ExecuteReader(selectQuery, parameters).First();
-            return _enrollmentMapper.MapRowToObject(row);
+            return _enrollmentMapper.MapRowToEntity(row);
         }
 
-        public IEnumerable<Enrollment> GetAll()
+        public IEnumerable<EnrollmentEntity> GetAll()
         {
             string selectQuery = "SELECT * FROM tbl_enrollment";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<Dictionary<string, object>> entityDicts = _dbUtil.ExecuteReader(selectQuery, parameters);
-            return _enrollmentMapper.MapTableToObjects(entityDicts);
+            return _enrollmentMapper.MapTableToEntities(entityDicts);
         }
 
-        public int Update(Enrollment enrollment)
+        public int Update(EnrollmentEntity enrollment)
         {
             string updateQuery = "UPDATE tbl_enrollment SET " +
                                     "employeeID = @employeeID" +

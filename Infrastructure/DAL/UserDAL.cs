@@ -1,5 +1,6 @@
-﻿using Core.Domain.Common;
-using Core.Domain.User;
+﻿using Core.Domain.User;
+using Infrastructure.Common;
+using Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -10,7 +11,7 @@ namespace Infrastructure.DAL
     public class UserDAL : IUserDAL
     {
         private readonly DbUtil _dbUtil;
-        private readonly MapperBase<User> _userMapper;
+        private readonly MapperBase<User, UserEntity> _userMapper;
 
         public UserDAL(DbUtil dbUtil, UserMapper userMapper)
         {
@@ -18,7 +19,7 @@ namespace Infrastructure.DAL
             _userMapper = userMapper;
         }
 
-        public int Add(User user)
+        public int Add(UserEntity user)
         {
             string insertQuery = "INSERT INTO tbl_user (role, email, password, name, NIC, phone, deptID, managerID) " +
                                     "VALUES (@role, @email, @password, @name, @NIC, @phone, @deptID, @managerID);";
@@ -58,7 +59,7 @@ namespace Infrastructure.DAL
             return IsValidScalarObject(scalarObject) && Convert.ToInt32(scalarObject) > 0;
         }
 
-        public User Get(int userID)
+        public UserEntity Get(int userID)
         {
             string selectQuery = "SELECT * FROM tbl_user WHERE ID = @ID";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -66,18 +67,18 @@ namespace Infrastructure.DAL
                 new SqlParameter("@ID", userID)
             };
             Dictionary<string, object> row = _dbUtil.ExecuteReader(selectQuery, parameters).First();
-            return _userMapper.MapRowToObject(row);
+            return _userMapper.MapRowToEntity(row);
         }
 
-        public IEnumerable<User> GetAll()
+        public IEnumerable<UserEntity> GetAll()
         {
             string selectQuery = "SELECT * FROM tbl_user";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<Dictionary<string, object>> entityDicts = _dbUtil.ExecuteReader(selectQuery, parameters);
-            return _userMapper.MapTableToObjects(entityDicts);
+            return _userMapper.MapTableToEntities(entityDicts);
         }
 
-        public int Update(User user)
+        public int Update(UserEntity user)
         {
             string updateQuery = "UPDATE tbl_user SET " +
                                     "role =  @role" +

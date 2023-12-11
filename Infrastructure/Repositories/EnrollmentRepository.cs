@@ -1,6 +1,8 @@
 ﻿using Core.Application.Repositories;
 using Core.Domain.Enrollment;
+using Infrastructure.Common;
 using Infrastructure.DAL;
+using Infrastructure.Entities;
 using System.Collections.Generic;
 
 namespace Infrastructure.Repositories
@@ -8,15 +10,18 @@ namespace Infrastructure.Repositories
     public class EnrollmentRepository : IEnrollmentRepository
     {
         private readonly IEnrollmentDAL _enrollmentDAL;
+        private readonly MapperBase<Enrollment, EnrollmentEntity> _enrollmentMapper;
 
-        public EnrollmentRepository(IEnrollmentDAL enrollmentDAL)
+        public EnrollmentRepository(IEnrollmentDAL enrollmentDAL, EnrollmentMapper enrollmentMapper)
         {
             _enrollmentDAL = enrollmentDAL;
+            _enrollmentMapper = enrollmentMapper;
         }
 
         public int Add(Enrollment enrollment)
         {
-            return _enrollmentDAL.Add(enrollment);
+            EnrollmentEntity enrollmentEntity = _enrollmentMapper.MapDomainModelToEntity(enrollment);
+            return _enrollmentDAL.Add(enrollmentEntity);
         }
 
         public int Delete(int enrollmentID)
@@ -26,17 +31,20 @@ namespace Infrastructure.Repositories
 
         public Enrollment Get(int enrollmentID)
         {
-            return _enrollmentDAL.Get(enrollmentID);
+            EnrollmentEntity enrollmentEntity = _enrollmentDAL.Get(enrollmentID);
+            return _enrollmentMapper.MapEntityToDomainModel(enrollmentEntity);
         }
 
         public IEnumerable<Enrollment> GetAll()
         {
-            return _enrollmentDAL.GetAll();
+            IEnumerable<EnrollmentEntity> enrollmentEntities = _enrollmentDAL.GetAll();
+            return _enrollmentMapper.MapEntitiesToDomainModel(enrollmentEntities);
         }
 
         public int Update(Enrollment enrollment)
         {
-            return _enrollmentDAL.Update(enrollment);
+            EnrollmentEntity enrollmentEntity = _enrollmentMapper.MapDomainModelToEntity(enrollment);
+            return _enrollmentDAL.Update(enrollmentEntity);
         }
     }
 }

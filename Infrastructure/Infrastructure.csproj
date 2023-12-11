@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\MapperBase.cs" />
     <Compile Include="DAL\DbUtil.cs" />
     <Compile Include="DAL\EnrollmentDAL.cs" />
     <Compile Include="DAL\IEnrollmentDAL.cs" />
@@ -48,6 +49,13 @@
     <Compile Include="DAL\IUserDAL.cs" />
     <Compile Include="DAL\TrainingDAL.cs" />
     <Compile Include="DAL\UserDAL.cs" />
+    <Compile Include="Entities\EnrollmentEntity.cs" />
+    <Compile Include="Entities\EnrollmentMapper.cs" />
+    <Compile Include="Entities\EntityBase.cs" />
+    <Compile Include="Entities\TrainingEntity.cs" />
+    <Compile Include="Entities\TrainingMapper.cs" />
+    <Compile Include="Entities\UserEntity.cs" />
+    <Compile Include="Entities\UserMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\EnrollmentRepository.cs" />
     <Compile Include="Repositories\TrainingRepository.cs" />

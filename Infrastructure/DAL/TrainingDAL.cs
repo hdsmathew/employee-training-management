@@ -1,5 +1,6 @@
-﻿using Core.Domain.Common;
-using Core.Domain.Training;
+﻿using Core.Domain.Training;
+using Infrastructure.Common;
+using Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -10,7 +11,7 @@ namespace Infrastructure.DAL
     public class TrainingDAL : ITrainingDAL
     {
         private readonly DbUtil _dbUtil;
-        private readonly MapperBase<Training> _trainingMapper;
+        private readonly MapperBase<Training, TrainingEntity> _trainingMapper;
 
         public TrainingDAL(DbUtil dbUtil, TrainingMapper trainingMapper)
         {
@@ -18,7 +19,7 @@ namespace Infrastructure.DAL
             _trainingMapper = trainingMapper;
         }
 
-        public int Add(Training training)
+        public int Add(TrainingEntity training)
         {
             string insertQuery = "INSERT INTO tbl_training (name, preferredDeptID, seatsAvailable, registrationDeadline) " +
                                     "VALUES (@name, @preferredDeptID, @seatsAvailable, @registrationDeadline)";
@@ -54,7 +55,7 @@ namespace Infrastructure.DAL
             return IsValidScalarObject(scalarObject) && Convert.ToInt32(scalarObject) > 0;
         }
 
-        public Training Get(int trainingID)
+        public TrainingEntity Get(int trainingID)
         {
             string selectQuery = "SELECT * FROM tbl_training WHERE ID = @ID";
             List<SqlParameter> parameters = new List<SqlParameter>
@@ -62,18 +63,18 @@ namespace Infrastructure.DAL
                 new SqlParameter("@ID", trainingID)
             };
             Dictionary<string, object> row = _dbUtil.ExecuteReader(selectQuery, parameters).First();
-            return _trainingMapper.MapRowToObject(row);
+            return _trainingMapper.MapRowToEntity(row);
         }
 
-        public IEnumerable<Training> GetAll()
+        public IEnumerable<TrainingEntity> GetAll()
         {
             string selectQuery = "SELECT * FROM tbl_training";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<Dictionary<string, object>> entityDicts = _dbUtil.ExecuteReader(selectQuery, parameters);
-            return _trainingMapper.MapTableToObjects(entityDicts);
+            return _trainingMapper.MapTableToEntities(entityDicts);
         }
 
-        public int Update(Training training)
+        public int Update(TrainingEntity training)
         {
             string updateQuery = "UPDATE tbl_training SET " +
                                     "name = @name" +

@@ -1,6 +1,8 @@
 ﻿using Core.Application.Repositories;
 using Core.Domain.Training;
+using Infrastructure.Common;
 using Infrastructure.DAL;
+using Infrastructure.Entities;
 using System.Collections.Generic;
 
 namespace Infrastructure.Repositories
@@ -8,15 +10,18 @@ namespace Infrastructure.Repositories
     public class TrainingRepository : ITrainingRepository
     {
         private readonly ITrainingDAL _trainingDAL;
+        private readonly MapperBase<Training, TrainingEntity> _trainingMapper;
 
-        public TrainingRepository(ITrainingDAL trainingDAL)
+        public TrainingRepository(ITrainingDAL trainingDAL, TrainingMapper trainingMapper)
         {
             _trainingDAL = trainingDAL;
+            _trainingMapper = trainingMapper;
         }
 
         public int Add(Training training)
         {
-            return _trainingDAL.Add(training);
+            TrainingEntity trainingEntity = _trainingMapper.MapDomainModelToEntity(training);
+            return _trainingDAL.Add(trainingEntity);
         }
 
         public int Delete(int trainingID)
@@ -31,17 +36,20 @@ namespace Infrastructure.Repositories
 
         public Training Get(int trainingID)
         {
-            return _trainingDAL.Get(trainingID);
+            TrainingEntity trainingEntity = _trainingDAL.Get(trainingID);
+            return _trainingMapper.MapEntityToDomainModel(trainingEntity);
         }
 
         public IEnumerable<Training> GetAll()
         {
-            return _trainingDAL.GetAll();
+            IEnumerable<TrainingEntity> trainingEntities = _trainingDAL.GetAll();
+            return _trainingMapper.MapEntitiesToDomainModel(trainingEntities);
         }
 
         public int Update(Training training)
         {
-            return _trainingDAL.Update(training);
+            TrainingEntity trainingEntity = _trainingMapper.MapDomainModelToEntity(training);
+            return _trainingDAL.Update(trainingEntity);
         }
     }
 }

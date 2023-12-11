@@ -1,14 +1,14 @@
-﻿using Core.Domain.Enrollment;
+﻿using Infrastructure.Entities;
 using System.Collections.Generic;
 
 namespace Infrastructure.DAL
 {
     public interface IEnrollmentDAL
     {
-        int Add(Enrollment enrollment);
+        int Add(EnrollmentEntity enrollment);
         int Delete(int enrollmentID);
-        Enrollment Get(int enrollmentID);
-        IEnumerable<Enrollment> GetAll();
-        int Update(Enrollment enrollment);
+        EnrollmentEntity Get(int enrollmentID);
+        IEnumerable<EnrollmentEntity> GetAll();
+        int Update(EnrollmentEntity enrollment);
     }
 }

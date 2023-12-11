@@ -1,15 +1,15 @@
-﻿using Core.Domain.Training;
+﻿using Infrastructure.Entities;
 using System.Collections.Generic;
 
 namespace Infrastructure.DAL
 {
     public interface ITrainingDAL
     {
-        int Add(Training training);
+        int Add(TrainingEntity training);
         int Delete(int trainingID);
-        Training Get(int trainingID);
+        TrainingEntity Get(int trainingID);
         bool ExistsByName(string name);
-        IEnumerable<Training> GetAll();
-        int Update(Training training);
+        IEnumerable<TrainingEntity> GetAll();
+        int Update(TrainingEntity training);
     }
 }
