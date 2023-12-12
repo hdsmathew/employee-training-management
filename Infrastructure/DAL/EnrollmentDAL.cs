@@ -21,16 +21,14 @@ namespace Infrastructure.DAL
 
         public int Add(EnrollmentEntity enrollment)
         {
-            string insertQuery = "INSERT INTO tbl_enrollment (employeeID, trainingID, status, message, requestDate, responseDate) " +
-                                    "VALUES (@employeeID, @trainingID, @status, @message, @requestDate, @responseDate)";
+            string insertQuery = "INSERT INTO tbl_enrollment (employeeID, trainingID, status, message, requestDate) " +
+                                    "VALUES (@employeeID, @trainingID, @status, @message, GETDATE())";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@employeeID", enrollment.EmployeeID),
                 new SqlParameter("@trainingID", enrollment.TrainingID),
                 new SqlParameter("@status", enrollment.Status),
-                new SqlParameter("@message", enrollment.Message),
-                new SqlParameter("@requestDate", enrollment.RequestDate),
-                new SqlParameter("@responseDate", enrollment.ResponseDate)
+                new SqlParameter("@message", enrollment.Message)
             };
             return _dbUtil.ExecuteNonQuery(insertQuery, parameters);
         }
@@ -50,7 +48,7 @@ namespace Infrastructure.DAL
             string selectQuery = "SELECT COUNT(*) FROM tbl_enrollment WHERE " +
                                     "employeeID = @employeeID AND " +
                                     "trainingID = @trainingID AND " +
-                                    "status != @status";
+                                    "status = @status";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@employeeID", employeeID),
@@ -83,16 +81,15 @@ namespace Infrastructure.DAL
         public int Update(EnrollmentEntity enrollment)
         {
             string updateQuery = "UPDATE tbl_enrollment SET " +
-                                    ", status = @status" +
+                                    "status = @status" +
                                     ", message = @message" +
-                                    ", responseDate = @responseDate" +
+                                    ", responseDate = GETDATE()" +
                                     "WHERE ID = @ID";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("ID", enrollment.ID),
                 new SqlParameter("@status", enrollment.Status),
                 new SqlParameter("@message", enrollment.Message),
-                new SqlParameter("@responseDate", enrollment.ResponseDate)
             };
             return _dbUtil.ExecuteNonQuery(updateQuery, parameters);
         }
