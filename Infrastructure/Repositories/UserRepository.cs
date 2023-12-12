@@ -40,6 +40,12 @@ namespace Infrastructure.Repositories
             return _userMapper.MapEntityToDomainModel(userEntity);
         }
 
+        public User Get(int userID, string password)
+        {
+            UserEntity userEntity = _userDAL.Get(userID, password);
+            return _userMapper.MapEntityToDomainModel(userEntity);
+        }
+
         public IEnumerable<User> GetAll()
         {
             IEnumerable<UserEntity> userEntities = _userDAL.GetAll();

@@ -19,7 +19,7 @@ namespace Core.Application.Services
             Response<User> response = new Response<User>();
             try
             {
-                response.Entity = _userRepository.Get(userID);
+                response.Entity = _userRepository.Get(userID, password);
             }
             catch (Exception ex)
             {

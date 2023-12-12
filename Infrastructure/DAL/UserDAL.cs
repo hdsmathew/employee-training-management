@@ -70,6 +70,20 @@ namespace Infrastructure.DAL
             return _userMapper.MapRowToEntity(row);
         }
 
+        public UserEntity Get(int userID, string password)
+        {
+            string selectQuery = "SELECT * FROM tbl_user WHERE " +
+                                    "ID = @ID AND " +
+                                    "password = @password";
+            List<SqlParameter> parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@ID", userID),
+                new SqlParameter("@password", password)
+            };
+            Dictionary<string, object> row = _dbUtil.ExecuteReader(selectQuery, parameters).First();
+            return _userMapper.MapRowToEntity(row);
+        }
+
         public IEnumerable<UserEntity> GetAll()
         {
             string selectQuery = "SELECT * FROM tbl_user";
