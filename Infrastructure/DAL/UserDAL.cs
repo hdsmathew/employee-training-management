@@ -70,14 +70,14 @@ namespace Infrastructure.DAL
             return _userMapper.MapRowToEntity(row);
         }
 
-        public UserEntity Get(int userID, string password)
+        public UserEntity Get(string emailAddress, string password)
         {
             string selectQuery = "SELECT * FROM tbl_user WHERE " +
-                                    "ID = @ID AND " +
+                                    "email = @email AND " +
                                     "password = @password";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
-                new SqlParameter("@ID", userID),
+                new SqlParameter("@email", emailAddress),
                 new SqlParameter("@password", password)
             };
             Dictionary<string, object> row = _dbUtil.ExecuteReader(selectQuery, parameters).First();

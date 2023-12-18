@@ -9,7 +9,7 @@ namespace Infrastructure.DAL
         int Delete(int userID);
         bool ExistsByEmail(string email);
         UserEntity Get(int userID);
-        UserEntity Get(int userID, string password);
+        UserEntity Get(string emailAddress, string password);
         IEnumerable<UserEntity> GetAll();
         int Update(UserEntity user);
     }

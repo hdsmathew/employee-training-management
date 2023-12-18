@@ -40,9 +40,9 @@ namespace Infrastructure.Repositories
             return _userMapper.MapEntityToDomainModel(userEntity);
         }
 
-        public User Get(int userID, string password)
+        public User Get(string emailAddress, string password)
         {
-            UserEntity userEntity = _userDAL.Get(userID, password);
+            UserEntity userEntity = _userDAL.Get(emailAddress, password);
             return _userMapper.MapEntityToDomainModel(userEntity);
         }
 

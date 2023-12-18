@@ -9,7 +9,7 @@ namespace Core.Application.Repositories
         int Delete(int userID);
         bool ExistsByEmail(string email);
         User Get(int userID);
-        User Get(int userID, string password);
+        User Get(string emailAddress, string password);
         IEnumerable<User> GetAll();
         int Update(User user);
     }

@@ -14,12 +14,12 @@ namespace Core.Application.Services
             _userRepository = userRepository;
         }
 
-        public Response<User> Login(int userID, string password)
+        public Response<User> Login(string emailAddress, string password)
         {
             Response<User> response = new Response<User>();
             try
             {
-                response.Entity = _userRepository.Get(userID, password);
+                response.Entity = _userRepository.Get(emailAddress, password);
             }
             catch (Exception ex)
             {
