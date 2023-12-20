@@ -1,7 +1,7 @@
 ﻿using Core.Application.Repositories;
-using Core.Domain.Enrollment;
+using Core.Domain;
 using Infrastructure.Common;
-using Infrastructure.DAL;
+using Infrastructure.DAL.Interfaces;
 using Infrastructure.Entities;
 using System.Collections.Generic;
 

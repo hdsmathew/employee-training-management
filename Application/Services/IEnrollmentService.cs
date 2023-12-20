@@ -1,12 +1,12 @@
 ﻿using Core.Application.Models;
-using Core.Domain.Enrollment;
+using Core.Domain;
 
 namespace Core.Application.Services
 {
     public interface IEnrollmentService
     {
-        Response<Enrollment> Process(Enrollment enrollment);
-        Response<Enrollment> Submit(Enrollment enrollment);
-        Response<Enrollment> ValidateApprovedEnrollments();
+        ResponseModel<Enrollment> Process(Enrollment enrollment);
+        ResponseModel<Enrollment> Submit(Enrollment enrollment);
+        ResponseModel<Enrollment> ValidateApprovedEnrollments();
     }
 }

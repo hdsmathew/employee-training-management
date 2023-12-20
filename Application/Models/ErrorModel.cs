@@ -2,7 +2,7 @@
 
 namespace Core.Application.Models
 {
-    public class Error
+    public class ErrorModel
     {
         public string Message { get; set; }
         public Exception Exception { get; set; }

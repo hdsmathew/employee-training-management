@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Infrastructure.Entities
+namespace Core.Domain
 {
-    public class EnrollmentEntity : EntityBase
+    public class Enrollment
     {
         public uint EnrollmentId { get; set; }
         public byte ApprovalStatusId { get; set; }

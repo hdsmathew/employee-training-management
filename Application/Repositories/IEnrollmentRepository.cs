@@ -1,4 +1,4 @@
-﻿using Core.Domain.Enrollment;
+﻿using Core.Domain;
 using System.Collections.Generic;
 
 namespace Core.Application.Repositories

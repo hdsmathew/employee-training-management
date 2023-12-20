@@ -1,12 +1,12 @@
 ﻿using Core.Application.Models;
-using Core.Domain.Training;
+using Core.Domain;
 
 namespace Core.Application.Services
 {
     public interface ITrainingService
     {
-        Response<Training> Add(Training training);
-        Response<Training> Update(Training training);
-        Response<Training> Delete(int trainingID);
+        ResponseModel<Training> Add(Training training);
+        ResponseModel<Training> Update(Training training);
+        ResponseModel<Training> Delete(int trainingID);
     }
 }

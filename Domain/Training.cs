@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Infrastructure.Entities
+namespace Core.Domain
 {
-    public class TrainingEntity : EntityBase
+    public class Training
     {
         public ushort TrainingId { get; set; }
         public byte PreferredDepartmentId { get; set; }

@@ -2,13 +2,13 @@
 
 namespace Core.Application.Models
 {
-    public class Response<T>
+    public class ResponseModel<T>
     {
-        private readonly List<Error> _errors;
+        private readonly List<ErrorModel> _errors;
 
-        public Response()
+        public ResponseModel()
         {
-            _errors = new List<Error>();
+            _errors = new List<ErrorModel>();
         }
 
         public List<T> Entities;
@@ -17,19 +17,19 @@ namespace Core.Application.Models
         public int DeletedRows { get; set; }
         public int UpdatedRows { get; set; }
 
-        public void AddError(Error error)
+        public void AddError(ErrorModel error)
         {
             _errors.Add(error);
         }
 
-        public List<Error> GetErrors()
+        public IEnumerable<ErrorModel> GetErrors()
         {
             return _errors;
         }
 
-        public bool HasErrors()
+        public bool Success()
         {
-            return _errors.Count > 0;
+            return _errors.Count == 0;
         }
     }
 }

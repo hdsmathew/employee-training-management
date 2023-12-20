@@ -1,6 +1,6 @@
 ﻿using Core.Application.Models;
 using Core.Application.Repositories;
-using Core.Domain.Enrollment;
+using Core.Domain;
 using System;
 
 namespace Core.Application.Services
@@ -14,16 +14,16 @@ namespace Core.Application.Services
             _enrollmentRepository = enrollmentRepository;
         }
 
-        public Response<Enrollment> Process(Enrollment enrollment)
+        public ResponseModel<Enrollment> Process(Enrollment enrollment)
         {
-            Response<Enrollment> response = new Response<Enrollment>();
+            ResponseModel<Enrollment> response = new ResponseModel<Enrollment>();
             try
             {
                 response.UpdatedRows = _enrollmentRepository.Update(enrollment);
             }
             catch (Exception ex)
             {
-                response.AddError(new Error()
+                response.AddError(new ErrorModel()
                 {
                     Message = "Unable to process enrollment. Try again later.",
                     Exception = ex
@@ -32,14 +32,14 @@ namespace Core.Application.Services
             return response;
         }
 
-        public Response<Enrollment> Submit(Enrollment enrollment)
+        public ResponseModel<Enrollment> Submit(Enrollment enrollment)
         {
-            Response<Enrollment> response = new Response<Enrollment>();
+            ResponseModel<Enrollment> response = new ResponseModel<Enrollment>();
             try
             {
-                if (_enrollmentRepository.Exists(enrollment.EmployeeID, enrollment.TrainingID))
+                if (_enrollmentRepository.Exists(enrollment.EmployeeId, enrollment.TrainingId))
                 {
-                    response.AddError(new Error()
+                    response.AddError(new ErrorModel()
                     {
                         Message = $"User already has a pending enrollment submission."
                     });
@@ -49,7 +49,7 @@ namespace Core.Application.Services
             }
             catch (Exception ex)
             {
-                response.AddError(new Error()
+                response.AddError(new ErrorModel()
                 {
                     Message = "Training registration failed. Try again later.",
                     Exception = ex
@@ -58,7 +58,7 @@ namespace Core.Application.Services
             return response;
         }
 
-        public Response<Enrollment> ValidateApprovedEnrollments()
+        public ResponseModel<Enrollment> ValidateApprovedEnrollments()
         {
             throw new System.NotImplementedException();
         }

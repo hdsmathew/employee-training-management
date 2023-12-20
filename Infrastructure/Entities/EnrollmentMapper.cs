@@ -1,4 +1,4 @@
-﻿using Core.Domain.Enrollment;
+﻿using Core.Domain;
 using Infrastructure.Common;
 using System;
 using System.Collections.Generic;
@@ -11,13 +11,13 @@ namespace Infrastructure.Entities
         {
             return new EnrollmentEntity
             {
-                ID = domainModel.ID,
-                EmployeeID = domainModel.EmployeeID,
-                TrainingID = domainModel.TrainingID,
-                Status = (int)domainModel.Status,
-                Message = domainModel.Message,
-                RequestDate = domainModel.RequestDate,
-                ResponseDate = domainModel.ResponseDate
+                EnrollmentId = domainModel.EnrollmentId,
+                ApprovalStatusId = domainModel.ApprovalStatusId,
+                ApproverAccountId = domainModel.ApproverAccountId,
+                EmployeeId = domainModel.EmployeeId,
+                RequestedAt = domainModel.RequestedAt,
+                TrainingId = domainModel.TrainingId,
+                UpdatedAt = domainModel.UpdatedAt
             };
         }
 
@@ -25,13 +25,13 @@ namespace Infrastructure.Entities
         {
             return new Enrollment
             {
-                ID = entity.ID,
-                EmployeeID = entity.EmployeeID,
-                TrainingID = entity.TrainingID,
-                Status = (EnrollmentStatusEnum)entity.Status,
-                Message = entity.Message,
-                RequestDate = entity.RequestDate,
-                ResponseDate = entity.ResponseDate
+                EnrollmentId = entity.EnrollmentId,
+                ApprovalStatusId = entity.ApprovalStatusId,
+                ApproverAccountId = entity.ApproverAccountId,
+                EmployeeId = entity.EmployeeId,
+                RequestedAt = entity.RequestedAt,
+                TrainingId = entity.TrainingId,
+                UpdatedAt = entity.UpdatedAt
             };
         }
 
@@ -39,13 +39,13 @@ namespace Infrastructure.Entities
         {
             return new EnrollmentEntity
             {
-                ID = Convert.ToInt32(row["ID"]),
-                EmployeeID = Convert.ToInt32(row["employeeID"]),
-                TrainingID = Convert.ToInt32(row["trainingID"]),
-                Status = Convert.ToInt32(row["status"]),
-                Message = row["message"].ToString(),
-                RequestDate = Convert.ToDateTime(row["requestDate"]),
-                ResponseDate = Convert.ToDateTime(row["responseDate"])
+                EnrollmentId = Convert.ToUInt32(row["EnrollmentId"]),
+                ApprovalStatusId = Convert.ToByte(row["ApprovalStatusId"]),
+                ApproverAccountId = Convert.ToUInt16(row["ApproverAccountId"]),
+                EmployeeId = Convert.ToUInt16(row["EmployeeId"]),
+                RequestedAt = Convert.ToDateTime(row["RequestedAt"]),
+                TrainingId = Convert.ToUInt16(row["TrainingId"]),
+                UpdatedAt = Convert.ToDateTime(row["UpdatedAt"])
             };
         }
     }

@@ -1,7 +1,7 @@
 ﻿using Infrastructure.Entities;
 using System.Collections.Generic;
 
-namespace Infrastructure.DAL
+namespace Infrastructure.DAL.Interfaces
 {
     public interface IEnrollmentDAL
     {

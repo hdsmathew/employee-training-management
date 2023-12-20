@@ -1,4 +1,4 @@
-﻿using Core.Domain.Training;
+﻿using Core.Domain;
 using Infrastructure.Common;
 using System;
 using System.Collections.Generic;
@@ -11,11 +11,12 @@ namespace Infrastructure.Entities
         {
             return new TrainingEntity
             {
-                ID = domainModel.ID,
-                Name = domainModel.Name,
-                PreferredDeptID = domainModel.PreferredDeptID,
+                TrainingId = domainModel.TrainingId,
+                PreferredDepartmentId = domainModel.PreferredDepartmentId,
+                RegistrationDeadline = domainModel.RegistrationDeadline,
                 SeatsAvailable = domainModel.SeatsAvailable,
-                RegistrationDeadline = domainModel.RegistrationDeadline
+                TrainingDescription = domainModel.TrainingDescription,
+                TrainingName = domainModel.TrainingName,
             };
         }
 
@@ -23,11 +24,12 @@ namespace Infrastructure.Entities
         {
             return new Training
             {
-                ID = entity.ID,
-                Name = entity.Name,
-                PreferredDeptID = entity.PreferredDeptID,
+                TrainingId = entity.TrainingId,
+                PreferredDepartmentId = entity.PreferredDepartmentId,
+                RegistrationDeadline = entity.RegistrationDeadline,
                 SeatsAvailable = entity.SeatsAvailable,
-                RegistrationDeadline = entity.RegistrationDeadline
+                TrainingDescription = entity.TrainingDescription,
+                TrainingName = entity.TrainingName,
             };
         }
 
@@ -35,11 +37,12 @@ namespace Infrastructure.Entities
         {
             return new TrainingEntity
             {
-                ID = Convert.ToInt32(row["ID"]),
-                Name = row["name"].ToString(),
-                PreferredDeptID = Convert.ToInt32(row["preferredDeptID"]),
-                SeatsAvailable = Convert.ToInt32(row["seatsAvailable"]),
-                RegistrationDeadline = Convert.ToDateTime(row["registrationDeadline"])
+                TrainingId = Convert.ToUInt16(row["TrainingId"]),
+                PreferredDepartmentId = Convert.ToByte(row["PreferredDepartmentId"]),
+                RegistrationDeadline = Convert.ToDateTime(row["RegistrationDeadline"]),
+                SeatsAvailable = Convert.ToUInt16(row["SeatsAvailable"]),
+                TrainingDescription = row["TrainingDescription"].ToString(),
+                TrainingName = row["TrainingName"].ToString(),
             };
         }
     }

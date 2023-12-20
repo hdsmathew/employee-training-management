@@ -1,5 +1,6 @@
-﻿using Core.Domain.Enrollment;
+﻿using Core.Domain;
 using Infrastructure.Common;
+using Infrastructure.DAL.Interfaces;
 using Infrastructure.Entities;
 using System;
 using System.Collections.Generic;
@@ -21,50 +22,50 @@ namespace Infrastructure.DAL
 
         public int Add(EnrollmentEntity enrollment)
         {
-            string insertQuery = "INSERT INTO tbl_enrollment (employeeID, trainingID, status, message, requestDate) " +
-                                    "VALUES (@employeeID, @trainingID, @status, @message, GETDATE())";
+            string insertQuery = @"INSERT INTO Enrollment (ApprovalStatusId, ApproverAccountId, EmployeeId, RequestedAt, TrainingId)
+                                   VALUES (@ApprovalStatusId, @ApproverAccountId, @EmployeeId, GETDATE(), @TrainingId)";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
-                new SqlParameter("@employeeID", enrollment.EmployeeID),
-                new SqlParameter("@trainingID", enrollment.TrainingID),
-                new SqlParameter("@status", enrollment.Status),
-                new SqlParameter("@message", enrollment.Message)
+                new SqlParameter("@ApprovalStatusId", enrollment.ApprovalStatusId),
+                new SqlParameter("@ApproverAccountId", enrollment.ApproverAccountId),
+                new SqlParameter("@EmployeeId", enrollment.EmployeeId),
+                new SqlParameter("@TrainingId", enrollment.TrainingId)
             };
             return _dbUtil.ExecuteNonQuery(insertQuery, parameters);
         }
 
-        public int Delete(int enrollmentID)
+        public int Delete(int enrollmentId)
         {
-            string deleteQuery = "DELETE FROM tbl_enrollment WHERE ID = @ID";
+            string deleteQuery = "DELETE FROM Enrollment WHERE EnrollmentId = @EnrollmentId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
-                new SqlParameter("@ID", enrollmentID)
+                new SqlParameter("@EnrollmentId", enrollmentId)
             };
             return _dbUtil.ExecuteNonQuery(deleteQuery, parameters);
         }
 
-        public bool Exists(int employeeID, int trainingID)
+        public bool Exists(int employeeId, int trainingId)
         {
-            string selectQuery = "SELECT COUNT(*) FROM tbl_enrollment WHERE " +
-                                    "employeeID = @employeeID AND " +
-                                    "trainingID = @trainingID AND " +
-                                    "status = @status";
+            string selectQuery = @"SELECT COUNT(*) FROM Enrollment WHERE 
+                                   EmployeeId = @EmployeeId AND 
+                                   TrainingId = @TrainingId AND 
+                                   ApprovalStatusId = @ApprovalStatusId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
-                new SqlParameter("@employeeID", employeeID),
-                new SqlParameter("@trainingID", trainingID),
-                new SqlParameter("@status", (int)EnrollmentStatusEnum.Pending)
+                new SqlParameter("@EmployeeId", employeeId),
+                new SqlParameter("@TrainingId", trainingId),
+                new SqlParameter("@ApprovalStatusId", (byte)ApprovalStatusEnum.Pending)
             };
             object scalarObject = _dbUtil.ExecuteScalar(selectQuery, parameters);
             return IsValidScalarObject(scalarObject) && Convert.ToInt32(scalarObject) > 0;
         }
 
-        public EnrollmentEntity Get(int enrollmentID)
+        public EnrollmentEntity Get(int enrollmentId)
         {
-            string selectQuery = "SELECT * FROM tbl_enrollment WHERE ID + @ID";
+            string selectQuery = "SELECT * FROM Enrollment WHERE EnrollmentId + @EnrollmentId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
-                new SqlParameter("@ID", enrollmentID)
+                new SqlParameter("@EnrollmentId", enrollmentId)
             };
             Dictionary<string, object> row = _dbUtil.ExecuteReader(selectQuery, parameters).First();
             return _enrollmentMapper.MapRowToEntity(row);
@@ -72,7 +73,7 @@ namespace Infrastructure.DAL
 
         public IEnumerable<EnrollmentEntity> GetAll()
         {
-            string selectQuery = "SELECT * FROM tbl_enrollment";
+            string selectQuery = "SELECT * FROM Enrollment";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<Dictionary<string, object>> entityDicts = _dbUtil.ExecuteReader(selectQuery, parameters);
             return _enrollmentMapper.MapTableToEntities(entityDicts);
@@ -80,16 +81,16 @@ namespace Infrastructure.DAL
 
         public int Update(EnrollmentEntity enrollment)
         {
-            string updateQuery = "UPDATE tbl_enrollment SET " +
-                                    "status = @status" +
-                                    ", message = @message" +
-                                    ", responseDate = GETDATE()" +
-                                    "WHERE ID = @ID";
+            string updateQuery = @"UPDATE Enrollment SET 
+                                   ApprovalStatusId = @ApprovalStatusId, 
+                                   ApproverAccountId = @ApproverAccountId, 
+                                   UpdatedAt = GETDATE()
+                                   WHERE EnrollmentId = @EnrollmentId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
-                new SqlParameter("ID", enrollment.ID),
-                new SqlParameter("@status", enrollment.Status),
-                new SqlParameter("@message", enrollment.Message),
+                new SqlParameter("@ApprovalStatusId", enrollment.ApprovalStatusId),
+                new SqlParameter("@ApproverAccountId", enrollment.ApproverAccountId),
+                new SqlParameter("@EnrollmentId", enrollment.EnrollmentId)
             };
             return _dbUtil.ExecuteNonQuery(updateQuery, parameters);
         }

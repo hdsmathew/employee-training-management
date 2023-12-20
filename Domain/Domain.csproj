@@ -41,13 +41,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Common\MapperBase.cs" />
-    <Compile Include="Enrollment\Enrollment.cs" />
-    <Compile Include="Enrollment\EnrollmentStatusEnum.cs" />
+    <Compile Include="Account.cs" />
+    <Compile Include="Department.cs" />
+    <Compile Include="EmployeeUpload.cs" />
+    <Compile Include="Enrollment.cs" />
+    <Compile Include="ApprovalStatusEnum.cs" />
+    <Compile Include="EnrollmentNotification.cs" />
+    <Compile Include="Prerequisite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Training\Training.cs" />
-    <Compile Include="User\User.cs" />
-    <Compile Include="User\UserRoleEnum.cs" />
+    <Compile Include="Training.cs" />
+    <Compile Include="Employee.cs" />
+    <Compile Include="AccountTypeEnum.cs" />
+    <Compile Include="TrainingPrerequisite.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

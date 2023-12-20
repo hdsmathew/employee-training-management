@@ -1,6 +1,6 @@
 ﻿using Core.Application.Models;
 using Core.Application.Repositories;
-using Core.Domain.Training;
+using Core.Domain;
 using System;
 
 namespace Core.Application.Services
@@ -14,16 +14,16 @@ namespace Core.Application.Services
             _trainingRepository = trainingRepository;
         }
 
-        public Response<Training> Add(Training training)
+        public ResponseModel<Training> Add(Training training)
         {
-            Response<Training> response = new Response<Training>();
+            ResponseModel<Training> response = new ResponseModel<Training>();
             try
             {
-                if (_trainingRepository.ExistsByName(training.Name))
+                if (_trainingRepository.ExistsByName(training.TrainingName))
                 {
-                    response.AddError(new Error()
+                    response.AddError(new ErrorModel()
                     {
-                        Message = $"Training with name: {training.Name} already exists."
+                        Message = $"Training with name: {training.TrainingName} already exists."
                     });
                     return response;
                 }
@@ -31,7 +31,7 @@ namespace Core.Application.Services
             }
             catch (Exception ex)
             {
-                response.AddError(new Error()
+                response.AddError(new ErrorModel()
                 {
                     Message = "Unable to add new training. Try again later.",
                     Exception = ex
@@ -40,36 +40,36 @@ namespace Core.Application.Services
             return response;
         }
 
-        public Response<Training> Delete(int trainingID)
+        public ResponseModel<Training> Delete(int trainingId)
         {
-            Response<Training> response = new Response<Training>();
+            ResponseModel<Training> response = new ResponseModel<Training>();
             try
             {
-                response.DeletedRows = _trainingRepository.Delete(trainingID);
+                response.DeletedRows = _trainingRepository.Delete(trainingId);
             }
             catch (Exception ex)
             {
-                response.AddError(new Error()
+                response.AddError(new ErrorModel()
                 {
-                    Message = $"Unable to delete training with Id: {trainingID}",
+                    Message = $"Unable to delete training with Id: {trainingId}",
                     Exception = ex
                 });
             }
             return response;
         }
 
-        public Response<Training> Update(Training training)
+        public ResponseModel<Training> Update(Training training)
         {
-            Response<Training> response = new Response<Training>();
+            ResponseModel<Training> response = new ResponseModel<Training>();
             try
             {
                 response.UpdatedRows = _trainingRepository.Update(training);
             }
             catch (Exception ex)
             {
-                response.AddError(new Error()
+                response.AddError(new ErrorModel()
                 {
-                    Message = $"Unable to update training with Id: {training.ID}",
+                    Message = $"Unable to update training with Id: {training.TrainingId}",
                     Exception = ex
                 });
             }
