@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Data.SqlClient;
 
 namespace Infrastructure.DAL
@@ -18,7 +20,7 @@ namespace Infrastructure.DAL
             using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, connection))
             {
                 sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                connection.Open();
+                SafelyOpenConnection(connection);
                 return sqlCommand.ExecuteNonQuery();
             }
         }
@@ -31,7 +33,7 @@ namespace Infrastructure.DAL
             using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, connection))
             {
                 sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                connection.Open();
+                SafelyOpenConnection(connection);
                 using (SqlDataReader reader = sqlCommand.ExecuteReader())
                 {
                     while (reader.Read())
@@ -54,8 +56,16 @@ namespace Infrastructure.DAL
             using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, connection))
             {
                 sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                connection.Open();
+                SafelyOpenConnection(connection);
                 return sqlCommand.ExecuteScalar();
+            }
+        }
+
+        private void SafelyOpenConnection(DbConnection connection)
+        {
+            if (connection != null && connection.State == ConnectionState.Closed)
+            {
+                connection.Open();
             }
         }
     }
