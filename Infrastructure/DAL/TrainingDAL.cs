@@ -11,12 +11,12 @@ namespace Infrastructure.DAL
 {
     public class TrainingDAL : ITrainingDAL
     {
-        private readonly DbUtil _dbUtil;
+        private readonly DataAccess _dataAccess;
         private readonly MapperBase<Training, TrainingEntity> _trainingMapper;
 
-        public TrainingDAL(DbUtil dbUtil, TrainingMapper trainingMapper)
+        public TrainingDAL(DataAccess dataAccess, TrainingMapper trainingMapper)
         {
-            _dbUtil = dbUtil;
+            _dataAccess = dataAccess;
             _trainingMapper = trainingMapper;
         }
 
@@ -32,7 +32,7 @@ namespace Infrastructure.DAL
                 new SqlParameter("@TrainingDescription", training.TrainingDescription),
                 new SqlParameter("@TrainingName", training.TrainingName)
             };
-            return _dbUtil.ExecuteNonQuery(insertQuery, parameters);
+            return _dataAccess.ExecuteNonQuery(insertQuery, parameters);
         }
 
         public int Delete(int trainingId)
@@ -42,7 +42,7 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@TrainingId", trainingId)
             };
-            return _dbUtil.ExecuteNonQuery(deleteQuery, parameters);
+            return _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
         }
 
         public bool ExistsByName(string trainingName)
@@ -53,7 +53,7 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@TrainingName", trainingName)
             };
-            object scalarObject = _dbUtil.ExecuteScalar(selectQuery, parameters);
+            object scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
             return IsValidScalarObject(scalarObject) && Convert.ToInt32(scalarObject) > 0;
         }
 
@@ -64,7 +64,7 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@TrainingId", trainingId)
             };
-            Dictionary<string, object> row = _dbUtil.ExecuteReader(selectQuery, parameters).First();
+            Dictionary<string, object> row = _dataAccess.ExecuteReader(selectQuery, parameters).First();
             return _trainingMapper.MapRowToEntity(row);
         }
 
@@ -72,7 +72,7 @@ namespace Infrastructure.DAL
         {
             string selectQuery = "SELECT * FROM Training";
             List<SqlParameter> parameters = new List<SqlParameter>();
-            IEnumerable<Dictionary<string, object>> entityDicts = _dbUtil.ExecuteReader(selectQuery, parameters);
+            IEnumerable<Dictionary<string, object>> entityDicts = _dataAccess.ExecuteReader(selectQuery, parameters);
             return _trainingMapper.MapTableToEntities(entityDicts);
         }
 
@@ -95,7 +95,7 @@ namespace Infrastructure.DAL
                 new SqlParameter("@TrainingDescription", training.TrainingDescription),
                 new SqlParameter("@TrainingName", training.TrainingName)
             };
-            return _dbUtil.ExecuteNonQuery(updateQuery, parameters);
+            return _dataAccess.ExecuteNonQuery(updateQuery, parameters);
         }
 
         private bool IsValidScalarObject(object scalarObject)

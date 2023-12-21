@@ -11,12 +11,12 @@ namespace Infrastructure.DAL
 {
     public class EmployeeDAL : IEmployeeDAL
     {
-        private readonly DbUtil _dbUtil;
+        private readonly DataAccess _dataAccess;
         private readonly MapperBase<Employee, EmployeeEntity> _employeeMapper;
 
-        public EmployeeDAL(DbUtil dbUtil, EmployeeMapper employeeMapper)
+        public EmployeeDAL(DataAccess dataAccess, EmployeeMapper employeeMapper)
         {
-            _dbUtil = dbUtil;
+            _dataAccess = dataAccess;
             _employeeMapper = employeeMapper;
         }
 
@@ -34,7 +34,7 @@ namespace Infrastructure.DAL
                 new SqlParameter("@MobileNumber", employee.MobileNumber),
                 new SqlParameter("@NationalId", employee.NationalId)
             };
-            return _dbUtil.ExecuteNonQuery(insertQuery, parameters);
+            return _dataAccess.ExecuteNonQuery(insertQuery, parameters);
         }
 
         public int Delete(int employeeId)
@@ -44,7 +44,7 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@EmployeeId", employeeId)
             };
-            return _dbUtil.ExecuteNonQuery(deleteQuery, parameters);
+            return _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
         }
 
         public bool ExistsByNationalIdOrMobileNumber(string mobileNumber, string nationalId)
@@ -57,7 +57,7 @@ namespace Infrastructure.DAL
                 new SqlParameter("@MobileNumber", mobileNumber),
                 new SqlParameter("@NationalId", nationalId)
             };
-            object scalarObject = _dbUtil.ExecuteScalar(selectQuery, parameters);
+            object scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
             return IsValidScalarObject(scalarObject) && Convert.ToInt32(scalarObject) > 0;
         }
 
@@ -68,7 +68,7 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@EmployeeId", employeeId)
             };
-            Dictionary<string, object> row = _dbUtil.ExecuteReader(selectQuery, parameters).First();
+            Dictionary<string, object> row = _dataAccess.ExecuteReader(selectQuery, parameters).First();
             return _employeeMapper.MapRowToEntity(row);
         }
 
@@ -76,7 +76,7 @@ namespace Infrastructure.DAL
         {
             string selectQuery = "SELECT * FROM Employee";
             List<SqlParameter> parameters = new List<SqlParameter>();
-            IEnumerable<Dictionary<string, object>> entityDicts = _dbUtil.ExecuteReader(selectQuery, parameters);
+            IEnumerable<Dictionary<string, object>> entityDicts = _dataAccess.ExecuteReader(selectQuery, parameters);
             return _employeeMapper.MapTableToEntities(entityDicts);
         }
 
@@ -102,7 +102,7 @@ namespace Infrastructure.DAL
                 new SqlParameter("@MobileNumber", employee.MobileNumber),
                 new SqlParameter("@NationalId", employee.NationalId)
             };
-            return _dbUtil.ExecuteNonQuery(updateQuery, parameters);
+            return _dataAccess.ExecuteNonQuery(updateQuery, parameters);
         }
 
         private bool IsValidScalarObject(object scalarObject)

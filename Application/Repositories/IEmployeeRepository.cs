@@ -5,11 +5,12 @@ namespace Core.Application.Repositories
 {
     public interface IEmployeeRepository
     {
-        int Add(Employee user);
-        int Delete(int userID);
+        int Add(Employee employee);
+        int Delete(int employeeId);
         bool ExistsByNationalIdOrMobileNumber(string nationalId, string mobileNumber);
-        Employee Get(int userID);
+        Employee Get(int employeeId);
         IEnumerable<Employee> GetAll();
-        int Update(Employee user);
+        IEnumerable<Employee> GetEmployeesByAccountType(byte accountTypeId);
+        int Update(Employee employee);
     }
 }

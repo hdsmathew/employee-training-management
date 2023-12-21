@@ -9,47 +9,53 @@ namespace Infrastructure.Repositories
 {
     public class EmployeeRepository : IEmployeeRepository
     {
-        private readonly IEmployeeDAL _userDAL;
-        private readonly MapperBase<Employee, EmployeeEntity> _userMapper;
+        private readonly IEmployeeDAL _employeeDAL;
+        private readonly MapperBase<Employee, EmployeeEntity> _employeeMapper;
 
-        public EmployeeRepository(IEmployeeDAL userDAL, EmployeeMapper userMapper)
+        public EmployeeRepository(IEmployeeDAL employeeDAL, EmployeeMapper employeeMapper)
         {
-            _userDAL = userDAL;
-            _userMapper = userMapper;
+            _employeeDAL = employeeDAL;
+            _employeeMapper = employeeMapper;
         }
 
-        public int Add(Employee user)
+        public int Add(Employee employee)
         {
-            EmployeeEntity userEntity = _userMapper.MapDomainModelToEntity(user);
-            return _userDAL.Add(userEntity);
+            EmployeeEntity employeeEntity = _employeeMapper.MapDomainModelToEntity(employee);
+            return _employeeDAL.Add(employeeEntity);
         }
 
-        public int Delete(int userID)
+        public int Delete(int employeeId)
         {
-            return _userDAL.Delete(userID);
+            return _employeeDAL.Delete(employeeId);
         }
 
         public bool ExistsByNationalIdOrMobileNumber(string nationalId, string mobileNumber)
         {
-            return _userDAL.ExistsByNationalIdOrMobileNumber(nationalId, mobileNumber);
+            return _employeeDAL.ExistsByNationalIdOrMobileNumber(nationalId, mobileNumber);
         }
 
-        public Employee Get(int userID)
+        public Employee Get(int employeeId)
         {
-            EmployeeEntity userEntity = _userDAL.Get(userID);
-            return _userMapper.MapEntityToDomainModel(userEntity);
+            EmployeeEntity employeeEntity = _employeeDAL.Get(employeeId);
+            return _employeeMapper.MapEntityToDomainModel(employeeEntity);
         }
 
         public IEnumerable<Employee> GetAll()
         {
-            IEnumerable<EmployeeEntity> userEntities = _userDAL.GetAll();
-            return _userMapper.MapEntitiesToDomainModel(userEntities);
+            IEnumerable<EmployeeEntity> employeeEntities = _employeeDAL.GetAll();
+            return _employeeMapper.MapEntitiesToDomainModel(employeeEntities);
         }
 
-        public int Update(Employee user)
+        public IEnumerable<Employee> GetEmployeesByAccountType(byte accountTypeId)
         {
-            EmployeeEntity userEntity = _userMapper.MapDomainModelToEntity(user);
-            return _userDAL.Update(userEntity);
+            IEnumerable<EmployeeEntity> employeeEntities = _employeeDAL.GetEmployeesByAccountType(accountTypeId);
+            return _employeeMapper.MapEntitiesToDomainModel(employeeEntities);
+        }
+
+        public int Update(Employee employee)
+        {
+            EmployeeEntity employeeEntity = _employeeMapper.MapDomainModelToEntity(employee);
+            return _employeeDAL.Update(employeeEntity);
         }
     }
 }

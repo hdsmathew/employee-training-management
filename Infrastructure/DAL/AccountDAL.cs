@@ -11,12 +11,12 @@ namespace Infrastructure.DAL
 {
     public class AccountDAL : IAccountDAL
     {
-        private readonly DbUtil _dbUtil;
+        private readonly DataAccess _dataAccess;
         private readonly MapperBase<Account, AccountEntity> _accountMapper;
 
-        public AccountDAL(DbUtil dbUtil, AccountMapper accountMapper)
+        public AccountDAL(DataAccess dataAccess, AccountMapper accountMapper)
         {
-            _dbUtil = dbUtil;
+            _dataAccess = dataAccess;
             _accountMapper = accountMapper;
         }
 
@@ -30,7 +30,7 @@ namespace Infrastructure.DAL
                 new SqlParameter("@EmailAddress", account.EmailAddress),
                 new SqlParameter("@PasswordHash", account.PasswordHash)
             };
-            return _dbUtil.ExecuteNonQuery(insertQuery, parameters);
+            return _dataAccess.ExecuteNonQuery(insertQuery, parameters);
         }
 
         public int Delete(int accountId)
@@ -40,7 +40,7 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@AccountId", accountId)
             };
-            return _dbUtil.ExecuteNonQuery(deleteQuery, parameters);
+            return _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
         }
 
         public bool ExistsByEmailAddress(string emailAddress)
@@ -51,7 +51,7 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@EmailAddress", emailAddress),
             };
-            object scalarObject = _dbUtil.ExecuteScalar(selectQuery, parameters);
+            object scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
             return IsValidScalarObject(scalarObject) && Convert.ToInt32(scalarObject) > 0;
         }
 
@@ -62,7 +62,7 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@AccountId", accountId)
             };
-            Dictionary<string, object> row = _dbUtil.ExecuteReader(selectQuery, parameters).First();
+            Dictionary<string, object> row = _dataAccess.ExecuteReader(selectQuery, parameters).First();
             return _accountMapper.MapRowToEntity(row);
         }
 
@@ -76,7 +76,7 @@ namespace Infrastructure.DAL
                 new SqlParameter("@EmailAddress", emailAddress),
                 new SqlParameter("@PasswordHash", passwordHash)
             };
-            Dictionary<string, object> row = _dbUtil.ExecuteReader(selectQuery, parameters).First();
+            Dictionary<string, object> row = _dataAccess.ExecuteReader(selectQuery, parameters).First();
             return _accountMapper.MapRowToEntity(row);
         }
 
@@ -87,7 +87,7 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@EmailAddress", emailAddress)
             };
-            object scalarObject = _dbUtil.ExecuteScalar(selectQuery, parameters);
+            object scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
             return Convert.ToUInt16(scalarObject);
         }
 
