@@ -33,16 +33,16 @@ namespace Infrastructure.Entities
             };
         }
 
-        public override TrainingEntity MapRowToEntity(Dictionary<string, object> row)
+        public override TrainingEntity MapRowToEntity((string, object)[] entityValueTuples)
         {
             return new TrainingEntity
             {
-                TrainingId = Convert.ToUInt16(row["TrainingId"]),
-                PreferredDepartmentId = Convert.ToByte(row["PreferredDepartmentId"]),
-                RegistrationDeadline = Convert.ToDateTime(row["RegistrationDeadline"]),
-                SeatsAvailable = Convert.ToUInt16(row["SeatsAvailable"]),
-                TrainingDescription = row["TrainingDescription"].ToString(),
-                TrainingName = row["TrainingName"].ToString(),
+                TrainingId = GetValueFromTuple<ushort>("TrainingId", entityValueTuples),
+                PreferredDepartmentId = GetValueFromTuple<byte>("PreferredDepartmentId", entityValueTuples),
+                RegistrationDeadline = GetValueFromTuple<DateTime>("RegistrationDeadline", entityValueTuples),
+                SeatsAvailable = GetValueFromTuple<ushort>("SeatsAvailable", entityValueTuples),
+                TrainingDescription = GetValueFromTuple<string>("TrainingDescription", entityValueTuples),
+                TrainingName = GetValueFromTuple<string>("TrainingName", entityValueTuples),
             };
         }
     }

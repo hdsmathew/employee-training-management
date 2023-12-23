@@ -64,16 +64,16 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@TrainingId", trainingId)
             };
-            Dictionary<string, object> row = _dataAccess.ExecuteReader(selectQuery, parameters).First();
-            return _trainingMapper.MapRowToEntity(row);
+            (string, object)[] entityValueTuples = _dataAccess.ExecuteReader(selectQuery, parameters).First();
+            return _trainingMapper.MapRowToEntity(entityValueTuples);
         }
 
         public IEnumerable<TrainingEntity> GetAll()
         {
             string selectQuery = "SELECT * FROM Training";
             List<SqlParameter> parameters = new List<SqlParameter>();
-            IEnumerable<Dictionary<string, object>> entityDicts = _dataAccess.ExecuteReader(selectQuery, parameters);
-            return _trainingMapper.MapTableToEntities(entityDicts);
+            IEnumerable<(string, object)[]> entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            return _trainingMapper.MapTableToEntities(entityValueTuplesArrays);
         }
 
         public int Update(TrainingEntity training)

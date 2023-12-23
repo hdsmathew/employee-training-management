@@ -67,16 +67,16 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@EnrollmentId", enrollmentId)
             };
-            Dictionary<string, object> row = _dataAccess.ExecuteReader(selectQuery, parameters).First();
-            return _enrollmentMapper.MapRowToEntity(row);
+            (string, object)[] entityValueTuples = _dataAccess.ExecuteReader(selectQuery, parameters).First();
+            return _enrollmentMapper.MapRowToEntity(entityValueTuples);
         }
 
         public IEnumerable<EnrollmentEntity> GetAll()
         {
             string selectQuery = "SELECT * FROM Enrollment";
             List<SqlParameter> parameters = new List<SqlParameter>();
-            IEnumerable<Dictionary<string, object>> entityDicts = _dataAccess.ExecuteReader(selectQuery, parameters);
-            return _enrollmentMapper.MapTableToEntities(entityDicts);
+            IEnumerable<(string, object)[]> entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            return _enrollmentMapper.MapTableToEntities(entityValueTuplesArrays);
         }
 
         public int Update(EnrollmentEntity enrollment)

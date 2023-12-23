@@ -49,8 +49,8 @@ namespace Infrastructure.DAL
 
         public bool ExistsByNationalIdOrMobileNumber(string mobileNumber, string nationalId)
         {
-            string selectQuery = @"SELECT COUNT(*) FROM Employee WHERE 
-                                   MobileNumber = @MobileNumber AND 
+            string selectQuery = @"SELECT COUNT(EmployeeId) FROM Employee WHERE 
+                                   MobileNumber = @MobileNumber OR 
                                    NationalId = @NationalId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
@@ -68,16 +68,32 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@EmployeeId", employeeId)
             };
-            Dictionary<string, object> row = _dataAccess.ExecuteReader(selectQuery, parameters).First();
-            return _employeeMapper.MapRowToEntity(row);
+            (string, object)[] entityValueTuples = _dataAccess.ExecuteReader(selectQuery, parameters).First();
+            return _employeeMapper.MapRowToEntity(entityValueTuples);
         }
 
         public IEnumerable<EmployeeEntity> GetAll()
         {
             string selectQuery = "SELECT * FROM Employee";
             List<SqlParameter> parameters = new List<SqlParameter>();
-            IEnumerable<Dictionary<string, object>> entityDicts = _dataAccess.ExecuteReader(selectQuery, parameters);
-            return _employeeMapper.MapTableToEntities(entityDicts);
+            IEnumerable<(string, object)[]> entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            return _employeeMapper.MapTableToEntities(entityValueTuplesArrays);
+        }
+
+        public IEnumerable<EmployeeEntity> GetEmployeesByAccountType(byte accountTypeId)
+        {
+            string selectQuery = @"WITH AccountIds (AccountId) AS (
+                                        SELECT AccountId FROM Account WHERE AccountTypeId = @AccountTypeId
+                                   )
+                                   SELECT EmployeeId, FirstName, LastName, DepartmentId
+                                   FROM Employee emp INNER JOIN AccountIds accIds
+                                   ON emp.AccountId = accIds.AccountId";
+            List<SqlParameter> parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@AccountTypeId", accountTypeId)
+            };
+            IEnumerable<(string, object)[]> entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            return _employeeMapper.MapTableToEntities(entityValueTuplesArrays);
         }
 
         public int Update(EmployeeEntity employee)

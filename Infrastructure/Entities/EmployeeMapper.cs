@@ -1,7 +1,5 @@
 ﻿using Core.Domain;
 using Infrastructure.Common;
-using System;
-using System.Collections.Generic;
 
 namespace Infrastructure.Entities
 {
@@ -37,18 +35,18 @@ namespace Infrastructure.Entities
             };
         }
 
-        public override EmployeeEntity MapRowToEntity(Dictionary<string, object> row)
+        public override EmployeeEntity MapRowToEntity((string, object)[] entityValueTuples)
         {
             return new EmployeeEntity
             {
-                EmployeeId = Convert.ToUInt16(row["EmployeeId"]),
-                AccountId = Convert.ToUInt16(row["AccountId"]),
-                DepartmentId = Convert.ToByte(row["DepartmentId"]),
-                FirstName = row["FirstName"].ToString(),
-                LastName = row["LastName"].ToString(),
-                ManagerId = Convert.ToUInt16(row["ManagerId"]),
-                MobileNumber = row["MobileNumber"].ToString(),
-                NationalId = row["NationalId"].ToString()
+                EmployeeId = GetValueFromTuple<ushort>("EmployeeId", entityValueTuples),
+                AccountId = GetValueFromTuple<ushort>("AccountId", entityValueTuples),
+                DepartmentId = GetValueFromTuple<byte>("DepartmentId", entityValueTuples),
+                FirstName = GetValueFromTuple<string>("FirstName", entityValueTuples),
+                LastName = GetValueFromTuple<string>("LastName", entityValueTuples),
+                ManagerId = GetValueFromTuple<ushort>("ManagerId", entityValueTuples),
+                MobileNumber = GetValueFromTuple<string>("MobileNumber", entityValueTuples),
+                NationalId = GetValueFromTuple<string>("NationalId", entityValueTuples),
             };
         }
     }

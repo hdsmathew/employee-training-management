@@ -29,14 +29,14 @@ namespace Infrastructure.Entities
             };
         }
 
-        public override AccountEntity MapRowToEntity(Dictionary<string, object> row)
+        public override AccountEntity MapRowToEntity((string, object)[] entityValueTuples)
         {
             return new AccountEntity
             {
-                AccountId = Convert.ToUInt16(row["AccountId"]),
-                AccountTypeId = Convert.ToByte(row["AccountTypeId"]),
-                EmailAddress = row["EmailAddress"].ToString(),
-                PasswordHash = row["PasswordHash"].ToString(),
+                AccountId = GetValueFromTuple<ushort>("AccountId", entityValueTuples),
+                AccountTypeId = GetValueFromTuple<byte>("AccountTypeId", entityValueTuples),
+                EmailAddress = GetValueFromTuple<string>("EmailAddress", entityValueTuples),
+                PasswordHash = GetValueFromTuple<string>("PasswordHash", entityValueTuples),
             };
         }
     }

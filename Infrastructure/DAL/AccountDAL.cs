@@ -62,8 +62,8 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@AccountId", accountId)
             };
-            Dictionary<string, object> row = _dataAccess.ExecuteReader(selectQuery, parameters).First();
-            return _accountMapper.MapRowToEntity(row);
+            (string, object)[] entityValueTuples = _dataAccess.ExecuteReader(selectQuery, parameters).First();
+            return _accountMapper.MapRowToEntity(entityValueTuples);
         }
 
         public AccountEntity Get(string emailAddress, string passwordHash)
@@ -76,8 +76,8 @@ namespace Infrastructure.DAL
                 new SqlParameter("@EmailAddress", emailAddress),
                 new SqlParameter("@PasswordHash", passwordHash)
             };
-            Dictionary<string, object> row = _dataAccess.ExecuteReader(selectQuery, parameters).First();
-            return _accountMapper.MapRowToEntity(row);
+            (string, object)[] entityValueTuples = _dataAccess.ExecuteReader(selectQuery, parameters).First();
+            return _accountMapper.MapRowToEntity(entityValueTuples);
         }
 
         public ushort GetAccountIdByEmailAddress(string emailAddress)

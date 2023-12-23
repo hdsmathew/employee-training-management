@@ -43,7 +43,7 @@
   <ItemGroup>
     <Compile Include="Common\MapperBase.cs" />
     <Compile Include="DAL\AccountDAL.cs" />
-    <Compile Include="DAL\DbUtil.cs" />
+    <Compile Include="DAL\DataAccess.cs" />
     <Compile Include="DAL\EnrollmentDAL.cs" />
     <Compile Include="DAL\Interfaces\IAccountDAL.cs" />
     <Compile Include="DAL\Interfaces\IEnrollmentDAL.cs" />

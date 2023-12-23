@@ -36,9 +36,9 @@ namespace Infrastructure.DAL
             }
         }
 
-        public IEnumerable<Dictionary<string, object>> ExecuteReader(string sqlQuery, List<SqlParameter> queryParameters)
+        public IEnumerable<(string, object)[]> ExecuteReader(string sqlQuery, List<SqlParameter> queryParameters)
         {
-            List<Dictionary<string, object>> entityDicts = new List<Dictionary<string, object>>();
+            List<(string, object)[]> entityValueTuplesArrays = new List<(string, object)[]>();
 
             try
             {
@@ -50,12 +50,12 @@ namespace Infrastructure.DAL
                     {
                         while (reader.Read())
                         {
-                            Dictionary<string, object> row = new Dictionary<string, object>();
+                            (string, object)[] row = new (string, object)[reader.FieldCount];
                             for (int i = 0; i < reader.FieldCount; i++)
                             {
-                                row[reader.GetName(i)] = reader.GetValue(i);
+                                row[i] = (reader.GetName(i), reader.GetValue(i));
                             }
-                            entityDicts.Add(row);
+                            entityValueTuplesArrays.Add(row);
                         }
                     }
                 }
@@ -65,7 +65,7 @@ namespace Infrastructure.DAL
                 SafelyCloseConnection(_connection);
             }
 
-            return entityDicts;
+            return entityValueTuplesArrays;
         }
 
         public object ExecuteScalar(string sqlQuery, List<SqlParameter> queryParameters)

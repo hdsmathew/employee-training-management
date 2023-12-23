@@ -1,7 +1,6 @@
 ﻿using Core.Domain;
 using Infrastructure.Common;
 using System;
-using System.Collections.Generic;
 
 namespace Infrastructure.Entities
 {
@@ -35,17 +34,17 @@ namespace Infrastructure.Entities
             };
         }
 
-        public override EnrollmentEntity MapRowToEntity(Dictionary<string, object> row)
+        public override EnrollmentEntity MapRowToEntity((string, object)[] entityValueTuples)
         {
             return new EnrollmentEntity
             {
-                EnrollmentId = Convert.ToUInt32(row["EnrollmentId"]),
-                ApprovalStatusId = Convert.ToByte(row["ApprovalStatusId"]),
-                ApproverAccountId = Convert.ToUInt16(row["ApproverAccountId"]),
-                EmployeeId = Convert.ToUInt16(row["EmployeeId"]),
-                RequestedAt = Convert.ToDateTime(row["RequestedAt"]),
-                TrainingId = Convert.ToUInt16(row["TrainingId"]),
-                UpdatedAt = Convert.ToDateTime(row["UpdatedAt"])
+                EnrollmentId = GetValueFromTuple<uint>("EnrollmentId", entityValueTuples),
+                ApprovalStatusId = GetValueFromTuple<byte>("ApprovalStatusId", entityValueTuples),
+                ApproverAccountId = GetValueFromTuple<ushort>("ApproverAccountId", entityValueTuples),
+                EmployeeId = GetValueFromTuple<ushort>("EmployeeId", entityValueTuples),
+                RequestedAt = GetValueFromTuple<DateTime>("RequestedAt", entityValueTuples),
+                TrainingId = GetValueFromTuple<ushort>("TrainingId", entityValueTuples),
+                UpdatedAt = GetValueFromTuple<DateTime>("UpdatedAt", entityValueTuples)
             };
         }
     }
