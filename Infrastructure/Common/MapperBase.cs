@@ -1,39 +1,38 @@
 ﻿using Infrastructure.Entities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Infrastructure.Common
 {
-    public abstract class MapperBase<T, E> where E : EntityBase
+    public abstract class MapperBase<TDomain, TEntity> where TEntity : EntityBase
     {
-        public abstract E MapDomainModelToEntity(T domainModel);
-        public abstract T MapEntityToDomainModel(E entity);
-        public abstract E MapRowToEntity((string, object)[] entityValueTuples);
+        public abstract TEntity MapDomainModelToEntity(TDomain domainModel);
+        public abstract TDomain MapEntityToDomainModel(TEntity entity);
+        public abstract TEntity MapRowToEntity((string, object)[] entityValueTuples);
 
-        public IEnumerable<E> MapDomainModelToEntities(IEnumerable<T> domainModeList)
+        public IEnumerable<TEntity> MapDomainModelToEntities(IEnumerable<TDomain> domainModeList)
         {
-            List<E> entities = new List<E>();
-            foreach (T domainModel in domainModeList)
+            List<TEntity> entities = new List<TEntity>();
+            foreach (TDomain domainModel in domainModeList)
             {
                 entities.Add(MapDomainModelToEntity(domainModel));
             }
             return entities;
         }
 
-        public IEnumerable<T> MapEntitiesToDomainModel(IEnumerable<E> entities)
+        public IEnumerable<TDomain> MapEntitiesToDomainModel(IEnumerable<TEntity> entities)
         {
-            List<T> domainModelList = new List<T>();
-            foreach(E entity in entities)
+            List<TDomain> domainModelList = new List<TDomain>();
+            foreach (TEntity entity in entities)
             {
                 domainModelList.Add(MapEntityToDomainModel(entity));
             }
             return domainModelList;
         }
 
-        public IEnumerable<E> MapTableToEntities(IEnumerable<(string, object)[]> entityValueTuplesArrays)
+        public IEnumerable<TEntity> MapTableToEntities(IEnumerable<(string, object)[]> entityValueTuplesArrays)
         {
-            List<E> entities = new List<E>();
+            List<TEntity> entities = new List<TEntity>();
             foreach ((string, object)[] entityValueTuples in entityValueTuplesArrays)
             {
                 entities.Add(MapRowToEntity(entityValueTuples));
@@ -41,10 +40,10 @@ namespace Infrastructure.Common
             return entities;
         }
 
-        protected S GetValueFromTuple<S>(string fieldName, (string, object)[] entityValueTuples)
+        protected TValue GetValueFromTuple<TValue>(string fieldName, (string, object)[] entityValueTuples)
         {
             var tuple = entityValueTuples.FirstOrDefault(t => t.Item1 == fieldName);
-            return (tuple.Item2 is S castedValue) ? castedValue : default;
+            return (tuple.Item2 is TValue castedValue) ? castedValue : default;
         }
     }
 }
