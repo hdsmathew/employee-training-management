@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
-using System.Data.Common;
 using System.Data.SqlClient;
 
 namespace Infrastructure.DAL
@@ -12,10 +10,6 @@ namespace Infrastructure.DAL
 
         public DataAccess(string connectionString)
         {
-            if (connectionString == null)
-            {
-                throw new ArgumentNullException($"{nameof(connectionString)}: No connection string provided.");
-            }
             _connection = new SqlConnection(connectionString);
         }
 
@@ -26,13 +20,13 @@ namespace Infrastructure.DAL
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, _connection))
                 {
                     sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                    SafelyOpenConnection(_connection);
+                    SafelyOpenConnection();
                     return sqlCommand.ExecuteNonQuery();
                 }
             }
             finally
             {
-                SafelyCloseConnection(_connection);
+                SafelyCloseConnection();
             }
         }
 
@@ -45,7 +39,7 @@ namespace Infrastructure.DAL
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, _connection))
                 {
                     sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                    SafelyOpenConnection(_connection);
+                    SafelyOpenConnection();
                     using (SqlDataReader reader = sqlCommand.ExecuteReader())
                     {
                         while (reader.Read())
@@ -62,7 +56,7 @@ namespace Infrastructure.DAL
             }
             finally
             {
-                SafelyCloseConnection(_connection);
+                SafelyCloseConnection();
             }
 
             return entityValueTuplesArrays;
@@ -75,29 +69,29 @@ namespace Infrastructure.DAL
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, _connection))
                 {
                     sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                    SafelyOpenConnection(_connection);
+                    SafelyOpenConnection();
                     return sqlCommand.ExecuteScalar();
                 }
             }
             finally
             {
-                SafelyCloseConnection(_connection);
+                SafelyCloseConnection();
             }
         }
 
-        private void SafelyOpenConnection(DbConnection connection)
+        private void SafelyOpenConnection()
         {
-            if (connection != null && connection.State == ConnectionState.Closed)
+            if (_connection != null && _connection.State == ConnectionState.Closed)
             {
-                connection.Open();
+                _connection.Open();
             }
         }
 
-        private void SafelyCloseConnection(DbConnection connection)
+        private void SafelyCloseConnection()
         {
-            if (connection != null && connection.State == ConnectionState.Open)
+            if (_connection != null && _connection.State == ConnectionState.Open)
             {
-                connection.Close();
+                _connection.Close();
             }
         }
     }
