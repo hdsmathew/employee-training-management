@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -43,7 +44,19 @@ namespace Infrastructure.Common
         protected TValue GetValueFromTuple<TValue>(string fieldName, (string, object)[] entityValueTuples)
         {
             var tuple = entityValueTuples.FirstOrDefault(t => t.Item1 == fieldName);
-            return (tuple.Item2 is TValue castedValue) ? castedValue : default;
+            if (tuple.Item2 == null)
+            {
+                return default;
+            }
+
+            try
+            {
+                return (TValue)Convert.ChangeType(tuple.Item2, typeof(TValue));
+            }
+            catch (InvalidCastException ex)
+            {
+                throw new InvalidOperationException($"Error converting value for fieldName {fieldName} to type {typeof(TValue)}", ex);
+            }
         }
     }
 }
