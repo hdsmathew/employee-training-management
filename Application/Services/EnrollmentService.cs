@@ -1,17 +1,18 @@
 ﻿using Core.Application.Models;
 using Core.Application.Repositories;
 using Core.Domain;
-using System;
 
 namespace Core.Application.Services
 {
     public class EnrollmentService : IEnrollmentService
     {
         private readonly IEnrollmentRepository _enrollmentRepository;
+        private readonly ILogger _logger;
 
-        public EnrollmentService(IEnrollmentRepository enrollmentRepository)
+        public EnrollmentService(IEnrollmentRepository enrollmentRepository, ILogger logger)
         {
             _enrollmentRepository = enrollmentRepository;
+            _logger = logger;
         }
 
         public ResponseModel<Enrollment> Process(Enrollment enrollment)
@@ -21,12 +22,13 @@ namespace Core.Application.Services
             {
                 response.UpdatedRows = _enrollmentRepository.Update(enrollment);
             }
-            catch (Exception ex)
+            catch (DALException dalEx)
             {
+                _logger.LogError(dalEx, "Error in processing enrollment");
                 response.AddError(new ErrorModel()
                 {
                     Message = "Unable to process enrollment. Try again later.",
-                    Exception = ex
+                    Exception = dalEx
                 });
             }
             return response;
@@ -47,12 +49,13 @@ namespace Core.Application.Services
                 }
                 response.AddedRows = _enrollmentRepository.Add(enrollment);
             }
-            catch (Exception ex)
+            catch (DALException dalEx)
             {
+                _logger.LogError(dalEx, "Error in submitting enrollment application");
                 response.AddError(new ErrorModel()
                 {
                     Message = "Training registration failed. Try again later.",
-                    Exception = ex
+                    Exception = dalEx
                 });
             }
             return response;

@@ -1,17 +1,18 @@
 ﻿using Core.Application.Models;
 using Core.Application.Repositories;
 using Core.Domain;
-using System;
 
 namespace Core.Application.Services
 {
     public class TrainingService : ITrainingService
     {
+        private readonly ILogger _logger;
         private readonly ITrainingRepository _trainingRepository;
 
-        public TrainingService(ITrainingRepository trainingRepository)
+        public TrainingService(ITrainingRepository trainingRepository, ILogger logger)
         {
             _trainingRepository = trainingRepository;
+            _logger = logger;
         }
 
         public ResponseModel<Training> Add(Training training)
@@ -29,12 +30,13 @@ namespace Core.Application.Services
                 }
                 response.AddedRows = _trainingRepository.Add(training);
             }
-            catch (Exception ex)
+            catch (DALException dalEx)
             {
+                _logger.LogError(dalEx, "Error in adding training");
                 response.AddError(new ErrorModel()
                 {
                     Message = "Unable to add new training. Try again later.",
-                    Exception = ex
+                    Exception = dalEx
                 });
             }
             return response;
@@ -47,12 +49,13 @@ namespace Core.Application.Services
             {
                 response.DeletedRows = _trainingRepository.Delete(trainingId);
             }
-            catch (Exception ex)
+            catch (DALException dalEx)
             {
+                _logger.LogError(dalEx, "Error in deleting training");
                 response.AddError(new ErrorModel()
                 {
                     Message = $"Unable to delete training with Id: {trainingId}",
-                    Exception = ex
+                    Exception = dalEx
                 });
             }
             return response;
@@ -65,12 +68,13 @@ namespace Core.Application.Services
             {
                 response.UpdatedRows = _trainingRepository.Update(training);
             }
-            catch (Exception ex)
+            catch (DALException dalEx)
             {
+                _logger.LogError(dalEx, "Error in updating training");
                 response.AddError(new ErrorModel()
                 {
                     Message = $"Unable to update training with Id: {training.TrainingId}",
-                    Exception = ex
+                    Exception = dalEx
                 });
             }
             return response;

@@ -1,17 +1,18 @@
 ﻿using Core.Application.Models;
 using Core.Application.Repositories;
 using Core.Domain;
-using System;
 
 namespace Core.Application.Services
 {
     public class EmployeeService : IEmployeeService
     {
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly ILogger _logger;
 
-        public EmployeeService(IEmployeeRepository employeeRepository)
+        public EmployeeService(IEmployeeRepository employeeRepository, ILogger logger)
         {
             _employeeRepository = employeeRepository;
+            _logger = logger;
         }
 
         public ResponseModel<Employee> Register(Employee employee)
@@ -29,12 +30,13 @@ namespace Core.Application.Services
                 }
                 response.AddedRows = _employeeRepository.Add(employee);
             }
-            catch (Exception ex)
+            catch (DALException dalEx)
             {
+                _logger.LogError(dalEx, "Error in registering employee");
                 response.AddError(new ErrorModel()
                 {
                     Message = "Employee registration failed. Try again later.",
-                    Exception = ex
+                    Exception = dalEx
                 });
             }
             return response;
@@ -47,15 +49,18 @@ namespace Core.Application.Services
             {
                 response.UpdatedRows = _employeeRepository.Update(employee);
             }
-            catch (Exception ex)
+            catch (DALException dalEx)
             {
+                _logger.LogError(dalEx, $"Error in updating employee");
                 response.AddError(new ErrorModel()
                 {
                     Message = $"Unable to update employee with Id: {employee.EmployeeId}",
-                    Exception = ex
+                    Exception = dalEx
                 });
             }
             return response;
         }
+
+
     }
 }

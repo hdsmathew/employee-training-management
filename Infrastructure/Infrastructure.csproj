@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AppLogger\FileLogger.cs" />
     <Compile Include="Common\MapperBase.cs" />
     <Compile Include="DAL\AccountDAL.cs" />
     <Compile Include="DAL\DataAccess.cs" />
