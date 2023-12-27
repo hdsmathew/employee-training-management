@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.Entities
 {
-    public class AccountEntity : EntityBase
+    public class AccountEntity : IEntity
     {
         public ushort AccountId { get; set; }
         public byte AccountTypeId { get; set; }

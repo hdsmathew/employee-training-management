@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Infrastructure.Common
 {
-    public abstract class MapperBase<TDomain, TEntity> where TEntity : EntityBase
+    public abstract class MapperBase<TDomain, TEntity>
     {
         public abstract TEntity MapDomainModelToEntity(TDomain domainModel);
         public abstract TDomain MapEntityToDomainModel(TEntity entity);

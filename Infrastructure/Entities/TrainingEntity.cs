@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Entities
 {
-    public class TrainingEntity : EntityBase
+    public class TrainingEntity : IEntity
     {
         public ushort TrainingId { get; set; }
         public byte PreferredDepartmentId { get; set; }

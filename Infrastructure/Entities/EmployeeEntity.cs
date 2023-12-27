@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.Entities
 {
-    public class EmployeeEntity : EntityBase
+    public class EmployeeEntity : IEntity
     {
         public ushort EmployeeId { get; set; }
         public ushort AccountId { get; set; }

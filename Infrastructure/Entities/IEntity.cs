@@ -1,6 +1,6 @@
 ﻿namespace Infrastructure.Entities
 {
-    public abstract class EntityBase
+    public interface IEntity
     {
     }
 }

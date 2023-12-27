@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Entities
 {
-    public class EnrollmentEntity : EntityBase
+    public class EnrollmentEntity : IEntity
     {
         public uint EnrollmentId { get; set; }
         public byte ApprovalStatusId { get; set; }

@@ -2,7 +2,7 @@
 
 namespace Infrastructure.Entities
 {
-    public class EnrollmentNotificationEntity : EntityBase
+    public class EnrollmentNotificationEntity : IEntity
     {
         public uint EnrollmentNotificationId { get; set; }
         public uint EnrollmentId { get; set; }
