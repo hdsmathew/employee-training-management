@@ -1,4 +1,5 @@
-﻿using Core.Domain;
+﻿using Core.Application;
+using Core.Domain;
 using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
 using Infrastructure.Entities;
@@ -30,7 +31,22 @@ namespace Infrastructure.DAL
                 new SqlParameter("@EmailAddress", account.EmailAddress),
                 new SqlParameter("@PasswordHash", account.PasswordHash)
             };
-            return _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+            int rowsAffected;
+
+            try
+            {
+                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (rowsAffected == 0)
+            {
+                throw new DALException("No rows added");
+            }
+            return rowsAffected;
         }
 
         public int Delete(int accountId)
@@ -40,7 +56,22 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@AccountId", accountId)
             };
-            return _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
+            int rowsAffected;
+
+            try
+            {
+                rowsAffected = _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (rowsAffected == 0)
+            {
+                throw new DALException("No rows deleted");
+            }
+            return rowsAffected;
         }
 
         public bool ExistsByEmailAddress(string emailAddress)
@@ -51,8 +82,19 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@EmailAddress", emailAddress),
             };
-            object scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
-            return IsValidScalarObject(scalarObject) && Convert.ToInt32(scalarObject) > 0;
+            object scalarObject;
+
+            try
+            {
+                scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            int.TryParse(scalarObject?.ToString(), out int scalarValue);
+            return scalarValue > 0;
         }
 
         public AccountEntity Get(int accountId)
@@ -62,13 +104,27 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@AccountId", accountId)
             };
-            (string, object)[] entityValueTuples = _dataAccess.ExecuteReader(selectQuery, parameters).First();
-            return _accountMapper.MapRowToEntity(entityValueTuples);
+            IEnumerable<(string, object)[]> entityValueTuplesArrays;
+
+            try
+            {
+                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (entityValueTuplesArrays.Count() < 1)
+            {
+                throw new DALException("No rows returned");
+            }
+            return _accountMapper.MapRowToEntity(entityValueTuplesArrays.Single());
         }
 
         public AccountEntity Get(string emailAddress, string passwordHash)
         {
-            string selectQuery = @"SELECT AccountId, AccountTypeId, EmailAddress, PasswordHash FROM Account WHERE 
+            string selectQuery = @"SELECT AccountId, AccountTypeId, EmailAddress FROM Account WHERE 
                                    EmailAddress = @EmailAddress AND 
                                    PasswordHash = @PasswordHash";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -76,8 +132,22 @@ namespace Infrastructure.DAL
                 new SqlParameter("@EmailAddress", emailAddress),
                 new SqlParameter("@PasswordHash", passwordHash)
             };
-            (string, object)[] entityValueTuples = _dataAccess.ExecuteReader(selectQuery, parameters).First();
-            return _accountMapper.MapRowToEntity(entityValueTuples);
+            IEnumerable<(string, object)[]> entityValueTuplesArrays;
+
+            try
+            {
+                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (entityValueTuplesArrays.Count() > 1)
+            {
+                throw new DALException("More than 1 rows returned");
+            }
+            return _accountMapper.MapRowToEntity(entityValueTuplesArrays.Single());
         }
 
         public ushort GetAccountIdByEmailAddress(string emailAddress)
@@ -87,8 +157,19 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@EmailAddress", emailAddress)
             };
-            object scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
-            return Convert.ToUInt16(scalarObject);
+            object scalarObject;
+
+            try
+            {
+                scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            ushort.TryParse(scalarObject?.ToString(), out ushort scalarValue);
+            return scalarValue;
         }
 
         public IEnumerable<AccountEntity> GetAll()
@@ -99,11 +180,6 @@ namespace Infrastructure.DAL
         public int Update(AccountEntity account)
         {
             throw new System.NotImplementedException();
-        }
-
-        private bool IsValidScalarObject(object scalarObject)
-        {
-            return scalarObject != null && scalarObject != DBNull.Value;
         }
     }
 }

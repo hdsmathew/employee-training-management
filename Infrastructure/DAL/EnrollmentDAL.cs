@@ -1,4 +1,5 @@
-﻿using Core.Domain;
+﻿using Core.Application;
+using Core.Domain;
 using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
 using Infrastructure.Entities;
@@ -31,7 +32,22 @@ namespace Infrastructure.DAL
                 new SqlParameter("@EmployeeId", enrollment.EmployeeId),
                 new SqlParameter("@TrainingId", enrollment.TrainingId)
             };
-            return _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+            int rowsAffected;
+
+            try
+            {
+                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (rowsAffected == 0)
+            {
+                throw new DALException("No rows added");
+            }
+            return rowsAffected;
         }
 
         public int Delete(int enrollmentId)
@@ -41,7 +57,22 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@EnrollmentId", enrollmentId)
             };
-            return _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
+            int rowsAffected;
+
+            try
+            {
+                rowsAffected = _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (rowsAffected == 0)
+            {
+                throw new DALException("No rows deleted");
+            }
+            return rowsAffected;
         }
 
         public bool Exists(int employeeId, int trainingId)
@@ -56,8 +87,19 @@ namespace Infrastructure.DAL
                 new SqlParameter("@TrainingId", trainingId),
                 new SqlParameter("@ApprovalStatusId", (byte)ApprovalStatusEnum.Pending)
             };
-            object scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
-            return IsValidScalarObject(scalarObject) && Convert.ToInt32(scalarObject) > 0;
+            object scalarObject;
+
+            try
+            {
+                scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            int.TryParse(scalarObject?.ToString(), out int scalarValue);
+            return scalarValue > 0;
         }
 
         public EnrollmentEntity Get(int enrollmentId)
@@ -67,15 +109,43 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@EnrollmentId", enrollmentId)
             };
-            (string, object)[] entityValueTuples = _dataAccess.ExecuteReader(selectQuery, parameters).First();
-            return _enrollmentMapper.MapRowToEntity(entityValueTuples);
+            IEnumerable<(string, object)[]> entityValueTuplesArrays;
+
+            try
+            {
+                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (entityValueTuplesArrays.Count() > 1)
+            {
+                throw new DALException("More than 1 rows returned");
+            }
+            return _enrollmentMapper.MapRowToEntity(entityValueTuplesArrays.Single());
         }
 
         public IEnumerable<EnrollmentEntity> GetAll()
         {
             string selectQuery = "SELECT * FROM Enrollment";
             List<SqlParameter> parameters = new List<SqlParameter>();
-            IEnumerable<(string, object)[]> entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            IEnumerable<(string, object)[]> entityValueTuplesArrays;
+
+            try
+            {
+                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (!entityValueTuplesArrays.Any())
+            {
+                throw new DALException("No rows returned");
+            }
             return _enrollmentMapper.MapTableToEntities(entityValueTuplesArrays);
         }
 
@@ -92,12 +162,22 @@ namespace Infrastructure.DAL
                 new SqlParameter("@ApproverAccountId", enrollment.ApproverAccountId),
                 new SqlParameter("@EnrollmentId", enrollment.EnrollmentId)
             };
-            return _dataAccess.ExecuteNonQuery(updateQuery, parameters);
-        }
+            int rowsAffected;
 
-        private bool IsValidScalarObject(object scalarObject)
-        {
-            return scalarObject != null && scalarObject != DBNull.Value;
+            try
+            {
+                rowsAffected = _dataAccess.ExecuteNonQuery(updateQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (rowsAffected == 0)
+            {
+                throw new DALException("No rows updated");
+            }
+            return rowsAffected;
         }
     }
 }
