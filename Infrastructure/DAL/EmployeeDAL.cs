@@ -150,7 +150,7 @@ namespace Infrastructure.DAL
             return _employeeMapper.MapTableToEntities(entityValueTuplesArrays);
         }
 
-        public IEnumerable<EmployeeEntity> GetEmployeesByAccountType(byte accountTypeId)
+        public IEnumerable<EmployeeEntity> GetAllByAccountType(byte accountTypeId)
         {
             string selectQuery = @"WITH AccountIds (AccountId) AS (
                                         SELECT AccountId FROM Account WHERE AccountTypeId = @AccountTypeId

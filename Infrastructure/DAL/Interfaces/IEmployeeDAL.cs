@@ -10,7 +10,7 @@ namespace Infrastructure.DAL.Interfaces
         bool ExistsByNationalIdOrMobileNumber(string mobileNumber, string nationalId);
         EmployeeEntity Get(int userID);
         IEnumerable<EmployeeEntity> GetAll();
-        IEnumerable<EmployeeEntity> GetEmployeesByAccountType(byte accountTypeId);
+        IEnumerable<EmployeeEntity> GetAllByAccountType(byte accountTypeId);
         int Update(EmployeeEntity user);
     }
 }

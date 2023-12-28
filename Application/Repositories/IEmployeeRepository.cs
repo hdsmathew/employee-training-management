@@ -10,7 +10,7 @@ namespace Core.Application.Repositories
         bool ExistsByNationalIdOrMobileNumber(string nationalId, string mobileNumber);
         Employee Get(int employeeId);
         IEnumerable<Employee> GetAll();
-        IEnumerable<Employee> GetEmployeesByAccountType(byte accountTypeId);
+        IEnumerable<Employee> GetAllByAccountType(byte accountTypeId);
         int Update(Employee employee);
     }
 }

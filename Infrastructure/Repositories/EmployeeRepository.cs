@@ -46,9 +46,9 @@ namespace Infrastructure.Repositories
             return _employeeMapper.MapEntitiesToDomainModel(employeeEntities);
         }
 
-        public IEnumerable<Employee> GetEmployeesByAccountType(byte accountTypeId)
+        public IEnumerable<Employee> GetAllByAccountType(byte accountTypeId)
         {
-            IEnumerable<EmployeeEntity> employeeEntities = _employeeDAL.GetEmployeesByAccountType(accountTypeId);
+            IEnumerable<EmployeeEntity> employeeEntities = _employeeDAL.GetAllByAccountType(accountTypeId);
             return _employeeMapper.MapEntitiesToDomainModel(employeeEntities);
         }
 
