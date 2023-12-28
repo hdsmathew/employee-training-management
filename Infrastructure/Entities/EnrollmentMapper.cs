@@ -38,12 +38,12 @@ namespace Infrastructure.Entities
         {
             return new EnrollmentEntity
             {
-                EnrollmentId = GetValueFromTuple<uint>("EnrollmentId", entityValueTuples),
+                EnrollmentId = GetValueFromTuple<int>("EnrollmentId", entityValueTuples),
                 ApprovalStatusId = GetValueFromTuple<byte>("ApprovalStatusId", entityValueTuples),
-                ApproverAccountId = GetValueFromTuple<ushort>("ApproverAccountId", entityValueTuples),
-                EmployeeId = GetValueFromTuple<ushort>("EmployeeId", entityValueTuples),
+                ApproverAccountId = GetValueFromTuple<short>("ApproverAccountId", entityValueTuples),
+                EmployeeId = GetValueFromTuple<short>("EmployeeId", entityValueTuples),
                 RequestedAt = GetValueFromTuple<DateTime>("RequestedAt", entityValueTuples),
-                TrainingId = GetValueFromTuple<ushort>("TrainingId", entityValueTuples),
+                TrainingId = GetValueFromTuple<short>("TrainingId", entityValueTuples),
                 UpdatedAt = GetValueFromTuple<DateTime>("UpdatedAt", entityValueTuples)
             };
         }

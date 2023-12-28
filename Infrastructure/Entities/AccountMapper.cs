@@ -33,7 +33,7 @@ namespace Infrastructure.Entities
         {
             return new AccountEntity
             {
-                AccountId = GetValueFromTuple<ushort>("AccountId", entityValueTuples),
+                AccountId = GetValueFromTuple<short>("AccountId", entityValueTuples),
                 AccountTypeId = GetValueFromTuple<byte>("AccountTypeId", entityValueTuples),
                 EmailAddress = GetValueFromTuple<string>("EmailAddress", entityValueTuples),
                 PasswordHash = GetValueFromTuple<string>("PasswordHash", entityValueTuples),

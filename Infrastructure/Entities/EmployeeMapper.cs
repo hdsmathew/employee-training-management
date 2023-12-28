@@ -39,12 +39,12 @@ namespace Infrastructure.Entities
         {
             return new EmployeeEntity
             {
-                EmployeeId = GetValueFromTuple<ushort>("EmployeeId", entityValueTuples),
-                AccountId = GetValueFromTuple<ushort>("AccountId", entityValueTuples),
+                EmployeeId = GetValueFromTuple<short>("EmployeeId", entityValueTuples),
+                AccountId = GetValueFromTuple<short>("AccountId", entityValueTuples),
                 DepartmentId = GetValueFromTuple<byte>("DepartmentId", entityValueTuples),
                 FirstName = GetValueFromTuple<string>("FirstName", entityValueTuples),
                 LastName = GetValueFromTuple<string>("LastName", entityValueTuples),
-                ManagerId = GetValueFromTuple<ushort>("ManagerId", entityValueTuples),
+                ManagerId = GetValueFromTuple<short>("ManagerId", entityValueTuples),
                 MobileNumber = GetValueFromTuple<string>("MobileNumber", entityValueTuples),
                 NationalId = GetValueFromTuple<string>("NationalId", entityValueTuples),
             };

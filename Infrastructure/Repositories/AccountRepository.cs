@@ -40,7 +40,7 @@ namespace Infrastructure.Repositories
             return _accountMapper.MapEntityToDomainModel(accountEntity);
         }
 
-        public ushort GetAccountIdByEmailAddress(string emailAddress)
+        public short GetAccountIdByEmailAddress(string emailAddress)
         {
             return _accountDAL.GetAccountIdByEmailAddress(emailAddress);
         }

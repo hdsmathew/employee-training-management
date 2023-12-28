@@ -150,7 +150,7 @@ namespace Infrastructure.DAL
             return _accountMapper.MapRowToEntity(entityValueTuplesArrays.Single());
         }
 
-        public ushort GetAccountIdByEmailAddress(string emailAddress)
+        public short GetAccountIdByEmailAddress(string emailAddress)
         {
             string selectQuery = "SELECT AccountId FROM Account WHERE EmailAddress = @EmailAddress";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -168,7 +168,7 @@ namespace Infrastructure.DAL
                 throw new DALException("Error while executing query", ex);
             }
 
-            ushort.TryParse(scalarObject?.ToString(), out ushort scalarValue);
+            short.TryParse(scalarObject?.ToString(), out short scalarValue);
             return scalarValue;
         }
 

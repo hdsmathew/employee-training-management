@@ -3,6 +3,6 @@
     public class TrainingPrerequisite
     {
         public byte PrerequisiteId { get; set; }
-        public ushort TrainingId { get; set; }
+        public short TrainingId { get; set; }
     }
 }

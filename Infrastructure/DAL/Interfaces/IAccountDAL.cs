@@ -10,7 +10,7 @@ namespace Infrastructure.DAL.Interfaces
         bool ExistsByEmailAddress(string emailAddress);
         AccountEntity Get(int accountId);
         AccountEntity Get(string emailAddress, string passwordHash);
-        ushort GetAccountIdByEmailAddress(string emailAddress);
+        short GetAccountIdByEmailAddress(string emailAddress);
         IEnumerable<AccountEntity> GetAll();
         int Update(AccountEntity account);
     }

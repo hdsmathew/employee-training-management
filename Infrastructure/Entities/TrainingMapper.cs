@@ -37,10 +37,10 @@ namespace Infrastructure.Entities
         {
             return new TrainingEntity
             {
-                TrainingId = GetValueFromTuple<ushort>("TrainingId", entityValueTuples),
+                TrainingId = GetValueFromTuple<short>("TrainingId", entityValueTuples),
                 PreferredDepartmentId = GetValueFromTuple<byte>("PreferredDepartmentId", entityValueTuples),
                 RegistrationDeadline = GetValueFromTuple<DateTime>("RegistrationDeadline", entityValueTuples),
-                SeatsAvailable = GetValueFromTuple<ushort>("SeatsAvailable", entityValueTuples),
+                SeatsAvailable = GetValueFromTuple<short>("SeatsAvailable", entityValueTuples),
                 TrainingDescription = GetValueFromTuple<string>("TrainingDescription", entityValueTuples),
                 TrainingName = GetValueFromTuple<string>("TrainingName", entityValueTuples),
             };

@@ -9,6 +9,6 @@ namespace Core.Application.Repositories
         bool ExistsByEmailAddress(string emailAddress);
         Account Get(int accountId);
         Account Get(string emailAddress, string passwordHash);
-        ushort GetAccountIdByEmailAddress(string emailAddress);
+        short GetAccountIdByEmailAddress(string emailAddress);
     }
 }
