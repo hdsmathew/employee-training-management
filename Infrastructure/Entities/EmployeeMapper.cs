@@ -10,11 +10,11 @@ namespace Infrastructure.Entities
             return new EmployeeEntity
             {
                 EmployeeId = domainModel.EmployeeId,
-                AccountId = domainModel.AccountId,
+                AccountId = domainModel.Account.AccountId,
                 DepartmentId = domainModel.DepartmentId,
                 FirstName = domainModel.FirstName,
                 LastName = domainModel.LastName,
-                ManagerId = domainModel.ManagerId,
+                ManagerId = domainModel.Manager.EmployeeId,
                 MobileNumber = domainModel.MobileNumber,
                 NationalId = domainModel.NationalId
             };
@@ -25,11 +25,9 @@ namespace Infrastructure.Entities
             return new Employee
             {
                 EmployeeId = entity.EmployeeId,
-                AccountId = entity.AccountId,
                 DepartmentId = entity.DepartmentId,
                 FirstName = entity.FirstName,
                 LastName = entity.LastName,
-                ManagerId = entity.ManagerId,
                 MobileNumber = entity.MobileNumber,
                 NationalId = entity.NationalId
             };

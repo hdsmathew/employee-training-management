@@ -1,7 +1,6 @@
 ﻿using Core.Domain;
 using Infrastructure.Common;
 using System;
-using System.Collections.Generic;
 
 namespace Infrastructure.Entities
 {
@@ -24,7 +23,7 @@ namespace Infrastructure.Entities
         {
             return new Training
             {
-                TrainingId = entity.TrainingId,
+                TrainingId = entity.TrainingId ?? default,
                 PreferredDepartmentId = entity.PreferredDepartmentId,
                 RegistrationDeadline = entity.RegistrationDeadline,
                 SeatsAvailable = entity.SeatsAvailable,

@@ -1,7 +1,5 @@
 ﻿using Core.Domain;
 using Infrastructure.Common;
-using System;
-using System.Collections.Generic;
 
 namespace Infrastructure.Entities
 {

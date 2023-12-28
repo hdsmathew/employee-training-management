@@ -7,7 +7,7 @@ namespace Infrastructure.DAL.Interfaces
     {
         int Add(EnrollmentEntity enrollment);
         int Delete(int enrollmentID);
-        bool Exists(int employeeID, int trainingID);
+        bool Exists(short employeeID, short trainingID);
         EnrollmentEntity Get(int enrollmentID);
         IEnumerable<EnrollmentEntity> GetAll();
         int Update(EnrollmentEntity enrollment);

@@ -75,7 +75,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public bool Exists(int employeeId, int trainingId)
+        public bool Exists(short employeeId, short trainingId)
         {
             string selectQuery = @"SELECT COUNT(*) FROM Enrollment WHERE 
                                    EmployeeId = @EmployeeId AND 

@@ -2,7 +2,7 @@
 {
     public class PrerequisiteEntity : IEntity
     {
-        public byte PrerequisiteId { get; set; }
-        public string DocumentName { get; set; }
+        public byte? PrerequisiteId { get; set; } = null;
+        public string DocumentName { get; set; } = null;
     }
 }

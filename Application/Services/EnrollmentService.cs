@@ -1,6 +1,7 @@
 ﻿using Core.Application.Models;
 using Core.Application.Repositories;
 using Core.Domain;
+using System;
 
 namespace Core.Application.Services
 {
@@ -34,12 +35,12 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<Enrollment> Submit(Enrollment enrollment)
+        public ResponseModel<Enrollment> Submit(short employeeId, short trainingId)
         {
             ResponseModel<Enrollment> response = new ResponseModel<Enrollment>();
             try
             {
-                if (_enrollmentRepository.Exists(enrollment.EmployeeId, enrollment.TrainingId))
+                if (_enrollmentRepository.Exists(employeeId, trainingId))
                 {
                     response.AddError(new ErrorModel()
                     {
@@ -47,7 +48,11 @@ namespace Core.Application.Services
                     });
                     return response;
                 }
-                response.AddedRows = _enrollmentRepository.Add(enrollment);
+                response.AddedRows = _enrollmentRepository.Add(new Enrollment()
+                {
+                    ApprovalStatus = ApprovalStatusEnum.Pending,
+                    TrainingId = trainingId
+                });
             }
             catch (DALException dalEx)
             {

@@ -29,7 +29,7 @@ namespace Infrastructure.Repositories
             return _enrollmentDAL.Delete(enrollmentID);
         }
 
-        public bool Exists(int employeeID, int trainingID)
+        public bool Exists(short employeeID, short trainingID)
         {
             return _enrollmentDAL.Exists(employeeID, trainingID);
         }

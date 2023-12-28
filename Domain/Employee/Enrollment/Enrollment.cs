@@ -1,15 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
 
-namespace Infrastructure.Entities
+namespace Core.Domain
 {
-    public class EnrollmentEntity : IEntity
+    public class Enrollment
     {
         public int? EnrollmentId { get; set; } = null;
-        public byte ApprovalStatusId { get; set; }
+        public ApprovalStatusEnum ApprovalStatus { get; set; }
         public short? ApproverAccountId { get; set; } = null;
-        public short? EmployeeId { get; set; } = null;
         public DateTime RequestedAt { get; set; }
         public short? TrainingId { get; set; } = null;
         public DateTime UpdatedAt { get; set; }
+        public IEnumerable<EnrollmentNotification> EnrollmentNotifications { get; set; } = null;
     }
 }

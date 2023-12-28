@@ -7,7 +7,7 @@ namespace Core.Application.Repositories
     {
         int Add(Enrollment enrollment);
         int Delete(int enrollmentID);
-        bool Exists(int employeeID, int trainingID);
+        bool Exists(short employeeID, short trainingID);
         Enrollment Get(int enrollmentID);
         IEnumerable<Enrollment> GetAll();
         int Update(Enrollment enrollment);

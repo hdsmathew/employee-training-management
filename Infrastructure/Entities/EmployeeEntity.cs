@@ -2,13 +2,13 @@
 {
     public class EmployeeEntity : IEntity
     {
-        public short EmployeeId { get; set; }
-        public short AccountId { get; set; }
-        public byte DepartmentId { get; set; }
-        public string FirstName { get; set; }
-        public string LastName { get; set; }
-        public short ManagerId { get; set; }
-        public string MobileNumber { get; set; }
-        public string NationalId { get; set; }
+        public short? EmployeeId { get; set; } = null;
+        public short? AccountId { get; set; } = null;
+        public byte? DepartmentId { get; set; } = null;
+        public string FirstName { get; set; } = null;
+        public string LastName { get; set; } = null;
+        public short? ManagerId { get; set; } = null;
+        public string MobileNumber { get; set; } = null;
+        public string NationalId { get; set; } = null;
     }
 }

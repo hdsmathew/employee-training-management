@@ -1,9 +1,9 @@
-﻿namespace Infrastructure.Entities
+﻿namespace Core.Domain
 {
-    public class AccountEntity : IEntity
+    public class Account
     {
         public short? AccountId { get; set; } = null;
-        public byte? AccountTypeId { get; set; } = null;
+        public AccountTypeEnum AccountType { get; set; }
         public string EmailAddress { get; set; } = null;
         public string PasswordHash { get; set; } = null;
     }

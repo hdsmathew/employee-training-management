@@ -11,9 +11,8 @@ namespace Infrastructure.Entities
             return new EnrollmentEntity
             {
                 EnrollmentId = domainModel.EnrollmentId,
-                ApprovalStatusId = domainModel.ApprovalStatusId,
+                ApprovalStatusId = (byte)domainModel.ApprovalStatus,
                 ApproverAccountId = domainModel.ApproverAccountId,
-                EmployeeId = domainModel.EmployeeId,
                 RequestedAt = domainModel.RequestedAt,
                 TrainingId = domainModel.TrainingId,
                 UpdatedAt = domainModel.UpdatedAt
@@ -25,9 +24,8 @@ namespace Infrastructure.Entities
             return new Enrollment
             {
                 EnrollmentId = entity.EnrollmentId,
-                ApprovalStatusId = entity.ApprovalStatusId,
+                ApprovalStatus = (ApprovalStatusEnum)entity.ApprovalStatusId,
                 ApproverAccountId = entity.ApproverAccountId,
-                EmployeeId = entity.EmployeeId,
                 RequestedAt = entity.RequestedAt,
                 TrainingId = entity.TrainingId,
                 UpdatedAt = entity.UpdatedAt
