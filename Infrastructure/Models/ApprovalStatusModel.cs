@@ -1,6 +1,6 @@
-﻿namespace Infrastructure.Entities
+﻿namespace Infrastructure.Models
 {
-    public class ApprovalStatusEntity : IEntity
+    public class ApprovalStatusModel : IModel
     {
         public byte ApprovalStatusid { get; set; }
         public string ApprovalStatusName { get; set; }

@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Infrastructure.Entities
+namespace Infrastructure.Models
 {
-    public class EnrollmentNotificationEntity : IEntity
+    public class EnrollmentNotificationModel : IModel
     {
         public int EnrollmentNotificationId { get; set; }
         public int EnrollmentId { get; set; }

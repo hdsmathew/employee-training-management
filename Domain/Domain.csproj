@@ -44,9 +44,10 @@
     <Compile Include="Account\Account.cs" />
     <Compile Include="Common\Department.cs" />
     <Compile Include="Employee\EmployeeUpload.cs" />
-    <Compile Include="Employee\Enrollment\Enrollment.cs" />
-    <Compile Include="Employee\Enrollment\ApprovalStatusEnum.cs" />
-    <Compile Include="Employee\Enrollment\EnrollmentNotification.cs" />
+    <Compile Include="Enrollment\Enrollment.cs" />
+    <Compile Include="Enrollment\ApprovalStatusEnum.cs" />
+    <Compile Include="Common\IEntity.cs" />
+    <Compile Include="Notification\EnrollmentNotification.cs" />
     <Compile Include="Common\Prerequisite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Training\Training.cs" />

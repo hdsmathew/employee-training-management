@@ -1,6 +1,6 @@
-﻿namespace Infrastructure.Entities
+﻿namespace Infrastructure.Models
 {
-    public class TrainingPrerequisiteEntity : IEntity
+    public class TrainingPrerequisiteModel : IModel
     {
         public byte PrerequisiteId { get; set; }
         public short TrainingId { get; set; }

@@ -10,6 +10,7 @@ namespace Core.Application.Repositories
         bool ExistsByName(string name);
         Training Get(int trainingID);
         IEnumerable<Training> GetAll();
+        IEnumerable<Training> GetAllWithPrerequisites();
         int Update(Training training);
     }
 }

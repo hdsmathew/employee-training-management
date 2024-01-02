@@ -1,41 +1,43 @@
 ﻿using Core.Domain;
 using Infrastructure.Common;
 
-namespace Infrastructure.Entities
+namespace Infrastructure.Models
 {
-    public class EmployeeMapper : MapperBase<Employee, EmployeeEntity>
+    public class EmployeeMapper : MapperBase<Employee, EmployeeModel>
     {
-        public override EmployeeEntity MapDomainModelToEntity(Employee domainModel)
+        public override EmployeeModel MapEntityToDataModel(Employee entity)
         {
-            return new EmployeeEntity
-            {
-                EmployeeId = domainModel.EmployeeId,
-                AccountId = domainModel.Account.AccountId,
-                DepartmentId = domainModel.DepartmentId,
-                FirstName = domainModel.FirstName,
-                LastName = domainModel.LastName,
-                ManagerId = domainModel.Manager.EmployeeId,
-                MobileNumber = domainModel.MobileNumber,
-                NationalId = domainModel.NationalId
-            };
-        }
-
-        public override Employee MapEntityToDomainModel(EmployeeEntity entity)
-        {
-            return new Employee
+            return new EmployeeModel
             {
                 EmployeeId = entity.EmployeeId,
+                AccountId = entity.AccountId,
                 DepartmentId = entity.DepartmentId,
                 FirstName = entity.FirstName,
                 LastName = entity.LastName,
+                ManagerId = entity.ManagerId,
                 MobileNumber = entity.MobileNumber,
                 NationalId = entity.NationalId
             };
         }
 
-        public override EmployeeEntity MapRowToEntity((string, object)[] entityValueTuples)
+        public override Employee MapDataModelToEntity(EmployeeModel model)
         {
-            return new EmployeeEntity
+            return new Employee
+            {
+                EmployeeId = model.EmployeeId,
+                AccountId = model.AccountId,
+                DepartmentId = model.DepartmentId,
+                FirstName = model.FirstName,
+                LastName = model.LastName,
+                ManagerId = model.ManagerId,
+                MobileNumber = model.MobileNumber,
+                NationalId = model.NationalId
+            };
+        }
+
+        public override EmployeeModel MapRowToDataModel((string, object)[] entityValueTuples)
+        {
+            return new EmployeeModel
             {
                 EmployeeId = GetValueFromTuple<short>("EmployeeId", entityValueTuples),
                 AccountId = GetValueFromTuple<short>("AccountId", entityValueTuples),

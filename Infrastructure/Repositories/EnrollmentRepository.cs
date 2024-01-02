@@ -2,7 +2,7 @@
 using Core.Domain;
 using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
-using Infrastructure.Entities;
+using Infrastructure.Models;
 using System.Collections.Generic;
 
 namespace Infrastructure.Repositories
@@ -10,18 +10,27 @@ namespace Infrastructure.Repositories
     public class EnrollmentRepository : IEnrollmentRepository
     {
         private readonly IEnrollmentDAL _enrollmentDAL;
-        private readonly MapperBase<Enrollment, EnrollmentEntity> _enrollmentMapper;
+        private readonly MapperBase<EmployeeUpload, EmployeeUploadModel> _employeeUploadMapper;
+        private readonly MapperBase<Enrollment, EnrollmentModel> _enrollmentMapper;
 
-        public EnrollmentRepository(IEnrollmentDAL enrollmentDAL, EnrollmentMapper enrollmentMapper)
+        public EnrollmentRepository(IEnrollmentDAL enrollmentDAL, EmployeeUploadMapper employeeUploadMapper, EnrollmentMapper enrollmentMapper)
         {
             _enrollmentDAL = enrollmentDAL;
+            _employeeUploadMapper = employeeUploadMapper;
             _enrollmentMapper = enrollmentMapper;
         }
 
         public int Add(Enrollment enrollment)
         {
-            EnrollmentEntity enrollmentEntity = _enrollmentMapper.MapDomainModelToEntity(enrollment);
+            EnrollmentModel enrollmentEntity = _enrollmentMapper.MapEntityToDataModel(enrollment);
             return _enrollmentDAL.Add(enrollmentEntity);
+        }
+
+        public int AddWithEmployeeUploads(Enrollment enrollment, IEnumerable<EmployeeUpload> employeeUploads)
+        {
+            EnrollmentModel enrollmentEntity = _enrollmentMapper.MapEntityToDataModel(enrollment);
+            IEnumerable<EmployeeUploadModel> employeeUploadEntities = _employeeUploadMapper.MapEntitiesToDataModels(employeeUploads);
+            return _enrollmentDAL.AddWithEmployeeUploads(enrollmentEntity, employeeUploadEntities);
         }
 
         public int Delete(int enrollmentID)
@@ -36,19 +45,19 @@ namespace Infrastructure.Repositories
 
         public Enrollment Get(int enrollmentID)
         {
-            EnrollmentEntity enrollmentEntity = _enrollmentDAL.Get(enrollmentID);
-            return _enrollmentMapper.MapEntityToDomainModel(enrollmentEntity);
+            EnrollmentModel enrollmentEntity = _enrollmentDAL.Get(enrollmentID);
+            return _enrollmentMapper.MapDataModelToEntity(enrollmentEntity);
         }
 
         public IEnumerable<Enrollment> GetAll()
         {
-            IEnumerable<EnrollmentEntity> enrollmentEntities = _enrollmentDAL.GetAll();
-            return _enrollmentMapper.MapEntitiesToDomainModel(enrollmentEntities);
+            IEnumerable<EnrollmentModel> enrollmentEntities = _enrollmentDAL.GetAll();
+            return _enrollmentMapper.MapDataModelsToEntities(enrollmentEntities);
         }
 
         public int Update(Enrollment enrollment)
         {
-            EnrollmentEntity enrollmentEntity = _enrollmentMapper.MapDomainModelToEntity(enrollment);
+            EnrollmentModel enrollmentEntity = _enrollmentMapper.MapEntityToDataModel(enrollment);
             return _enrollmentDAL.Update(enrollmentEntity);
         }
     }

@@ -1,15 +1,16 @@
-﻿using Infrastructure.Entities;
+﻿using Infrastructure.Models;
 using System.Collections.Generic;
 
 namespace Infrastructure.DAL.Interfaces
 {
     public interface IEnrollmentDAL
     {
-        int Add(EnrollmentEntity enrollment);
+        int Add(EnrollmentModel enrollment);
+        int AddWithEmployeeUploads(EnrollmentModel enrollment, IEnumerable<EmployeeUploadModel> employeeUploads);
         int Delete(int enrollmentID);
         bool Exists(short employeeID, short trainingID);
-        EnrollmentEntity Get(int enrollmentID);
-        IEnumerable<EnrollmentEntity> GetAll();
-        int Update(EnrollmentEntity enrollment);
+        EnrollmentModel Get(int enrollmentID);
+        IEnumerable<EnrollmentModel> GetAll();
+        int Update(EnrollmentModel enrollment);
     }
 }

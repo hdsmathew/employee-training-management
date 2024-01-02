@@ -1,7 +1,7 @@
 ﻿using Core.Application.Models;
 using Core.Application.Repositories;
 using Core.Domain;
-using System;
+using System.Collections.Generic;
 
 namespace Core.Application.Services
 {
@@ -35,7 +35,7 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<Enrollment> Submit(short employeeId, short trainingId)
+        public ResponseModel<Enrollment> Submit(short employeeId, short trainingId, IEnumerable<EmployeeUpload> employeeUploads)
         {
             ResponseModel<Enrollment> response = new ResponseModel<Enrollment>();
             try
@@ -48,11 +48,12 @@ namespace Core.Application.Services
                     });
                     return response;
                 }
-                response.AddedRows = _enrollmentRepository.Add(new Enrollment()
+                response.AddedRows = _enrollmentRepository.AddWithEmployeeUploads(new Enrollment()
                 {
                     ApprovalStatus = ApprovalStatusEnum.Pending,
+                    EmployeeId = employeeId,
                     TrainingId = trainingId
-                });
+                }, employeeUploads);
             }
             catch (DALException dalEx)
             {

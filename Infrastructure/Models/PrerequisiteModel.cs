@@ -1,6 +1,6 @@
-﻿namespace Core.Domain
+﻿namespace Infrastructure.Models
 {
-    public class Prerequisite : IEntity
+    public class PrerequisiteModel : IModel
     {
         public byte PrerequisiteId { get; set; }
         public string DocumentName { get; set; }

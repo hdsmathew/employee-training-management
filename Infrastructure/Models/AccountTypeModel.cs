@@ -1,6 +1,6 @@
-﻿namespace Infrastructure.Entities
+﻿namespace Infrastructure.Models
 {
-    public class AccountTypeEntity : IEntity
+    public class AccountTypeModel : IModel
     {
         public byte AccountTypeId { get; set; }
         public string TypeName { get; set; }

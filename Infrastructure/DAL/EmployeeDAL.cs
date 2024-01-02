@@ -2,7 +2,7 @@
 using Core.Domain;
 using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
-using Infrastructure.Entities;
+using Infrastructure.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -13,7 +13,7 @@ namespace Infrastructure.DAL
     public class EmployeeDAL : IEmployeeDAL
     {
         private readonly DataAccess _dataAccess;
-        private readonly MapperBase<Employee, EmployeeEntity> _employeeMapper;
+        private readonly MapperBase<Employee, EmployeeModel> _employeeMapper;
 
         public EmployeeDAL(DataAccess dataAccess, EmployeeMapper employeeMapper)
         {
@@ -21,7 +21,7 @@ namespace Infrastructure.DAL
             _employeeMapper = employeeMapper;
         }
 
-        public int Add(EmployeeEntity employee)
+        public int Add(EmployeeModel employee)
         {
             string insertQuery = @"INSERT INTO Employee (AccountId, DepartmentId, FirstName, LastName, ManagerId, MobileNumber, NationalId)
                                    VALUES (@AccountId, @DepartmentId, @FirstName, @LastName, @ManagerId, @MobileNumber, @NationalId);";
@@ -103,7 +103,7 @@ namespace Infrastructure.DAL
             return scalarValue > 0;
         }
 
-        public EmployeeEntity Get(int employeeId)
+        public EmployeeModel Get(int employeeId)
         {
             string selectQuery = "SELECT * FROM Employee WHERE EmployeeId = @EmployeeId";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -125,10 +125,10 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("More than 1 rows returned");
             }
-            return _employeeMapper.MapRowToEntity(entityValueTuplesArrays.Single());
+            return _employeeMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
         }
 
-        public IEnumerable<EmployeeEntity> GetAll()
+        public IEnumerable<EmployeeModel> GetAll()
         {
             string selectQuery = "SELECT * FROM Employee";
             List<SqlParameter> parameters = new List<SqlParameter>();
@@ -150,7 +150,7 @@ namespace Infrastructure.DAL
             return _employeeMapper.MapTableToEntities(entityValueTuplesArrays);
         }
 
-        public IEnumerable<EmployeeEntity> GetAllByAccountType(byte accountTypeId)
+        public IEnumerable<EmployeeModel> GetAllByAccountType(byte accountTypeId)
         {
             string selectQuery = @"WITH AccountIds (AccountId) AS (
                                         SELECT AccountId FROM Account WHERE AccountTypeId = @AccountTypeId
@@ -180,7 +180,7 @@ namespace Infrastructure.DAL
             return _employeeMapper.MapTableToEntities(entityValueTuplesArrays);
         }
 
-        public int Update(EmployeeEntity employee)
+        public int Update(EmployeeModel employee)
         {
             string updateQuery = @"UPDATE Employee SET 
                                    AccountId =  @AccountId, 

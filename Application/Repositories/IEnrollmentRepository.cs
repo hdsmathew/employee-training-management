@@ -6,6 +6,7 @@ namespace Core.Application.Repositories
     public interface IEnrollmentRepository
     {
         int Add(Enrollment enrollment);
+        int AddWithEmployeeUploads(Enrollment enrollment, IEnumerable<EmployeeUpload> employeeUploads);
         int Delete(int enrollmentID);
         bool Exists(short employeeID, short trainingID);
         Enrollment Get(int enrollmentID);

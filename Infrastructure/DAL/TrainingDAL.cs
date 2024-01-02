@@ -2,7 +2,7 @@
 using Core.Domain;
 using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
-using Infrastructure.Entities;
+using Infrastructure.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -13,7 +13,7 @@ namespace Infrastructure.DAL
     public class TrainingDAL : ITrainingDAL
     {
         private readonly DataAccess _dataAccess;
-        private readonly MapperBase<Training, TrainingEntity> _trainingMapper;
+        private readonly MapperBase<Training, TrainingModel> _trainingMapper;
 
         public TrainingDAL(DataAccess dataAccess, TrainingMapper trainingMapper)
         {
@@ -21,7 +21,7 @@ namespace Infrastructure.DAL
             _trainingMapper = trainingMapper;
         }
 
-        public int Add(TrainingEntity training)
+        public int Add(TrainingModel training)
         {
             string insertQuery = @"INSERT INTO Training (CreatedAt, PreferredDepartmentId, RegistrationDeadline, SeatsAvailable, TrainingDescription, TrainingName) 
                                    VALUES (GETDATE(), @PreferredDepartmentId, @RegistrationDeadline, @SeatsAvailable, @TrainingDescription, @TrainingName)";
@@ -99,7 +99,7 @@ namespace Infrastructure.DAL
             return scalarValue > 0;
         }
 
-        public TrainingEntity Get(int trainingId)
+        public TrainingModel Get(int trainingId)
         {
             string selectQuery = "SELECT * FROM Training WHERE TrainingId = @TrainingId";
             List<SqlParameter> parameters = new List<SqlParameter>
@@ -121,10 +121,10 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("More than 1 rows returned");
             }
-            return _trainingMapper.MapRowToEntity(entityValueTuplesArrays.Single());
+            return _trainingMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
         }
 
-        public IEnumerable<TrainingEntity> GetAll()
+        public IEnumerable<TrainingModel> GetAll()
         {
             string selectQuery = "SELECT * FROM Training";
             List<SqlParameter> parameters = new List<SqlParameter>();
@@ -146,7 +146,7 @@ namespace Infrastructure.DAL
             return _trainingMapper.MapTableToEntities(entityValueTuplesArrays);
         }
 
-        public int Update(TrainingEntity training)
+        public int Update(TrainingModel training)
         {
             string updateQuery = @"UPDATE Training SET 
                                    PreferredDepartmentId = @PreferredDepartmentId, 

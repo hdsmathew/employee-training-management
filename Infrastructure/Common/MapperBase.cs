@@ -1,42 +1,45 @@
-﻿using Infrastructure.Entities;
+﻿using Core.Domain;
+using Infrastructure.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Infrastructure.Common
 {
-    public abstract class MapperBase<TDomain, TEntity>
+    public abstract class MapperBase<TEntity, TModel>
+        where TEntity : IEntity
+        where TModel : IModel
     {
-        public abstract TEntity MapDomainModelToEntity(TDomain domainModel);
-        public abstract TDomain MapEntityToDomainModel(TEntity entity);
-        public abstract TEntity MapRowToEntity((string, object)[] entityValueTuples);
+        public abstract TModel MapEntityToDataModel(TEntity entity);
+        public abstract TEntity MapDataModelToEntity(TModel model);
+        public abstract TModel MapRowToDataModel((string, object)[] entityValueTuples);
 
-        public IEnumerable<TEntity> MapDomainModelToEntities(IEnumerable<TDomain> domainModeList)
+        public IEnumerable<TModel> MapEntitiesToDataModels(IEnumerable<TEntity> entities)
+        {
+            List<TModel> models = new List<TModel>();
+            foreach (TEntity entity in entities)
+            {
+                models.Add(MapEntityToDataModel(entity));
+            }
+            return models;
+        }
+
+        public IEnumerable<TEntity> MapDataModelsToEntities(IEnumerable<TModel> models)
         {
             List<TEntity> entities = new List<TEntity>();
-            foreach (TDomain domainModel in domainModeList)
+            foreach (TModel model in models)
             {
-                entities.Add(MapDomainModelToEntity(domainModel));
+                entities.Add(MapDataModelToEntity(model));
             }
             return entities;
         }
 
-        public IEnumerable<TDomain> MapEntitiesToDomainModel(IEnumerable<TEntity> entities)
+        public IEnumerable<TModel> MapTableToEntities(IEnumerable<(string, object)[]> entityValueTuplesArrays)
         {
-            List<TDomain> domainModelList = new List<TDomain>();
-            foreach (TEntity entity in entities)
-            {
-                domainModelList.Add(MapEntityToDomainModel(entity));
-            }
-            return domainModelList;
-        }
-
-        public IEnumerable<TEntity> MapTableToEntities(IEnumerable<(string, object)[]> entityValueTuplesArrays)
-        {
-            List<TEntity> entities = new List<TEntity>();
+            List<TModel> entities = new List<TModel>();
             foreach ((string, object)[] entityValueTuples in entityValueTuplesArrays)
             {
-                entities.Add(MapRowToEntity(entityValueTuples));
+                entities.Add(MapRowToDataModel(entityValueTuples));
             }
             return entities;
         }

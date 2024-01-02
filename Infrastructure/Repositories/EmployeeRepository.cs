@@ -2,7 +2,7 @@
 using Core.Domain;
 using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
-using Infrastructure.Entities;
+using Infrastructure.Models;
 using System.Collections.Generic;
 
 namespace Infrastructure.Repositories
@@ -10,7 +10,7 @@ namespace Infrastructure.Repositories
     public class EmployeeRepository : IEmployeeRepository
     {
         private readonly IEmployeeDAL _employeeDAL;
-        private readonly MapperBase<Employee, EmployeeEntity> _employeeMapper;
+        private readonly MapperBase<Employee, EmployeeModel> _employeeMapper;
 
         public EmployeeRepository(IEmployeeDAL employeeDAL, EmployeeMapper employeeMapper)
         {
@@ -20,7 +20,7 @@ namespace Infrastructure.Repositories
 
         public int Add(Employee employee)
         {
-            EmployeeEntity employeeEntity = _employeeMapper.MapDomainModelToEntity(employee);
+            EmployeeModel employeeEntity = _employeeMapper.MapEntityToDataModel(employee);
             return _employeeDAL.Add(employeeEntity);
         }
 
@@ -36,25 +36,25 @@ namespace Infrastructure.Repositories
 
         public Employee Get(int employeeId)
         {
-            EmployeeEntity employeeEntity = _employeeDAL.Get(employeeId);
-            return _employeeMapper.MapEntityToDomainModel(employeeEntity);
+            EmployeeModel employeeEntity = _employeeDAL.Get(employeeId);
+            return _employeeMapper.MapDataModelToEntity(employeeEntity);
         }
 
         public IEnumerable<Employee> GetAll()
         {
-            IEnumerable<EmployeeEntity> employeeEntities = _employeeDAL.GetAll();
-            return _employeeMapper.MapEntitiesToDomainModel(employeeEntities);
+            IEnumerable<EmployeeModel> employeeEntities = _employeeDAL.GetAll();
+            return _employeeMapper.MapDataModelsToEntities(employeeEntities);
         }
 
         public IEnumerable<Employee> GetAllByAccountType(byte accountTypeId)
         {
-            IEnumerable<EmployeeEntity> employeeEntities = _employeeDAL.GetAllByAccountType(accountTypeId);
-            return _employeeMapper.MapEntitiesToDomainModel(employeeEntities);
+            IEnumerable<EmployeeModel> employeeEntities = _employeeDAL.GetAllByAccountType(accountTypeId);
+            return _employeeMapper.MapDataModelsToEntities(employeeEntities);
         }
 
         public int Update(Employee employee)
         {
-            EmployeeEntity employeeEntity = _employeeMapper.MapDomainModelToEntity(employee);
+            EmployeeModel employeeEntity = _employeeMapper.MapEntityToDataModel(employee);
             return _employeeDAL.Update(employeeEntity);
         }
     }

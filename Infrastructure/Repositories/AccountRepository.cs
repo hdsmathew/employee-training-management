@@ -2,14 +2,14 @@
 using Core.Domain;
 using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
-using Infrastructure.Entities;
+using Infrastructure.Models;
 
 namespace Infrastructure.Repositories
 {
     public class AccountRepository : IAccountRepository
     {
         private readonly IAccountDAL _accountDAL;
-        private readonly MapperBase<Account, AccountEntity> _accountMapper;
+        private readonly MapperBase<Account, AccountModel> _accountMapper;
 
         public AccountRepository(IAccountDAL accountDAL, AccountMapper accountMapper)
         {
@@ -19,7 +19,7 @@ namespace Infrastructure.Repositories
 
         public int Add(Account account)
         {
-            AccountEntity accountEntity = _accountMapper.MapDomainModelToEntity(account);
+            AccountModel accountEntity = _accountMapper.MapEntityToDataModel(account);
             return _accountDAL.Add(accountEntity);
         }
 
@@ -30,14 +30,14 @@ namespace Infrastructure.Repositories
 
         public Account Get(int accountId)
         {
-            AccountEntity accountEntity = _accountDAL.Get(accountId);
-            return _accountMapper.MapEntityToDomainModel(accountEntity);
+            AccountModel accountEntity = _accountDAL.Get(accountId);
+            return _accountMapper.MapDataModelToEntity(accountEntity);
         }
 
         public Account Get(string emailAddress, string passwordHash)
         {
-            AccountEntity accountEntity = _accountDAL.Get(emailAddress, passwordHash);
-            return _accountMapper.MapEntityToDomainModel(accountEntity);
+            AccountModel accountEntity = _accountDAL.Get(emailAddress, passwordHash);
+            return _accountMapper.MapDataModelToEntity(accountEntity);
         }
 
         public short GetAccountIdByEmailAddress(string emailAddress)

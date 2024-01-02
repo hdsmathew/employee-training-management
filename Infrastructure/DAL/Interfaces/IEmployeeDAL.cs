@@ -1,16 +1,16 @@
-﻿using Infrastructure.Entities;
+﻿using Infrastructure.Models;
 using System.Collections.Generic;
 
 namespace Infrastructure.DAL.Interfaces
 {
     public interface IEmployeeDAL
     {
-        int Add(EmployeeEntity user);
+        int Add(EmployeeModel user);
         int Delete(int userID);
         bool ExistsByNationalIdOrMobileNumber(string mobileNumber, string nationalId);
-        EmployeeEntity Get(int userID);
-        IEnumerable<EmployeeEntity> GetAll();
-        IEnumerable<EmployeeEntity> GetAllByAccountType(byte accountTypeId);
-        int Update(EmployeeEntity user);
+        EmployeeModel Get(int userID);
+        IEnumerable<EmployeeModel> GetAll();
+        IEnumerable<EmployeeModel> GetAllByAccountType(byte accountTypeId);
+        int Update(EmployeeModel user);
     }
 }

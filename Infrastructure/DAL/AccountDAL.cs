@@ -2,7 +2,7 @@
 using Core.Domain;
 using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
-using Infrastructure.Entities;
+using Infrastructure.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -13,7 +13,7 @@ namespace Infrastructure.DAL
     public class AccountDAL : IAccountDAL
     {
         private readonly DataAccess _dataAccess;
-        private readonly MapperBase<Account, AccountEntity> _accountMapper;
+        private readonly MapperBase<Account, AccountModel> _accountMapper;
 
         public AccountDAL(DataAccess dataAccess, AccountMapper accountMapper)
         {
@@ -21,7 +21,7 @@ namespace Infrastructure.DAL
             _accountMapper = accountMapper;
         }
 
-        public int Add(AccountEntity account)
+        public int Add(AccountModel account)
         {
             string insertQuery = @"INSERT INTO Account (AccountTypeId, CreatedAt, EmailAddress, PasswordHash)
                                    VALUES (@AccountTypeId, GETDATE(), @EmailAddress, @PasswordHash);";
@@ -97,7 +97,7 @@ namespace Infrastructure.DAL
             return scalarValue > 0;
         }
 
-        public AccountEntity Get(int accountId)
+        public AccountModel Get(int accountId)
         {
             string selectQuery = "SELECT AccountId, AccountTypeId, EmailAddress, PasswordHash FROM Account WHERE AccountId = @AccountId";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -119,10 +119,10 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("No rows returned");
             }
-            return _accountMapper.MapRowToEntity(entityValueTuplesArrays.Single());
+            return _accountMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
         }
 
-        public AccountEntity Get(string emailAddress, string passwordHash)
+        public AccountModel Get(string emailAddress, string passwordHash)
         {
             string selectQuery = @"SELECT AccountId, AccountTypeId, EmailAddress FROM Account WHERE 
                                    EmailAddress = @EmailAddress AND 
@@ -147,7 +147,7 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("More than 1 rows returned");
             }
-            return _accountMapper.MapRowToEntity(entityValueTuplesArrays.Single());
+            return _accountMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
         }
 
         public short GetAccountIdByEmailAddress(string emailAddress)
@@ -172,12 +172,12 @@ namespace Infrastructure.DAL
             return scalarValue;
         }
 
-        public IEnumerable<AccountEntity> GetAll()
+        public IEnumerable<AccountModel> GetAll()
         {
             throw new System.NotImplementedException();
         }
 
-        public int Update(AccountEntity account)
+        public int Update(AccountModel account)
         {
             throw new System.NotImplementedException();
         }

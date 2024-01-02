@@ -2,18 +2,19 @@
 using Core.Domain;
 using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
-using Infrastructure.Entities;
+using Infrastructure.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 
 namespace Infrastructure.DAL
 {
     public class EnrollmentDAL : IEnrollmentDAL
     {
         private readonly DataAccess _dataAccess;
-        private readonly MapperBase<Enrollment, EnrollmentEntity> _enrollmentMapper;
+        private readonly MapperBase<Enrollment, EnrollmentModel> _enrollmentMapper;
 
         public EnrollmentDAL(DataAccess dataAccess, EnrollmentMapper enrollmentMapper)
         {
@@ -21,14 +22,13 @@ namespace Infrastructure.DAL
             _enrollmentMapper = enrollmentMapper;
         }
 
-        public int Add(EnrollmentEntity enrollment)
+        public int Add(EnrollmentModel enrollment)
         {
-            string insertQuery = @"INSERT INTO Enrollment (ApprovalStatusId, ApproverAccountId, EmployeeId, RequestedAt, TrainingId)
-                                   VALUES (@ApprovalStatusId, @ApproverAccountId, @EmployeeId, GETDATE(), @TrainingId)";
+            string insertQuery = @"INSERT INTO Enrollment (ApprovalStatusId, EmployeeId, RequestedAt, TrainingId)
+                                   VALUES (@ApprovalStatusId, @EmployeeId, GETDATE(), @TrainingId)";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@ApprovalStatusId", enrollment.ApprovalStatusId),
-                new SqlParameter("@ApproverAccountId", enrollment.ApproverAccountId),
                 new SqlParameter("@EmployeeId", enrollment.EmployeeId),
                 new SqlParameter("@TrainingId", enrollment.TrainingId)
             };
@@ -37,6 +37,50 @@ namespace Infrastructure.DAL
             try
             {
                 rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (rowsAffected == 0)
+            {
+                throw new DALException("No rows added");
+            }
+            return rowsAffected;
+        }
+
+        public int AddWithEmployeeUploads(EnrollmentModel enrollment, IEnumerable<EmployeeUploadModel> employeeUploads)
+        {
+            StringBuilder insertQuery = new StringBuilder(@"INSERT INTO Enrollment (ApprovalStatusId, EmployeeId, RequestedAt, TrainingId)
+                                                            VALUES (@ApprovalStatusId, @EmployeeId, GETDATE(), @TrainingId);
+                                                            INSERT INTO EmployeeUpload (EmployeeId, PrerequisiteId, UploadPath) VALUES ");
+            List<SqlParameter> parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@ApprovalStatusId", enrollment.ApprovalStatusId),
+                new SqlParameter("@EmployeeId", enrollment.EmployeeId),
+                new SqlParameter("@TrainingId", enrollment.TrainingId)
+            };
+            int parameterIndex = 0;
+            foreach (EmployeeUploadModel employeeUpload in employeeUploads)
+            {
+                string valueSet = $"(@EmployeeId, @PrerequisiteId{parameterIndex}, GETDATE(), @UploadPath{parameterIndex})";
+                insertQuery.Append(valueSet);
+
+                parameters.Add(new SqlParameter($"@PrerequisiteId{parameterIndex}", employeeUpload.PrerequisiteId));
+                parameters.Add(new SqlParameter($"@UploadPath{parameterIndex}", employeeUpload.UploadPath));
+
+                parameterIndex++;
+                if (parameterIndex < employeeUploads.Count())
+                {
+                    insertQuery.Append(", ");
+                }
+            }
+            int rowsAffected;
+
+            try
+            {
+                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
             }
             catch (Exception ex)
             {
@@ -102,7 +146,7 @@ namespace Infrastructure.DAL
             return scalarValue > 0;
         }
 
-        public EnrollmentEntity Get(int enrollmentId)
+        public EnrollmentModel Get(int enrollmentId)
         {
             string selectQuery = "SELECT * FROM Enrollment WHERE EnrollmentId + @EnrollmentId";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -124,10 +168,10 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("More than 1 rows returned");
             }
-            return _enrollmentMapper.MapRowToEntity(entityValueTuplesArrays.Single());
+            return _enrollmentMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
         }
 
-        public IEnumerable<EnrollmentEntity> GetAll()
+        public IEnumerable<EnrollmentModel> GetAll()
         {
             string selectQuery = "SELECT * FROM Enrollment";
             List<SqlParameter> parameters = new List<SqlParameter>();
@@ -149,7 +193,7 @@ namespace Infrastructure.DAL
             return _enrollmentMapper.MapTableToEntities(entityValueTuplesArrays);
         }
 
-        public int Update(EnrollmentEntity enrollment)
+        public int Update(EnrollmentModel enrollment)
         {
             string updateQuery = @"UPDATE Enrollment SET 
                                    ApprovalStatusId = @ApprovalStatusId, 
