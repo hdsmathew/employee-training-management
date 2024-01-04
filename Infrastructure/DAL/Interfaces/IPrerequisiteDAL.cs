@@ -6,6 +6,7 @@ namespace Infrastructure.DAL.Interfaces
     public interface IPrerequisiteDAL
     {
         int Add(PrerequisiteModel prerequisite);
+        IEnumerable<PrerequisiteModel> GetAll();
         IEnumerable<PrerequisiteModel> GetAllByTrainingId(short trainingId);
     }
 }

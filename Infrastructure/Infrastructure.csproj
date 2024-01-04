@@ -45,6 +45,8 @@
     <Compile Include="Common\MapperBase.cs" />
     <Compile Include="DAL\AccountDAL.cs" />
     <Compile Include="DAL\DataAccess.cs" />
+    <Compile Include="DAL\DepartmentDAL.cs" />
+    <Compile Include="DAL\Interfaces\IDepartmentDAL.cs" />
     <Compile Include="DAL\EnrollmentDAL.cs" />
     <Compile Include="DAL\Interfaces\IAccountDAL.cs" />
     <Compile Include="DAL\Interfaces\IEnrollmentDAL.cs" />
@@ -58,6 +60,7 @@
     <Compile Include="Models\AccountMapper.cs" />
     <Compile Include="Models\AccountTypeModel.cs" />
     <Compile Include="Models\ApprovalStatusModel.cs" />
+    <Compile Include="Models\DepartmentMapper.cs" />
     <Compile Include="Models\DepartmentModel.cs" />
     <Compile Include="Models\EmployeeUploadModel.cs" />
     <Compile Include="Models\EmployeeUploadMapper.cs" />
@@ -74,7 +77,9 @@
     <Compile Include="Models\EmployeeMapper.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\AccountRepository.cs" />
+    <Compile Include="Repositories\DepartmentRepository.cs" />
     <Compile Include="Repositories\EnrollmentRepository.cs" />
+    <Compile Include="Repositories\PrerequisiteRepository.cs" />
     <Compile Include="Repositories\TrainingRepository.cs" />
     <Compile Include="Repositories\EmployeeRepository.cs" />
   </ItemGroup>

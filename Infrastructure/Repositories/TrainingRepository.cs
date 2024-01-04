@@ -1,6 +1,7 @@
 ﻿using Core.Application.Repositories;
 using Core.Domain;
 using Infrastructure.Common;
+using Infrastructure.DAL;
 using Infrastructure.DAL.Interfaces;
 using Infrastructure.Models;
 using System.Collections.Generic;
@@ -29,7 +30,14 @@ namespace Infrastructure.Repositories
             return _trainingDAL.Add(trainingEntity);
         }
 
-        public int Delete(int trainingID)
+        public int AddWithPrerequisites(Training training)
+        {
+            TrainingModel trainingEntity = _trainingMapper.MapEntityToDataModel(training);
+            IEnumerable<PrerequisiteModel> prerequisiteModels = _prerequisiteMapper.MapEntitiesToDataModels(training.Prerequisites);
+            return _trainingDAL.AddWithPrerequisites(trainingEntity, prerequisiteModels);
+        }
+
+        public int Delete(short trainingID)
         {
             return _trainingDAL.Delete(trainingID);
         }
@@ -39,10 +47,17 @@ namespace Infrastructure.Repositories
             return _trainingDAL.ExistsByName(name);
         }
 
-        public Training Get(int trainingID)
+        public Training Get(short trainingID)
         {
             TrainingModel trainingEntity = _trainingDAL.Get(trainingID);
             return _trainingMapper.MapDataModelToEntity(trainingEntity);
+        }
+
+        public Training GetWithPrerequisites(short trainingID)
+        {
+            Training training = Get(trainingID);
+            training.SetPrerequisites(_prerequisiteMapper.MapDataModelsToEntities(_prerequisiteDAL.GetAllByTrainingId(trainingID)));
+            return training;
         }
 
         public IEnumerable<Training> GetAll()

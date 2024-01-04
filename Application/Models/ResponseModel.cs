@@ -31,5 +31,10 @@ namespace Core.Application.Models
         {
             return _errors.Count == 0;
         }
+
+        public bool Failure()
+        {
+            return !Success();
+        }
     }
 }

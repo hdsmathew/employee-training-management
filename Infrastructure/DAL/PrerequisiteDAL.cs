@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 
 namespace Infrastructure.DAL
 {
@@ -47,6 +48,28 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
+        public IEnumerable<PrerequisiteModel> GetAll()
+        {
+            string selectQuery = "SELECT * FROM Prerequisite";
+            List<SqlParameter> parameters = new List<SqlParameter>();
+            IEnumerable<(string, object)[]> entityValueTuplesArrays;
+
+            try
+            {
+                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (!entityValueTuplesArrays.Any())
+            {
+                throw new DALException("No rows returned");
+            }
+            return _prerequisiteMapper.MapTableToEntities(entityValueTuplesArrays);
+        }
+
         public IEnumerable<PrerequisiteModel> GetAllByTrainingId(short trainingId)
         {
             string selectQuery = @"WITH PrerequisiteIds (PrerequisiteId) AS (
@@ -72,7 +95,7 @@ namespace Infrastructure.DAL
 
             if (!entityValueTuplesArrays.Any())
             {
-                throw new DALException("No rows returned");
+                return new List<PrerequisiteModel>();
             }
             return _prerequisiteMapper.MapTableToEntities(entityValueTuplesArrays);
         }

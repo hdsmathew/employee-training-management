@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using Core.Application;
+using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 

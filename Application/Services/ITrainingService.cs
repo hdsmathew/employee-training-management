@@ -7,6 +7,8 @@ namespace Core.Application.Services
     {
         ResponseModel<Training> Add(Training training);
         ResponseModel<Training> Update(Training training);
-        ResponseModel<Training> Delete(int trainingID);
+        ResponseModel<Training> Delete(short trainingID);
+        ResponseModel<TrainingViewModel> GetTrainingViewModel();
+        ResponseModel<TrainingViewModel> GetTrainingViewModel(short trainingId);
     }
 }

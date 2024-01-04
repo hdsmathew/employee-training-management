@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 
 namespace Infrastructure.DAL
 {
@@ -51,9 +52,67 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public int Delete(int trainingId)
+        public int AddWithPrerequisites(TrainingModel training, IEnumerable<PrerequisiteModel> prerequisites)
         {
-            string deleteQuery = "DELETE FROM Training WHERE TrainingId = @TrainingId";
+            StringBuilder insertQuery = new StringBuilder();
+            insertQuery.Append(@"
+            BEGIN TRY
+                BEGIN TRANSACTION;
+                    INSERT INTO Training (CreatedAt, PreferredDepartmentId, RegistrationDeadline, SeatsAvailable, TrainingDescription, TrainingName) 
+                    VALUES (GETDATE(), @PreferredDepartmentId, @RegistrationDeadline, @SeatsAvailable, @TrainingDescription, @TrainingName);
+
+                    DECLARE @TrainingId INT;
+                    SET @TrainingId = SCOPE_IDENTITY();
+
+                    INSERT INTO TrainingPrerequisite (TrainingId, PrerequisiteId) VALUES ");
+            List<SqlParameter> parameters = new List<SqlParameter>
+            {
+                new SqlParameter("@PreferredDepartmentId", training.PreferredDepartmentId),
+                new SqlParameter("@RegistrationDeadline", training.RegistrationDeadline),
+                new SqlParameter("@SeatsAvailable", training.SeatsAvailable),
+                new SqlParameter("@TrainingDescription", training.TrainingDescription),
+                new SqlParameter("@TrainingName", training.TrainingName)
+            };
+
+            int parameterIndex = 0;
+            foreach (PrerequisiteModel prerequisite in prerequisites)
+            {
+                string trainingPrerequisiteValues = $"(@TrainingId, @PrerequisiteId{parameterIndex}), ";
+                insertQuery.Append(trainingPrerequisiteValues);
+
+                parameters.Add(new SqlParameter($"@PrerequisiteId{parameterIndex}", prerequisite.PrerequisiteId));
+
+                parameterIndex++;
+            }
+            insertQuery.Length -= 2;
+            insertQuery.Append(@";
+                COMMIT;
+            END TRY
+            BEGIN CATCH
+                ROLLBACK;
+                THROW;
+            END CATCH");
+            int rowsAffected;
+
+            try
+            {
+                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (rowsAffected == 0)
+            {
+                throw new DALException("No rows added");
+            }
+            return rowsAffected;
+        }
+
+        public int Delete(short trainingId)
+        {
+            string deleteQuery = "UPDATE Training SET IsActive = 0, UpdatedAt = GETDATE() WHERE TrainingId = @TrainingId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@TrainingId", trainingId)
@@ -99,7 +158,7 @@ namespace Infrastructure.DAL
             return scalarValue > 0;
         }
 
-        public TrainingModel Get(int trainingId)
+        public TrainingModel Get(short trainingId)
         {
             string selectQuery = "SELECT * FROM Training WHERE TrainingId = @TrainingId";
             List<SqlParameter> parameters = new List<SqlParameter>
@@ -126,7 +185,7 @@ namespace Infrastructure.DAL
 
         public IEnumerable<TrainingModel> GetAll()
         {
-            string selectQuery = "SELECT * FROM Training";
+            string selectQuery = "SELECT * FROM Training WHERE IsActive = 1";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<(string, object)[]> entityValueTuplesArrays;
 
@@ -154,7 +213,7 @@ namespace Infrastructure.DAL
                                    SeatsAvailable = @seatsAvailable, 
                                    TrainingDescription = @TrainingDescription, 
                                    TrainingName = @TrainingName,
-                                   UpdatedAt = GETDATE(),
+                                   UpdatedAt = GETDATE()
                                    WHERE TrainingId = @TrainingId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
