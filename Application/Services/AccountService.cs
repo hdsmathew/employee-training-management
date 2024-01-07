@@ -1,7 +1,6 @@
 ﻿using Core.Application.Models;
 using Core.Application.Repositories;
 using Core.Domain;
-using System;
 
 namespace Core.Application.Services
 {
@@ -16,13 +15,14 @@ namespace Core.Application.Services
             _logger = logger;
         }
 
-        public ResponseModel<Account> Authenticate(string emailAddress, string passwordHash)
+        public ResponseModel<AuthenticatedUser> Authenticate(LoginViewModel model)
         {
-            ResponseModel<Account> response = new ResponseModel<Account>();
+            // TODO: Hash password
+            ResponseModel<AuthenticatedUser> response = new ResponseModel<AuthenticatedUser>();
             try
             {
-                response.Entity = _accountRepository.Get(emailAddress, passwordHash);
-                if (response.Entity == null)
+                Account account = _accountRepository.Get(model.EmailAddress, model.Password);
+                if (account == null)
                 {
                     response.AddError(new ErrorModel()
                     {
@@ -30,6 +30,7 @@ namespace Core.Application.Services
                     });
                     return response;
                 }
+                response.Entity = new AuthenticatedUser(account.AccountId, account.AccountType);
             }
             catch (DALException dalEx)
             {
@@ -45,6 +46,7 @@ namespace Core.Application.Services
 
         public ResponseModel<Account> Create(Account account)
         {
+            // TODO: Hash password
             ResponseModel<Account> response = new ResponseModel<Account>();
             try
             {
@@ -57,8 +59,6 @@ namespace Core.Application.Services
                     return response;
                 }
                 response.AddedRows = _accountRepository.Add(account);
-                account.AccountId = _accountRepository.GetAccountIdByEmailAddress(account.EmailAddress);
-                response.Entity = account;
             }
             catch (DALException dalEx)
             {

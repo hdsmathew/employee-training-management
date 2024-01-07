@@ -34,7 +34,7 @@ namespace Infrastructure.Common
             return entities;
         }
 
-        public IEnumerable<TModel> MapTableToEntities(IEnumerable<(string, object)[]> entityValueTuplesArrays)
+        public IEnumerable<TModel> MapTableToDataModels(IEnumerable<(string, object)[]> entityValueTuplesArrays)
         {
             List<TModel> entities = new List<TModel>();
             foreach ((string, object)[] entityValueTuples in entityValueTuplesArrays)
@@ -47,7 +47,7 @@ namespace Infrastructure.Common
         protected TValue GetValueFromTuple<TValue>(string fieldName, (string, object)[] entityValueTuples)
         {
             var tuple = entityValueTuples.FirstOrDefault(t => t.Item1 == fieldName);
-            if (tuple.Item2 == null)
+            if (tuple.Item2 == null || tuple.Item2 == DBNull.Value)
             {
                 return default;
             }

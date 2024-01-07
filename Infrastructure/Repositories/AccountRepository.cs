@@ -10,17 +10,26 @@ namespace Infrastructure.Repositories
     {
         private readonly IAccountDAL _accountDAL;
         private readonly MapperBase<Account, AccountModel> _accountMapper;
+        private readonly MapperBase<Employee, EmployeeModel> _employeeMapper;
 
-        public AccountRepository(IAccountDAL accountDAL, AccountMapper accountMapper)
+        public AccountRepository(IAccountDAL accountDAL, AccountMapper accountMapper, EmployeeMapper employeeMapper)
         {
             _accountDAL = accountDAL;
             _accountMapper = accountMapper;
+            _employeeMapper = employeeMapper;
         }
 
         public int Add(Account account)
         {
-            AccountModel accountEntity = _accountMapper.MapEntityToDataModel(account);
-            return _accountDAL.Add(accountEntity);
+            AccountModel accountModel = _accountMapper.MapEntityToDataModel(account);
+            return _accountDAL.Add(accountModel);
+        }
+
+        public int AddWithEmployeeDetails(Account account, Employee employee)
+        {
+            AccountModel accountModel = _accountMapper.MapEntityToDataModel(account);
+            EmployeeModel employeeModel = _employeeMapper.MapEntityToDataModel(employee);
+            return _accountDAL.AddWithEmployeeDetails(accountModel, employeeModel);
         }
 
         public bool ExistsByEmailAddress(string emailAddress)
@@ -30,14 +39,14 @@ namespace Infrastructure.Repositories
 
         public Account Get(int accountId)
         {
-            AccountModel accountEntity = _accountDAL.Get(accountId);
-            return _accountMapper.MapDataModelToEntity(accountEntity);
+            AccountModel accountModel = _accountDAL.Get(accountId);
+            return _accountMapper.MapDataModelToEntity(accountModel);
         }
 
         public Account Get(string emailAddress, string passwordHash)
         {
-            AccountModel accountEntity = _accountDAL.Get(emailAddress, passwordHash);
-            return _accountMapper.MapDataModelToEntity(accountEntity);
+            AccountModel accountModel = _accountDAL.Get(emailAddress, passwordHash);
+            return _accountMapper.MapDataModelToEntity(accountModel);
         }
 
         public short GetAccountIdByEmailAddress(string emailAddress)

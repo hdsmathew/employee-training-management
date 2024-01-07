@@ -5,7 +5,9 @@ namespace Core.Application.Services
 {
     public interface IEmployeeService
     {
-        ResponseModel<Employee> Register(Employee employee);
+        ResponseModel<Employee> GetEmployeeUploads(short employeeId);
+        ResponseModel<Employee> GetManagers();
+        ResponseModel<Employee> Register(RegisterViewModel model);
         ResponseModel<Employee> Update(Employee employee);
     }
 }

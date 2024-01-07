@@ -1,34 +1,111 @@
 ﻿using Core.Application.Models;
 using Core.Application.Repositories;
 using Core.Domain;
+using System;
+using System.Linq;
 
 namespace Core.Application.Services
 {
     public class EmployeeService : IEmployeeService
     {
+        private readonly IAccountRepository _accountRepository;
         private readonly IEmployeeRepository _employeeRepository;
+        private readonly IEnrollmentNotificationRepository _enrollmentNotificationRepository;
         private readonly ILogger _logger;
 
-        public EmployeeService(IEmployeeRepository employeeRepository, ILogger logger)
+        public EmployeeService(IEmployeeRepository employeeRepository, ILogger logger, IAccountRepository accountRepository, IEnrollmentNotificationRepository enrollmentNotificationRepository)
         {
             _employeeRepository = employeeRepository;
             _logger = logger;
+            _accountRepository = accountRepository;
+            _enrollmentNotificationRepository = enrollmentNotificationRepository;
         }
 
-        public ResponseModel<Employee> Register(Employee employee)
+        public ResponseModel<Employee> GetEmployeeUploads(short employeeId)
         {
             ResponseModel<Employee> response = new ResponseModel<Employee>();
             try
             {
-                if (_employeeRepository.ExistsByNationalIdOrMobileNumber(employee.NationalId, employee.MobileNumber))
+                response.Entity = _employeeRepository.GetWithEmployeeUploads(employeeId);
+            }
+            catch (DALException dalEx)
+            {
+                _logger.LogError(dalEx, "Error in retrieving employee with uploads.");
+                response.AddError(new ErrorModel()
+                {
+                    Message = "Unable to retrieve employee with uploads.",
+                    Exception = dalEx
+                });
+            }
+            return response;
+        }
+
+        public ResponseModel<Employee> GetManagers()
+        {
+            ResponseModel<Employee> response = new ResponseModel<Employee>();
+            try
+            {
+                response.Entities = _employeeRepository.GetAllByAccountType(AccountTypeEnum.Manager);
+                if (!response.Entities.Any())
                 {
                     response.AddError(new ErrorModel()
                     {
-                        Message = $"Employee with NationalId: {employee.NationalId} or MobileNumber: {employee.MobileNumber} already exists."
+                        Message = "No managers found."
                     });
                     return response;
                 }
-                response.AddedRows = _employeeRepository.Add(employee);
+            }
+            catch (DALException dalEx)
+            {
+                _logger.LogError(dalEx, "Error in retrieving managers.");
+                response.AddError(new ErrorModel()
+                {
+                    Message = "Unable to retrieve managers.",
+                    Exception = dalEx
+                });
+            }
+            return response;
+        }
+
+        public ResponseModel<Employee> Register(RegisterViewModel model)
+        {
+            // TODO: Hash password
+            ResponseModel<Employee> response = new ResponseModel<Employee>();
+            try
+            {
+                if (_accountRepository.ExistsByEmailAddress(model.EmailAddress))
+                {
+                    response.AddError(new ErrorModel()
+                    {
+                        Message = $"Account with EmailAddress: {model.EmailAddress} already exists."
+                    });
+                    return response;
+                }
+
+                if (_employeeRepository.ExistsByNationalIdOrMobileNumber(model.NationalId, model.MobileNumber))
+                {
+                    response.AddError(new ErrorModel()
+                    {
+                        Message = $"Employee with NationalId: {model.NationalId} or MobileNumber: {model.MobileNumber} already exists."
+                    });
+                    return response;
+                }
+                response.AddedRows = _accountRepository.AddWithEmployeeDetails(
+                    new Account()
+                    {
+                        AccountType = AccountTypeEnum.Employee,
+                        EmailAddress = model.EmailAddress,
+                        PasswordHash = model.Password
+                    },
+                    new Employee()
+                    {
+                        DepartmentId = model.DepartmentId,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName,
+                        ManagerId = model.ManagerId,
+                        MobileNumber = model.MobileNumber,
+                        NationalId = model.NationalId,
+                    });
             }
             catch (DALException dalEx)
             {
@@ -60,7 +137,5 @@ namespace Core.Application.Services
             }
             return response;
         }
-
-
     }
 }

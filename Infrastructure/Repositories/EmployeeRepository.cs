@@ -10,12 +10,23 @@ namespace Infrastructure.Repositories
     public class EmployeeRepository : IEmployeeRepository
     {
         private readonly IEmployeeDAL _employeeDAL;
+        private readonly IEmployeeUploadDAL _employeeUploadDAL;
+        private readonly IEnrollmentDAL _enrollmentDAL;
+        private readonly MapperBase<Enrollment, EnrollmentModel> _enrollmentMapper;
         private readonly MapperBase<Employee, EmployeeModel> _employeeMapper;
+        private readonly MapperBase<EmployeeUpload, EmployeeUploadModel> _employeeUploadMapper;
 
-        public EmployeeRepository(IEmployeeDAL employeeDAL, EmployeeMapper employeeMapper)
+        public EmployeeRepository(IEmployeeDAL employeeDAL, IEmployeeUploadDAL employeeUploadDAL,
+            EmployeeMapper employeeMapper, EmployeeUploadMapper employeeUploadMapper,
+            EnrollmentMapper enrollmentMapper, IEnrollmentDAL enrollmentDAL,
+            IEnrollmentNotificationDAL enrollmentNotificationDAL)
         {
             _employeeDAL = employeeDAL;
+            _employeeUploadDAL = employeeUploadDAL;
             _employeeMapper = employeeMapper;
+            _employeeUploadMapper = employeeUploadMapper;
+            _enrollmentMapper = enrollmentMapper;
+            _enrollmentDAL = enrollmentDAL;
         }
 
         public int Add(Employee employee)
@@ -24,7 +35,7 @@ namespace Infrastructure.Repositories
             return _employeeDAL.Add(employeeEntity);
         }
 
-        public int Delete(int employeeId)
+        public int Delete(short employeeId)
         {
             return _employeeDAL.Delete(employeeId);
         }
@@ -34,28 +45,42 @@ namespace Infrastructure.Repositories
             return _employeeDAL.ExistsByNationalIdOrMobileNumber(nationalId, mobileNumber);
         }
 
-        public Employee Get(int employeeId)
+        public Employee Get(short employeeId)
         {
-            EmployeeModel employeeEntity = _employeeDAL.Get(employeeId);
-            return _employeeMapper.MapDataModelToEntity(employeeEntity);
+            EmployeeModel employeeModel = _employeeDAL.Get(employeeId);
+            return _employeeMapper.MapDataModelToEntity(employeeModel);
+        }
+
+        public Employee GetWithEmployeeUploads(short employeeId)
+        {
+            Employee employee = Get(employeeId);
+            employee.SetEmployeeUploads(_employeeUploadMapper.MapDataModelsToEntities(_employeeUploadDAL.GetAllByEmployeeId(employeeId)));
+            return employee;
+        }
+
+        public Employee GetWithEnrollmentsByApprovalStatus(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        {
+            Employee employee = Get(employeeId);
+            employee.SetEnrollments(_enrollmentMapper.MapDataModelsToEntities(_enrollmentDAL.GetAllByEmployeeIdAndApprovalStatus(employeeId, approvalStatusEnums)));
+            return employee;
         }
 
         public IEnumerable<Employee> GetAll()
         {
-            IEnumerable<EmployeeModel> employeeEntities = _employeeDAL.GetAll();
-            return _employeeMapper.MapDataModelsToEntities(employeeEntities);
+            IEnumerable<EmployeeModel> employeeModels = _employeeDAL.GetAll();
+            return _employeeMapper.MapDataModelsToEntities(employeeModels);
         }
 
-        public IEnumerable<Employee> GetAllByAccountType(byte accountTypeId)
+        public IEnumerable<Employee> GetAllByAccountType(AccountTypeEnum accountType)
         {
-            IEnumerable<EmployeeModel> employeeEntities = _employeeDAL.GetAllByAccountType(accountTypeId);
-            return _employeeMapper.MapDataModelsToEntities(employeeEntities);
+            IEnumerable<EmployeeModel> employeeModels = _employeeDAL.GetAllByAccountType((byte)accountType);
+            return _employeeMapper.MapDataModelsToEntities(employeeModels);
         }
 
         public int Update(Employee employee)
         {
-            EmployeeModel employeeEntity = _employeeMapper.MapEntityToDataModel(employee);
-            return _employeeDAL.Update(employeeEntity);
+            EmployeeModel employeeModel = _employeeMapper.MapEntityToDataModel(employee);
+            return _employeeDAL.Update(employeeModel);
         }
     }
 }

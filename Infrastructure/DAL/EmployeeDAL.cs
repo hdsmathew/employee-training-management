@@ -147,7 +147,7 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("No rows returned");
             }
-            return _employeeMapper.MapTableToEntities(entityValueTuplesArrays);
+            return _employeeMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
         public IEnumerable<EmployeeModel> GetAllByAccountType(byte accountTypeId)
@@ -173,11 +173,7 @@ namespace Infrastructure.DAL
                 throw new DALException("Error while executing query", ex);
             }
 
-            if (!entityValueTuplesArrays.Any())
-            {
-                throw new DALException("No rows returned");
-            }
-            return _employeeMapper.MapTableToEntities(entityValueTuplesArrays);
+            return _employeeMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
         public int Update(EmployeeModel employee)

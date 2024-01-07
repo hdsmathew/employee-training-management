@@ -40,7 +40,7 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("No rows returned");
             }
-            return _departmentMapper.MapTableToEntities(entityValueTuplesArrays);
+            return _departmentMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
     }
 }

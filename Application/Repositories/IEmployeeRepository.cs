@@ -6,11 +6,13 @@ namespace Core.Application.Repositories
     public interface IEmployeeRepository
     {
         int Add(Employee employee);
-        int Delete(int employeeId);
+        int Delete(short employeeId);
         bool ExistsByNationalIdOrMobileNumber(string nationalId, string mobileNumber);
-        Employee Get(int employeeId);
+        Employee Get(short employeeId);
         IEnumerable<Employee> GetAll();
-        IEnumerable<Employee> GetAllByAccountType(byte accountTypeId);
+        IEnumerable<Employee> GetAllByAccountType(AccountTypeEnum accountType);
+        Employee GetWithEmployeeUploads(short employeeId);
+        Employee GetWithEnrollmentsByApprovalStatus(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
         int Update(Employee employee);
     }
 }

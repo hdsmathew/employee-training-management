@@ -5,7 +5,7 @@ namespace Core.Application.Services
 {
     public interface IAccountService
     {
-        ResponseModel<Account> Authenticate(string emailAddress, string passwordHash);
+        ResponseModel<AuthenticatedUser> Authenticate(LoginViewModel model);
         ResponseModel<Account> Create(Account account);
     }
 }

@@ -48,6 +48,11 @@ namespace Core.Domain
             ProcessEnrollment(enrollment, e => e.Decline());
         }
 
+        public string GetFullName()
+        {
+            return FirstName + " " + LastName;
+        }
+
         public Enrollment RegisterForTraining(Training training)
         {
             if (training.RegistrationDeadline > DateTime.UtcNow)
@@ -66,6 +71,11 @@ namespace Core.Domain
         public void SetEmployeeUploads(IEnumerable<EmployeeUpload> uploads)
         {
             _documentUploads.AddRange(uploads);
+        }
+
+        public void SetEnrollments(IEnumerable<Enrollment> enrollments)
+        {
+            _enrollments.AddRange(enrollments);
         }
 
         public EmployeeUpload UploadPrerequisite(byte prerequisiteId, string uploadPath)
