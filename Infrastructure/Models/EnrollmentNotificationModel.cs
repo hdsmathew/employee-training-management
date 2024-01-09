@@ -5,7 +5,6 @@ namespace Infrastructure.Models
     public class EnrollmentNotificationModel : IModel
     {
         public int EnrollmentNotificationId { get; set; }
-        public int EnrollmentId { get; set; }
         public bool HasSeen { get; set; }
         public string NotificationMessage { get; set; }
         public short RecipientId { get; set; }

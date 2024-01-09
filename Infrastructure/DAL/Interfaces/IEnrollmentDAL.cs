@@ -1,4 +1,5 @@
-﻿using Infrastructure.Models;
+﻿using Core.Domain;
+using Infrastructure.Models;
 using System.Collections.Generic;
 
 namespace Infrastructure.DAL.Interfaces
@@ -11,6 +12,10 @@ namespace Infrastructure.DAL.Interfaces
         bool Exists(short employeeID, short trainingID);
         EnrollmentModel Get(int enrollmentID);
         IEnumerable<EnrollmentModel> GetAll();
+        IEnumerable<EnrollmentModel> GetAllByTrainingIdAndApprovalStatus(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
+        IEnumerable<EnrollmentModel> GetAllByEmployeeIdAndApprovalStatus(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
+        IEnumerable<EnrollmentModel> GetAllByManagerIdAndApprovalStatus(short managerId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
         int Update(EnrollmentModel enrollment);
+        int UpdateBatch(IEnumerable<EnrollmentModel> enrollments);
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Infrastructure.Models;
+using System;
 using System.Collections.Generic;
 
 namespace Infrastructure.DAL.Interfaces
@@ -11,6 +12,8 @@ namespace Infrastructure.DAL.Interfaces
         TrainingModel Get(short trainingID);
         bool ExistsByName(string name);
         IEnumerable<TrainingModel> GetAll();
+        IEnumerable<TrainingModel> GetAllByRegistrationDeadlineDue(DateTime registrationDeadline);
         int Update(TrainingModel training);
+        bool HasEnrollments(short trainingId);
     }
 }

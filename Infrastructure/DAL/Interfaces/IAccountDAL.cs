@@ -1,4 +1,5 @@
-﻿using Infrastructure.Models;
+﻿using Core.Domain;
+using Infrastructure.Models;
 using System.Collections.Generic;
 
 namespace Infrastructure.DAL.Interfaces
@@ -11,6 +12,7 @@ namespace Infrastructure.DAL.Interfaces
         bool ExistsByEmailAddress(string emailAddress);
         AccountModel Get(int accountId);
         AccountModel Get(string emailAddress, string passwordHash);
+        short GetAccountIdByAccountType(AccountTypeEnum accountType);
         short GetAccountIdByEmailAddress(string emailAddress);
         IEnumerable<AccountModel> GetAll();
         int Update(AccountModel account);

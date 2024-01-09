@@ -5,14 +5,18 @@ namespace Core.Application.Models
 {
     public class AuthenticatedUser
     {
-        public AuthenticatedUser(short accountId, AccountTypeEnum accountType)
+        public AuthenticatedUser(Account account, Employee employee)
         {
-            AccountId = accountId;
-            AccountType = accountType;
+            AccountId = account.AccountId;
+            AccountType = account.AccountType;
+            EmployeeId = employee.EmployeeId;
+            FirstName = employee.FirstName;
         }
 
         public short AccountId { get; set; }
         public AccountTypeEnum AccountType { get; set; }
+        public short EmployeeId { get; set; }
+        public string FirstName { get; set; }
 
         public bool IsInRole(params AccountTypeEnum[] roles)
         {

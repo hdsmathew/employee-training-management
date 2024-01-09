@@ -43,9 +43,25 @@ namespace Core.Domain
             ProcessEnrollment(enrollment, e => e.Confirm());
         }
 
+        public void ConfirmEnrollments(IEnumerable<Enrollment> enrollments)
+        {
+            foreach (Enrollment enrollment in enrollments)
+            {
+                ConfirmEnrollment(enrollment);
+            }
+        }
+
         public void DeclineEnrollment(Enrollment enrollment)
         {
             ProcessEnrollment(enrollment, e => e.Decline());
+        }
+
+        public void DeclineEnrollment(IEnumerable<Enrollment> enrollments)
+        {
+            foreach (Enrollment enrollment in enrollments)
+            {
+                DeclineEnrollment(enrollment);
+            }
         }
 
         public string GetFullName()

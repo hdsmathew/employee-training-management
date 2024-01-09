@@ -1,4 +1,5 @@
 ﻿using Core.Domain;
+using System;
 using System.Collections.Generic;
 
 namespace Core.Application.Repositories
@@ -11,7 +12,9 @@ namespace Core.Application.Repositories
         bool ExistsByName(string name);
         Training Get(short trainingID);
         IEnumerable<Training> GetAll();
+        IEnumerable<Training> GetAllByRegistrationDeadlineDue(DateTime registrationDeadline);
         IEnumerable<Training> GetAllWithPrerequisites();
+        bool HasEnrollments(short trainingId);
         int Update(Training training);
     }
 }

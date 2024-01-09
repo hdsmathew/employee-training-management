@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace Core.Domain
 {
@@ -20,6 +21,7 @@ namespace Core.Domain
 
         public short TrainingId { get; set; }
         public byte PreferredDepartmentId { get; set; }
+        [DisplayFormat(DataFormatString = "{0:ddd, MMM dd, yyyy h:mm tt}", ApplyFormatInEditMode = true)]
         public DateTime RegistrationDeadline { get; set; }
         public short SeatsAvailable { get; set; }
         public string TrainingDescription { get; set; }

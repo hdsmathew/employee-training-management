@@ -67,7 +67,7 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("No rows returned");
             }
-            return _prerequisiteMapper.MapTableToEntities(entityValueTuplesArrays);
+            return _prerequisiteMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
         public IEnumerable<PrerequisiteModel> GetAllByTrainingId(short trainingId)
@@ -97,7 +97,7 @@ namespace Infrastructure.DAL
             {
                 return new List<PrerequisiteModel>();
             }
-            return _prerequisiteMapper.MapTableToEntities(entityValueTuplesArrays);
+            return _prerequisiteMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
     }
 }

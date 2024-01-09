@@ -11,7 +11,7 @@ namespace Core.Application.Models
             _errors = new List<ErrorModel>();
         }
 
-        public List<T> Entities;
+        public IEnumerable<T> Entities { get; set; }
         public T Entity { get; set; }
         public int AddedRows {  get; set; }
         public int DeletedRows { get; set; }

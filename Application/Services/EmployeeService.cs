@@ -10,15 +10,13 @@ namespace Core.Application.Services
     {
         private readonly IAccountRepository _accountRepository;
         private readonly IEmployeeRepository _employeeRepository;
-        private readonly IEnrollmentNotificationRepository _enrollmentNotificationRepository;
         private readonly ILogger _logger;
 
-        public EmployeeService(IEmployeeRepository employeeRepository, ILogger logger, IAccountRepository accountRepository, IEnrollmentNotificationRepository enrollmentNotificationRepository)
+        public EmployeeService(IEmployeeRepository employeeRepository, ILogger logger, IAccountRepository accountRepository)
         {
             _employeeRepository = employeeRepository;
             _logger = logger;
             _accountRepository = accountRepository;
-            _enrollmentNotificationRepository = enrollmentNotificationRepository;
         }
 
         public ResponseModel<Employee> GetEmployeeUploads(short employeeId)
@@ -82,7 +80,7 @@ namespace Core.Application.Services
                     return response;
                 }
 
-                if (_employeeRepository.ExistsByNationalIdOrMobileNumber(model.NationalId, model.MobileNumber))
+                if (_employeeRepository.ExistsByNationalIdOrMobileNumber(model.MobileNumber, model.NationalId))
                 {
                     response.AddError(new ErrorModel()
                     {

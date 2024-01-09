@@ -128,6 +128,31 @@ namespace Infrastructure.DAL
             return _employeeMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
         }
 
+        public EmployeeModel GetByAccountId(short accountId)
+        {
+            string selectQuery = "SELECT * FROM Employee WHERE AccountId = @AccountId";
+            List<SqlParameter> parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@AccountId", accountId)
+            };
+            IEnumerable<(string, object)[]> entityValueTuplesArrays;
+
+            try
+            {
+                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (entityValueTuplesArrays.Count() > 1)
+            {
+                throw new DALException("More than 1 rows returned");
+            }
+            return _employeeMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
+        }
+
         public IEnumerable<EmployeeModel> GetAll()
         {
             string selectQuery = "SELECT * FROM Employee";
@@ -143,10 +168,24 @@ namespace Infrastructure.DAL
                 throw new DALException("Error while executing query", ex);
             }
 
-            if (!entityValueTuplesArrays.Any())
+            return _employeeMapper.MapTableToDataModels(entityValueTuplesArrays);
+        }
+
+        public IEnumerable<EmployeeModel> GetAllByEmployeeIds(IEnumerable<short> employeeIds)
+        {
+            string selectQuery = $"SELECT EmployeeId, DepartmentId FROM Employee WHERE EmployeeId IN ({string.Join(", ", employeeIds.ToList())})";
+            List<SqlParameter> parameters = new List<SqlParameter>();
+            IEnumerable<(string, object)[]> entityValueTuplesArrays;
+
+            try
             {
-                throw new DALException("No rows returned");
+                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
             }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
             return _employeeMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 

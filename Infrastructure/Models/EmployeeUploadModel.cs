@@ -7,6 +7,6 @@ namespace Infrastructure.Models
         public short EmployeeId { get; set; }
         public byte PrerequisiteId {  get; set; }
         public DateTime UploadedAt { get; set; }
-        public string UploadPath { get; set; }
+        public string UploadedFileName { get; set; }
     }
 }

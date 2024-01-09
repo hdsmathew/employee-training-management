@@ -2,8 +2,9 @@
 {
     public enum AccountTypeEnum
     {
-        Admin = 1,
-        Manager = 2,
-        Employee = 3,
+        SysAdmin = 1,
+        Admin = 2,
+        Manager = 3,
+        Employee = 4,
     }
 }

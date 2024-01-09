@@ -11,6 +11,10 @@ namespace Core.Application.Repositories
         bool Exists(short employeeID, short trainingID);
         Enrollment Get(int enrollmentID);
         IEnumerable<Enrollment> GetAll();
+        IEnumerable<Enrollment> GetAllByEmployeeIdAndApprovalStatus(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
+        IEnumerable<Enrollment> GetAllByManagerIdAndApprovalStatus(short managerId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
+        IEnumerable<Enrollment> GetAllByTrainingIdAndApprovalStatus(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
         int Update(Enrollment enrollment);
+        int UpdateBatch(IEnumerable<Enrollment> enrollments);
     }
 }

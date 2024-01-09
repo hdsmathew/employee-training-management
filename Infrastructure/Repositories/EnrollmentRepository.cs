@@ -55,10 +55,34 @@ namespace Infrastructure.Repositories
             return _enrollmentMapper.MapDataModelsToEntities(enrollmentEntities);
         }
 
+        public IEnumerable<Enrollment> GetAllByTrainingIdAndApprovalStatus(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        {
+            IEnumerable<EnrollmentModel> enrollmentEntities = _enrollmentDAL.GetAllByTrainingIdAndApprovalStatus(trainingId, approvalStatusEnums);
+            return _enrollmentMapper.MapDataModelsToEntities(enrollmentEntities);
+        }
+
+        public IEnumerable<Enrollment> GetAllByEmployeeIdAndApprovalStatus(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        {
+            IEnumerable<EnrollmentModel> enrollmentEntities = _enrollmentDAL.GetAllByEmployeeIdAndApprovalStatus(employeeId, approvalStatusEnums);
+            return _enrollmentMapper.MapDataModelsToEntities(enrollmentEntities);
+        }
+
+        public IEnumerable<Enrollment> GetAllByManagerIdAndApprovalStatus(short managerId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        {
+            IEnumerable<EnrollmentModel> enrollmentEntities = _enrollmentDAL.GetAllByManagerIdAndApprovalStatus(managerId, approvalStatusEnums);
+            return _enrollmentMapper.MapDataModelsToEntities(enrollmentEntities);
+        }
+
         public int Update(Enrollment enrollment)
         {
             EnrollmentModel enrollmentEntity = _enrollmentMapper.MapEntityToDataModel(enrollment);
             return _enrollmentDAL.Update(enrollmentEntity);
+        }
+
+        public int UpdateBatch(IEnumerable<Enrollment> enrollments)
+        {
+            IEnumerable<EnrollmentModel> enrollmentEntities = _enrollmentMapper.MapEntitiesToDataModels(enrollments);
+            return _enrollmentDAL.UpdateBatch(enrollmentEntities);
         }
     }
 }

@@ -11,6 +11,8 @@ namespace Infrastructure.DAL.Interfaces
         EmployeeModel Get(int userID);
         IEnumerable<EmployeeModel> GetAll();
         IEnumerable<EmployeeModel> GetAllByAccountType(byte accountTypeId);
+        IEnumerable<EmployeeModel> GetAllByEmployeeIds(IEnumerable<short> employeeIds);
+        EmployeeModel GetByAccountId(short accountId);
         int Update(EmployeeModel user);
     }
 }

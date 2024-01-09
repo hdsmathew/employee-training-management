@@ -1,18 +1,21 @@
 ﻿using Core.Application.Models;
 using Core.Application.Repositories;
 using Core.Domain;
+using System;
 
 namespace Core.Application.Services
 {
     public class AccountService : IAccountService
     {
         private readonly IAccountRepository _accountRepository;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly ILogger _logger;
 
-        public AccountService(IAccountRepository accountRepository, ILogger logger)
+        public AccountService(IAccountRepository accountRepository, ILogger logger, IEmployeeRepository employeeRepository)
         {
             _accountRepository = accountRepository;
             _logger = logger;
+            _employeeRepository = employeeRepository;
         }
 
         public ResponseModel<AuthenticatedUser> Authenticate(LoginViewModel model)
@@ -30,7 +33,8 @@ namespace Core.Application.Services
                     });
                     return response;
                 }
-                response.Entity = new AuthenticatedUser(account.AccountId, account.AccountType);
+                Employee employee = _employeeRepository.GetByAccountId(account.AccountId);
+                response.Entity = new AuthenticatedUser(account, employee);
             }
             catch (DALException dalEx)
             {

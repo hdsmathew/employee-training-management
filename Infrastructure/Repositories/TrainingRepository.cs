@@ -1,9 +1,9 @@
 ﻿using Core.Application.Repositories;
 using Core.Domain;
 using Infrastructure.Common;
-using Infrastructure.DAL;
 using Infrastructure.DAL.Interfaces;
 using Infrastructure.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -47,23 +47,29 @@ namespace Infrastructure.Repositories
             return _trainingDAL.ExistsByName(name);
         }
 
-        public Training Get(short trainingID)
+        public Training Get(short trainingId)
         {
-            TrainingModel trainingEntity = _trainingDAL.Get(trainingID);
-            return _trainingMapper.MapDataModelToEntity(trainingEntity);
+            TrainingModel trainingModel = _trainingDAL.Get(trainingId);
+            return _trainingMapper.MapDataModelToEntity(trainingModel);
         }
 
-        public Training GetWithPrerequisites(short trainingID)
+        public Training GetWithPrerequisites(short trainingId)
         {
-            Training training = Get(trainingID);
-            training.SetPrerequisites(_prerequisiteMapper.MapDataModelsToEntities(_prerequisiteDAL.GetAllByTrainingId(trainingID)));
+            Training training = Get(trainingId);
+            training.SetPrerequisites(_prerequisiteMapper.MapDataModelsToEntities(_prerequisiteDAL.GetAllByTrainingId(trainingId)));
             return training;
         }
 
         public IEnumerable<Training> GetAll()
         {
-            IEnumerable<TrainingModel> trainingEntities = _trainingDAL.GetAll();
-            return _trainingMapper.MapDataModelsToEntities(trainingEntities);
+            IEnumerable<TrainingModel> trainingModels = _trainingDAL.GetAll();
+            return _trainingMapper.MapDataModelsToEntities(trainingModels);
+        }
+
+        public IEnumerable<Training> GetAllByRegistrationDeadlineDue(DateTime registrationDeadline)
+        {
+            IEnumerable<TrainingModel> trainingModels = _trainingDAL.GetAllByRegistrationDeadlineDue(registrationDeadline);
+            return _trainingMapper.MapDataModelsToEntities(trainingModels);
         }
 
         public IEnumerable<Training> GetAllWithPrerequisites()
@@ -71,6 +77,11 @@ namespace Infrastructure.Repositories
             List<Training> trainings = GetAll().ToList();
             trainings.ForEach(t => t.SetPrerequisites(_prerequisiteMapper.MapDataModelsToEntities(_prerequisiteDAL.GetAllByTrainingId(t.TrainingId))));
             return trainings;
+        }
+
+        public bool HasEnrollments(short trainingId)
+        {
+            return _trainingDAL.HasEnrollments(trainingId);
         }
 
         public int Update(Training training)

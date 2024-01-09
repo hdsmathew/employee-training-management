@@ -12,7 +12,7 @@ namespace Infrastructure.Models
             {
                 PrerequisiteId = entity.PrerequisiteId,
                 UploadedAt = entity.UploadedAt,
-                UploadPath = entity.UploadPath
+                UploadedFileName = entity.UploadedFileName
             };
         }
 
@@ -20,8 +20,9 @@ namespace Infrastructure.Models
         {
             return new EmployeeUpload()
             {
+                PrerequisiteId = model.PrerequisiteId,
                 UploadedAt = model.UploadedAt,
-                UploadPath = model.UploadPath
+                UploadedFileName = model.UploadedFileName
             };
         }
 
@@ -31,7 +32,7 @@ namespace Infrastructure.Models
             {
                 PrerequisiteId = GetValueFromTuple<byte>("PrerequisiteId", entityValueTuples),
                 UploadedAt = GetValueFromTuple<DateTime>("UploadedAt", entityValueTuples),
-                UploadPath = GetValueFromTuple<string>("UploadPath", entityValueTuples)
+                UploadedFileName = GetValueFromTuple<string>("UploadedFileName", entityValueTuples)
             };
         }
     }

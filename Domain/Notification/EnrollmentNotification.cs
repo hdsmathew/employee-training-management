@@ -4,9 +4,10 @@ namespace Core.Domain
 {
     public class EnrollmentNotification : IEntity
     {
-        public EnrollmentNotification(int enrollmentId, string notificationMessage, short recipientId)
+        public EnrollmentNotification() { }
+
+        public EnrollmentNotification(string notificationMessage, short recipientId)
         {
-            EnrollmentId = enrollmentId;
             HasSeen = false;
             RecipientId = recipientId;
             NotificationMessage = notificationMessage;
@@ -14,7 +15,6 @@ namespace Core.Domain
         }
 
         public int EnrollmentNotificationId { get; set; }
-        public int EnrollmentId { get; set; }
         public bool HasSeen { get; set; }
         public string NotificationMessage { get; set; }
         public short RecipientId { get; set; }

@@ -10,6 +10,7 @@ namespace Core.Application.Repositories
         bool ExistsByEmailAddress(string emailAddress);
         Account Get(int accountId);
         Account Get(string emailAddress, string passwordHash);
+        short GetAccountIdByAccountType(AccountTypeEnum accountType);
         short GetAccountIdByEmailAddress(string emailAddress);
     }
 }

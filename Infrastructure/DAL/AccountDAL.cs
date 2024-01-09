@@ -221,6 +221,32 @@ namespace Infrastructure.DAL
             return scalarValue;
         }
 
+        public short GetAccountIdByAccountType(AccountTypeEnum accountType)
+        {
+            string selectQuery = @"SELECT AccountId 
+                                   FROM Account acc 
+                                   INNER JOIN AccountType accType
+                                   ON acc.AccountTypeId = accType.AccountTypeId
+                                   WHERE TypeName = @TypeName";
+            List<SqlParameter> parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@TypeName", accountType)
+            };
+            object scalarObject;
+
+            try
+            {
+                scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            short.TryParse(scalarObject?.ToString(), out short scalarValue);
+            return scalarValue;
+        }
+
         public IEnumerable<AccountModel> GetAll()
         {
             throw new System.NotImplementedException();

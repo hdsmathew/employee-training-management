@@ -61,7 +61,7 @@ namespace Infrastructure.DAL
                     INSERT INTO Training (CreatedAt, PreferredDepartmentId, RegistrationDeadline, SeatsAvailable, TrainingDescription, TrainingName) 
                     VALUES (GETDATE(), @PreferredDepartmentId, @RegistrationDeadline, @SeatsAvailable, @TrainingDescription, @TrainingName);
 
-                    DECLARE @TrainingId INT;
+                    DECLARE @TrainingId SMALLINT;
                     SET @TrainingId = SCOPE_IDENTITY();
 
                     INSERT INTO TrainingPrerequisite (TrainingId, PrerequisiteId) VALUES ");
@@ -198,11 +198,52 @@ namespace Infrastructure.DAL
                 throw new DALException("Error while executing query", ex);
             }
 
-            if (!entityValueTuplesArrays.Any())
+            return _trainingMapper.MapTableToDataModels(entityValueTuplesArrays);
+        }
+
+        public IEnumerable<TrainingModel> GetAllByRegistrationDeadlineDue(DateTime registrationDeadline)
+        {
+            string selectQuery = "SELECT * FROM Training WHERE IsActive = 1 AND RegistrationDeadline <= GETDATE()";
+            List<SqlParameter> parameters = new List<SqlParameter>();
+            IEnumerable<(string, object)[]> entityValueTuplesArrays;
+
+            try
             {
-                throw new DALException("No rows returned");
+                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
             }
-            return _trainingMapper.MapTableToEntities(entityValueTuplesArrays);
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            return _trainingMapper.MapTableToDataModels(entityValueTuplesArrays);
+        }
+
+        public bool HasEnrollments(short trainingId)
+        {
+            string selectQuery = @"SELECT COUNT(trainingId) 
+                                   FROM Training t
+                                   INNER JOIN Enrollment e ON t.TrainingId = e.TrainingId
+                                   INNER JOIN ApprovalStatus a ON e.ApprovalStatusId = a.ApprovalStatusId
+                                   WHERE TrainingId = @TrainingId
+                                   AND ApprovalStatusId IN ('Pending', 'Approved')";
+            List<SqlParameter> parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@TrainingId", trainingId)
+            };
+            object scalarObject;
+
+            try
+            {
+                scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            int.TryParse(scalarObject?.ToString(), out int scalarValue);
+            return scalarValue > 0;
         }
 
         public int Update(TrainingModel training)

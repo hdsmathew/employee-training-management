@@ -10,12 +10,12 @@ namespace Core.Domain
             EmployeeId = employeeId;
             PrerequisiteId = prerequisiteId;
             UploadedAt = DateTime.UtcNow;
-            UploadPath = uploadPath;
+            UploadedFileName = uploadPath;
         }
 
         public short EmployeeId { get; set; }
         public byte PrerequisiteId { get; set; }
         public DateTime UploadedAt { get; set; }
-        public string UploadPath { get; set; }
+        public string UploadedFileName { get; set; }
     }
 }

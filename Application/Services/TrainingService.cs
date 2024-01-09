@@ -59,6 +59,14 @@ namespace Core.Application.Services
             ResponseModel<Training> response = new ResponseModel<Training>();
             try
             {
+                if (_trainingRepository.HasEnrollments(trainingId))
+                {
+                    response.AddError(new ErrorModel()
+                    {
+                        Message = $"Training already has approved enrollments."
+                    });
+                    return response;
+                }
                 response.DeletedRows = _trainingRepository.Delete(trainingId);
             }
             catch (DALException dalEx)
@@ -73,7 +81,7 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<TrainingViewModel> GetTrainingViewModel()
+        public ResponseModel<TrainingViewModel> GetTrainingDetails()
         {
             ResponseModel<TrainingViewModel> response = new ResponseModel<TrainingViewModel>();
             try
@@ -86,19 +94,19 @@ namespace Core.Application.Services
             }
             catch (DALException dalEx)
             {
-                _logger.LogError(dalEx, "Error in retrieving TrainingViewModel");
+                _logger.LogError(dalEx, "Error in retrieving training details");
                 response.AddError(new ErrorModel()
                 {
-                    Message = $"Unable to retrieve TrainingViewModel",
+                    Message = "Unable to retrieve training details",
                     Exception = dalEx
                 });
             }
             return response;
         }
 
-        public ResponseModel<TrainingViewModel> GetTrainingViewModel(short trainingId)
+        public ResponseModel<TrainingViewModel> GetTrainingDetails(short trainingId)
         {
-            ResponseModel<TrainingViewModel> response = GetTrainingViewModel();
+            ResponseModel<TrainingViewModel> response = GetTrainingDetails();
             try
             {
                 Training training = _trainingRepository.Get(trainingId);
@@ -110,7 +118,7 @@ namespace Core.Application.Services
             }
             catch (DALException dalEx)
             {
-                _logger.LogError(dalEx, "Error in retrieving training");
+                _logger.LogError(dalEx, "Error in retrieving training details");
                 response.AddError(new ErrorModel()
                 {
                     Message = $"Unable to retrieve training with Id: {trainingId}",

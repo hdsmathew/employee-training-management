@@ -24,8 +24,12 @@ namespace Infrastructure.DAL
 
         public int Add(EnrollmentModel enrollment)
         {
-            string insertQuery = @"INSERT INTO Enrollment (ApprovalStatusId, EmployeeId, RequestedAt, TrainingId)
-                                   VALUES (@ApprovalStatusId, @EmployeeId, GETDATE(), @TrainingId)";
+            string insertQuery = @"
+            DECLARE @ManagerId SMALLINT;
+            SET @ManagerId = (SELECT ManagerId FROM Employee WHERE EmployeeId = @EmployeeId);
+            
+            INSERT INTO Enrollment (ApprovalStatusId, ApproverAccountId, EmployeeId, RequestedAt, TrainingId)
+            VALUES (@ApprovalStatusId, @ManagerId, @EmployeeId, GETDATE(), @TrainingId)";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@ApprovalStatusId", enrollment.ApprovalStatusId),
@@ -52,30 +56,42 @@ namespace Infrastructure.DAL
 
         public int AddWithEmployeeUploads(EnrollmentModel enrollment, IEnumerable<EmployeeUploadModel> employeeUploads)
         {
-            StringBuilder insertQuery = new StringBuilder(@"INSERT INTO Enrollment (ApprovalStatusId, EmployeeId, RequestedAt, TrainingId)
-                                                            VALUES (@ApprovalStatusId, @EmployeeId, GETDATE(), @TrainingId);
-                                                            INSERT INTO EmployeeUpload (EmployeeId, PrerequisiteId, UploadPath) VALUES ");
+            StringBuilder insertQuery = new StringBuilder(@"
+            BEGIN TRY
+                BEGIN TRANSACTION
+                    DECLARE @ManagerId SMALLINT;
+                    SET @ManagerId = (SELECT ManagerId FROM Employee WHERE EmployeeId = @EmployeeId);
+
+                    INSERT INTO Enrollment (ApprovalStatusId, ApproverAccountId, EmployeeId, RequestedAt, TrainingId)
+                    VALUES (@ApprovalStatusId, @ManagerId, @EmployeeId, GETDATE(), @TrainingId);
+
+                    INSERT INTO EmployeeUpload (EmployeeId, PrerequisiteId, UploadedAt, UploadedFileName) VALUES ");
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@ApprovalStatusId", enrollment.ApprovalStatusId),
                 new SqlParameter("@EmployeeId", enrollment.EmployeeId),
                 new SqlParameter("@TrainingId", enrollment.TrainingId)
             };
+
             int parameterIndex = 0;
             foreach (EmployeeUploadModel employeeUpload in employeeUploads)
             {
-                string valueSet = $"(@EmployeeId, @PrerequisiteId{parameterIndex}, GETDATE(), @UploadPath{parameterIndex})";
-                insertQuery.Append(valueSet);
+                string employeeUploadValues = $"(@EmployeeId, @PrerequisiteId{parameterIndex}, GETDATE(), @UploadedFileName{parameterIndex}), ";
+                insertQuery.Append(employeeUploadValues);
 
                 parameters.Add(new SqlParameter($"@PrerequisiteId{parameterIndex}", employeeUpload.PrerequisiteId));
-                parameters.Add(new SqlParameter($"@UploadPath{parameterIndex}", employeeUpload.UploadPath));
+                parameters.Add(new SqlParameter($"@UploadedFileName{parameterIndex}", employeeUpload.UploadedFileName));
 
                 parameterIndex++;
-                if (parameterIndex < employeeUploads.Count())
-                {
-                    insertQuery.Append(", ");
-                }
             }
+            insertQuery.Length -= 2;
+            insertQuery.Append(@";
+                    COMMIT;
+            END TRY
+            BEGIN CATCH
+                ROLLBACK;
+                THROW;
+            END CATCH");
             int rowsAffected;
 
             try
@@ -148,7 +164,7 @@ namespace Infrastructure.DAL
 
         public EnrollmentModel Get(int enrollmentId)
         {
-            string selectQuery = "SELECT * FROM Enrollment WHERE EnrollmentId + @EnrollmentId";
+            string selectQuery = "SELECT * FROM Enrollment WHERE EnrollmentId = @EnrollmentId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@EnrollmentId", enrollmentId)
@@ -168,6 +184,12 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("More than 1 rows returned");
             }
+
+            if (!entityValueTuplesArrays.Any())
+            {
+                return new EnrollmentModel();
+            }
+
             return _enrollmentMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
         }
 
@@ -188,9 +210,91 @@ namespace Infrastructure.DAL
 
             if (!entityValueTuplesArrays.Any())
             {
-                throw new DALException("No rows returned");
+                return new List<EnrollmentModel>();
             }
-            return _enrollmentMapper.MapTableToEntities(entityValueTuplesArrays);
+            return _enrollmentMapper.MapTableToDataModels(entityValueTuplesArrays);
+        }
+
+        public IEnumerable<EnrollmentModel> GetAllByTrainingIdAndApprovalStatus(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        {
+            string selectQuery = $@"SELECT enr.* 
+                                    FROM Enrollment enr
+                                    INNER JOIN Training tra ON enr.TrainingId = tra.TrainingId
+                                    INNER JOIN ApprovalStatus appr ON enr.ApprovalStatusId = appr.ApprovalStatusId
+                                    WHERE tra.TrainingId = @TrainingId
+                                    AND appr.StatusName IN ({string.Join(", ", approvalStatusEnums.Select(status => $"'{status}'"))})";
+            List<SqlParameter> parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@TrainingId", trainingId)
+            };
+            IEnumerable<(string, object)[]> entityValueTuplesArrays;
+
+            try
+            {
+                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            return _enrollmentMapper.MapTableToDataModels(entityValueTuplesArrays);
+        }
+
+        public IEnumerable<EnrollmentModel> GetAllByEmployeeIdAndApprovalStatus(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        {
+            string selectQuery = $@"SELECT enr.* 
+                                    FROM Enrollment enr
+                                    INNER JOIN Employee emp ON enr.EmployeeId = emp.EmployeeId
+                                    INNER JOIN ApprovalStatus appr ON enr.ApprovalStatusId = appr.ApprovalStatusId
+                                    WHERE emp.EmployeeId = @EmployeeId
+                                    AND appr.StatusName IN ({string.Join(", ", approvalStatusEnums.Select(status => $"'{status}'"))})";
+            List<SqlParameter> parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@EmployeeId", employeeId)
+            };
+            IEnumerable<(string, object)[]> entityValueTuplesArrays;
+
+            try
+            {
+                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            return _enrollmentMapper.MapTableToDataModels(entityValueTuplesArrays);
+        }
+
+        public IEnumerable<EnrollmentModel> GetAllByManagerIdAndApprovalStatus(short managerId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        {
+            string selectQuery = $@"SELECT enr.* 
+                                    FROM Enrollment enr
+                                    INNER JOIN Employee emp ON enr.EmployeeId = emp.EmployeeId
+                                    INNER JOIN ApprovalStatus appr ON enr.ApprovalStatusId = appr.ApprovalStatusId
+                                    WHERE emp.ManagerId = @ManagerId
+                                    AND appr.StatusName IN ({string.Join(", ", approvalStatusEnums.Select(status => $"'{status}'"))})";
+            List<SqlParameter> parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@ManagerId", managerId)
+            };
+            IEnumerable<(string, object)[]> entityValueTuplesArrays;
+
+            try
+            {
+                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (!entityValueTuplesArrays.Any())
+            {
+                return new List<EnrollmentModel>();
+            }
+            return _enrollmentMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
         public int Update(EnrollmentModel enrollment)
@@ -211,6 +315,69 @@ namespace Infrastructure.DAL
             try
             {
                 rowsAffected = _dataAccess.ExecuteNonQuery(updateQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (rowsAffected == 0)
+            {
+                throw new DALException("No rows updated");
+            }
+            return rowsAffected;
+        }
+
+        public int UpdateBatch(IEnumerable<EnrollmentModel> enrollments)
+        {
+            StringBuilder updateQuery = new StringBuilder(@"
+            BEGIN TRANSACTION
+                BEGIN TRY
+                     CREATE TABLE #EnrollmentUpdateTemp (
+                        EnrollmentId INT,
+                        ApprovalStatusId TINYINT,
+                        ApproverAccountId SMALLINT
+                     );
+
+                     INSERT INTO #EnrollmentUpdateTemp (EnrollmentId, ApprovalStatusId, ApproverAccountId) VALUES
+            ");
+            List<SqlParameter> parameters = new List<SqlParameter>();
+
+            int parameterIndex = 0;
+            foreach (EnrollmentModel enrollment in enrollments)
+            {
+                string employeeUploadValues = $"(@EnrollmentId{parameterIndex}, @ApprovalStatusId{parameterIndex}, @ApproverAccountId{parameterIndex}), ";
+                updateQuery.Append(employeeUploadValues);
+
+                parameters.Add(new SqlParameter($"@EnrollmentId{parameterIndex}", enrollment.EnrollmentId));
+                parameters.Add(new SqlParameter($"@ApprovalStatusId{parameterIndex}", enrollment.ApprovalStatusId));
+                parameters.Add(new SqlParameter($"@ApproverAccountId{parameterIndex}", enrollment.ApproverAccountId));
+
+                parameterIndex++;
+            }
+            updateQuery.Length -= 2;
+
+            updateQuery.Append(@";
+                    UPDATE enr
+                    SET enr.ApprovalStatusId = enrTemp.ApprovalStatusId,
+                        enr.ApproverAccountId = enrTemp.ApproverAccountId,
+                        enr.UpdatedAt = GETDATE()
+                    FROM Enrollment enr
+                    INNER JOIN #EnrollmentUpdateTemp enrTemp
+                    ON enr.EnrollmentId = enrTemp.EnrollmentId;
+
+                    COMMIT;
+            END TRY
+            BEGIN CATCH
+                ROLLBACK;
+                THROW;
+            END CATCH
+            ");
+            int rowsAffected;
+
+            try
+            {
+                rowsAffected = _dataAccess.ExecuteNonQuery(updateQuery.ToString(), parameters);
             }
             catch (Exception ex)
             {

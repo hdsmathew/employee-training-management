@@ -53,5 +53,10 @@ namespace Infrastructure.Repositories
         {
             return _accountDAL.GetAccountIdByEmailAddress(emailAddress);
         }
+
+        public short GetAccountIdByAccountType(AccountTypeEnum accountType)
+        {
+            return _accountDAL.GetAccountIdByAccountType(accountType);
+        }
     }
 }
