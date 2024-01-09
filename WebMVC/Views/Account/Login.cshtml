@@ -1,0 +1,44 @@
+﻿@model Core.Application.Models.LoginViewModel
+
+@{
+    ViewBag.Title = "Login";
+}
+
+<main>
+    @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+    {
+        if (@ViewBag.LoginErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                <span class="text-danger">@ViewBag.LoginErrorMessage</span>
+            </div>
+        }
+
+        <div class="row">
+            @Html.LabelFor(m => m.EmailAddress, new { @class = "col-md-4" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.EmailAddress, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.EmailAddress, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            @Html.LabelFor(m => m.Password, new { @class = "col-md-4" })
+            <div class="col-md-8">
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 offset-4">
+                <button type="submit" class="btn btn-primary">Login</button>
+            </div>
+            <p class="my-2 text-center text-muted">Don't have an account? <span>@Html.ActionLink("Register", "Register", "Account")</span></p>
+        </div>
+    }
+</main>
+
+@section css {
+    <link rel="stylesheet" href="~/Content/customcss/form.css" />
+}

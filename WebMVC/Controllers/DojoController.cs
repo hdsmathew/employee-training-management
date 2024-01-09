@@ -2,9 +2,10 @@
 
 namespace WebMVC.Controllers
 {
-    public class HomeController : Controller
+    public class DojoController : Controller
     {
-        public ActionResult Index()
+        // GET: Dojo
+        public ActionResult Login()
         {
             return View();
         }

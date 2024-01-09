@@ -1,0 +1,82 @@
+﻿@model IEnumerable<Core.Domain.Training>
+
+@using Core.Application.Models;
+@using Core.Domain;
+
+@{
+    ViewBag.Title = "Trainings";
+    AuthenticatedUser authenticatedUser = Session["AuthenticatedUser"] as AuthenticatedUser;
+}
+
+<script type="text/javascript">
+    sessionStorage.setItem("Trainings", '@Html.Raw(Json.Encode(Model))');
+    sessionStorage.setItem("EmployeeId", 3);
+</script>
+
+<main>
+    <table class="table">
+        <tr>
+            <th>@Html.DisplayNameFor(m => m.TrainingName)</th>
+            <th>@Html.DisplayNameFor(m => m.TrainingDescription)</th>
+            <th>@Html.DisplayNameFor(m => m.RegistrationDeadline)</th>
+            <th class="d-flex justify-content-between">
+                Action
+                @if (authenticatedUser.IsInRole(AccountTypeEnum.Admin))
+                {
+                    @Html.ActionLink("Create Training", "Create", "Training", new { }, new { @class = "btn btn-primary" })
+                }
+            </th>
+        </tr>
+
+        @foreach (var training in Model)
+        {
+            <tr id="tr_@(training.TrainingId)">
+                <td>@Html.DisplayFor(trainings => training.TrainingName)</td>
+                <td>@Html.DisplayFor(trainings => training.TrainingDescription)</td>
+                <td>@Html.DisplayFor(trainings => training.RegistrationDeadline)</td>
+                <td>
+                    @{
+                        if (authenticatedUser.IsInRole(AccountTypeEnum.Admin))
+                        {
+                            <button @if (training.RegistrationDeadline >= DateTime.Now) { <text>disabled</text> } type="button" class="btn btn-primary generateEnrollmentsReport" data-trainingId="@(training.TrainingId)">Enrollment Report</button>
+                            <button @if (training.RegistrationDeadline >= DateTime.Now) { <text>disabled</text> } type="button" class="btn btn-primary processEnrollments" data-trainingId="@(training.TrainingId)">Process Enrollments</button>
+                            @Html.ActionLink("Edit", "Edit", "Training", new { trainingId = training.TrainingId }, new { @class = "btn btn-primary" })
+                            <button type="button" class="btn btn-danger deleteTraining" data-trainingId="@(training.TrainingId)">Delete</button>
+                        }
+                        else
+                        {
+                            <button @if (training.RegistrationDeadline <= DateTime.Now) { <text>disabled</text> } type="button" class="btn btn-primary" data-toggle="modal" data-target="#templateModal" data-trainingId="@(training.TrainingId)">Enroll</button>
+                        }
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+</main>
+
+@if (authenticatedUser.IsInRole(AccountTypeEnum.Manager, AccountTypeEnum.Employee))
+{
+    <div class="modal fade" id="templateModal" tabindex="-1" role="dialog" aria-labelledby="templateModalTitle" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="templateModalLongTitle">Training Prerequisites</h5>
+                </div>
+                <div class="modal-body d-flex flex-column align-items-center">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button form="enrollForm" type="button" class="btn btn-primary submitEnrollment" data-dismiss="modal">Enroll</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section css {
+    <link rel="stylesheet" href="~/Content/customcss/training.css" />
+}
+
+@section scripts {
+    <script src="~/Scripts/JavaScript/training.js"></script>
+}

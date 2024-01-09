@@ -1,0 +1,75 @@
+﻿@model Core.Application.Models.TrainingViewModel
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<main>
+    @using (Html.BeginForm("Edit", "Training", FormMethod.Post, new { id = "editTrainingForm" }))
+    {
+        if (@ViewBag.EditTrainingErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                <span class="text-danger">@ViewBag.EditTrainingErrorMessage</span>
+            </div>
+        }
+
+        @Html.HiddenFor(m => m.TrainingId)
+
+        <div class="row">
+            @Html.LabelFor(m => m.TrainingName, "Training Name", new { @class = "col-md-4" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.TrainingName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.TrainingName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            @Html.LabelFor(m => m.PreferredDepartmentId, "Preferred Deparment", new { @class = "col-md-4" })
+            <div class="col-md-8">
+                @Html.DropDownListFor(m => m.PreferredDepartmentId, new SelectList(Model.Departments, "DepartmentId", "DepartmentName"), new { @class = "form-select" })
+                @Html.ValidationMessageFor(m => m.PreferredDepartmentId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            @Html.LabelFor(m => m.RegistrationDeadline, "Registration Deadline", new { @class = "col-md-4" })
+            <div class="col-md-8">
+                <input type="datetime-local" id="registrationDeadline" class="form-control"
+                       name="RegistrationDeadline"
+                       value='@Model.RegistrationDeadline.ToString("yyyy-MM-ddTHH:mm")' />
+                @Html.ValidationMessageFor(m => m.RegistrationDeadline, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            @Html.LabelFor(m => m.SeatsAvailable, "Seat Capacity", new { @class = "col-md-4" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.SeatsAvailable, new { type = "number", @class = "form-control", min = 1 })
+                @Html.ValidationMessageFor(m => m.SeatsAvailable, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            @Html.LabelFor(m => m.TrainingDescription, "Description", new { @class = "col-md-4" })
+            <div class="col-md-8">
+                @Html.TextAreaFor(m => m.TrainingDescription, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.TrainingDescription, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 offset-4">
+                <input type="submit" id="editTraining" value="Update" class="btn btn-success" />
+            </div>
+        </div>
+    }
+</main>
+
+@section css {
+    <link rel="stylesheet" href="~/Content/customcss/form.css" />
+}
+
+@section scripts {
+    <script src="~/Scripts/JavaScript/editTraining.js"></script>
+}

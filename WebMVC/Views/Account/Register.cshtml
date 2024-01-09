@@ -1,0 +1,103 @@
+﻿@model Core.Application.Models.RegisterViewModel
+
+@{
+    ViewBag.Title = "Register";
+}
+
+<main>
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+    {
+        if (@ViewBag.RegistrationErrorMessage != null)
+        {
+            <div class="alert alert-danger">
+                <span class="text-danger">@ViewBag.RegistrationErrorMessage</span>
+            </div>
+        }
+
+        <div class="row">
+            @Html.LabelFor(m => m.FirstName, "First Name", new { @class = "col-md-4" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.FirstName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            @Html.LabelFor(m => m.LastName, "Last Name", new { @class = "col-md-4" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.LastName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            @Html.LabelFor(m => m.NationalId, "National ID", new { @class = "col-md-4" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.NationalId, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.NationalId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            @Html.LabelFor(m => m.MobileNumber, "Mobile Number", new { @class = "col-md-4" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.MobileNumber, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.MobileNumber, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            @Html.LabelFor(m => m.ManagerId, "Manager", new { @class = "col-md-4" })
+            <div class="col-md-8">
+                <select id="ManagerId" class="form-select" name="ManagerId"></select>
+            </div>
+        </div>
+
+        <div class="row">
+            @Html.LabelFor(m => m.DepartmentId, "Department", new { @class = "col-md-4" })
+            <div class="col-md-8">
+                <input type="text" id="DepartmentId" name="DepartmentId" class="form-control" readonly />
+            </div>
+        </div>
+
+        <div class="row">
+            @Html.LabelFor(m => m.EmailAddress, "Email", new { @class = "col-md-4" })
+            <div class="col-md-8">
+                @Html.TextBoxFor(m => m.EmailAddress, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.EmailAddress, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            @Html.LabelFor(m => m.Password, new { @class = "col-md-4" })
+            <div class="col-md-8">
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            @Html.LabelFor(m => m.ConfirmPassword, "Confirm Password", new { @class = "col-md-4" })
+            <div class="col-md-8">
+                @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.ConfirmPassword, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-8 offset-4">
+                <button type="submit" class="btn btn-primary">Register</button>
+            </div>
+            <p class="my-2 text-center text-muted">Already have an account? <span>@Html.ActionLink("Login", "Login", "Account")</span></p>
+        </div>
+    }
+</main>
+
+@section css {
+    <link rel="stylesheet" href="~/Content/customcss/form.css" />
+}
+
+@section scripts {
+    <script src="~/Scripts/JavaScript/register.js"></script>
+}
+

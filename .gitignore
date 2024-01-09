@@ -10,6 +10,7 @@
 *.userosscache
 *.sln.docstates
 
+WebMVC/App_Data/
 WebMVC/src/
 WebMVC/node_modules/
 WebMVC/Scripts/dojoSRC/

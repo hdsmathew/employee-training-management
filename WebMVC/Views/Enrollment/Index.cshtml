@@ -1,0 +1,98 @@
+﻿@model IEnumerable<Core.Application.Models.EnrollmentViewModel>
+
+@using Core.Application.Models;
+@using Core.Domain;
+
+@{
+    ViewBag.Title = "Enrollments";
+    AuthenticatedUser authenticatedUser = Session["AuthenticatedUser"] as AuthenticatedUser;
+}
+
+<main>
+    <table class="table">
+        @if (Model != null && Model.Any())
+        {
+            <tr>
+                @if (authenticatedUser.IsInRole(AccountTypeEnum.Manager))
+                {
+                    <th>@Html.DisplayNameFor(m => m.EmployeeName)</th>
+                }
+                <th>@Html.DisplayNameFor(m => m.TrainingName)</th>
+                <th>@Html.DisplayNameFor(m => m.RequestedAt)</th>
+                <th>@Html.DisplayNameFor(m => m.ApprovalStatus)</th>
+                <th>Documents</th>
+                @if (authenticatedUser.IsInRole(AccountTypeEnum.Manager))
+                {
+                    <th>Action</th>
+                }
+            </tr>
+            foreach (var enrollment in Model)
+            {
+                <tr id="tr_@(enrollment.EnrollmentId)">
+                    @if (authenticatedUser.IsInRole(AccountTypeEnum.Manager))
+                    {
+                        <td>@Html.DisplayFor(enrollments => enrollment.EmployeeName)</td>
+                    }
+                    <td>@Html.DisplayFor(enrollments => enrollment.TrainingName)</td>
+                    <td>@Html.DisplayFor(enrollments => enrollment.RequestedAt)</td>
+                    <td class="@GetColourClassByApprovalStatus(enrollment.ApprovalStatus)">@Html.DisplayFor(enrollments => enrollment.ApprovalStatus)</td>
+                    <td>
+                        <button type="button" class="btn btn-primary w-100 viewDocuments" data-enrollmentId="@(enrollment.EnrollmentId)">Documents</button>
+                    </td>
+                    @if (authenticatedUser.IsInRole(AccountTypeEnum.Manager))
+                    {
+                        <td>
+                            <div class="d-md-flex">
+                                <button type="button" class="btn btn-danger w-100 approveEnrollment" data-enrollmentId="@(enrollment.EnrollmentId)">Approve</button>
+                                <button type="button" class="btn btn-success w-100" data-toggle="modal" data-target="#templateModal" data-enrollmentId="@(enrollment.EnrollmentId)">Decline</button>
+                            </div>
+                        </td>
+                    }
+                </tr>
+            }
+        }
+    </table>
+</main>
+
+<div class="modal fade" id="templateModal" tabindex="-1" role="dialog" aria-labelledby="templateModalTitle" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="templateModalLongTitle">Reason for declining</h5>
+            </div>
+            <div class="modal-body d-flex flex-column align-items-center">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button form="declineForm" type="button" class="btn btn-primary declineEnrollment" data-dismiss="modal">Decline</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@functions {
+    public string GetColourClassByApprovalStatus(ApprovalStatusEnum approvalStatus)
+    {
+        switch (approvalStatus)
+        {
+            case ApprovalStatusEnum.Pending:
+                return "table-secondary";
+            case ApprovalStatusEnum.Approved:
+                return "table-primary";
+            case ApprovalStatusEnum.Confirmed:
+                return "table-success";
+            case ApprovalStatusEnum.Declined:
+                return "table-danger";
+            default:
+                return "";
+        }
+    }
+}
+
+@section css {
+    <link rel="stylesheet" href="~/Content/customcss/enrollment.css" />
+}
+
+@section scripts {
+    <script src="~/Scripts/JavaScript/enrollment.js"></script>
+}
