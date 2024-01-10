@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -9,7 +8,7 @@ namespace Infrastructure.DAL
 {
     public class DataAccess
     {
-        private SqlConnection _connection;
+        private readonly SqlConnection _connection;
         private readonly string _connectionString;
 
         public DataAccess()
@@ -18,15 +17,15 @@ namespace Infrastructure.DAL
             _connection = new SqlConnection(_connectionString);
         }
 
-        public Task<int> ExecuteNonQuery(string sqlQuery, List<SqlParameter> queryParameters)
+        public async Task<int> ExecuteNonQuery(string sqlQuery, List<SqlParameter> queryParameters)
         {
             try
             {
+                await SafelyOpenConnectionAsync();
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, _connection))
                 {
                     sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                    SafelyOpenConnectionAsync();
-                    return sqlCommand.ExecuteNonQueryAsync();
+                    return await sqlCommand.ExecuteNonQueryAsync();
                 }
             }
             finally
@@ -41,12 +40,12 @@ namespace Infrastructure.DAL
 
             try
             {
+                await SafelyOpenConnectionAsync();
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, _connection))
                 {
                     sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                    SafelyOpenConnectionAsync();
                     SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
-                    while (await reader.ReadAsync())
+                    while (reader.Read())
                     {
                         (string, object)[] row = new (string, object)[reader.FieldCount];
                         for (int i = 0; i < reader.FieldCount; i++)
@@ -65,14 +64,14 @@ namespace Infrastructure.DAL
             return entityValueTuplesArrays;
         }
 
-        public Task<object> ExecuteScalar(string sqlQuery, List<SqlParameter> queryParameters)
+        public async Task<object> ExecuteScalar(string sqlQuery, List<SqlParameter> queryParameters)
         {
             try
             {
+                await SafelyOpenConnectionAsync();
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, _connection))
                 {
                     sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                    SafelyOpenConnectionAsync();
                     return sqlCommand.ExecuteScalarAsync();
                 }
             }
@@ -82,11 +81,11 @@ namespace Infrastructure.DAL
             }
         }
 
-        private void SafelyOpenConnectionAsync()
+        private async Task SafelyOpenConnectionAsync()
         {
-            if (_connection != null && _connection.State == ConnectionState.Closed)
+            if (_connection == null || _connection.State != ConnectionState.Open)
             {
-                _connection.Open();
+                await _connection.OpenAsync();
             }
         }
 

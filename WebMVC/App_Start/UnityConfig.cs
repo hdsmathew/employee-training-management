@@ -1,17 +1,13 @@
 using Core.Application;
 using Core.Application.Repositories;
 using Core.Application.Services;
-using Core.Domain;
 using Infrastructure.AppLogger;
-using Infrastructure.Common;
 using Infrastructure.DAL;
 using Infrastructure.DAL.Interfaces;
 using Infrastructure.Models;
 using Infrastructure.Repositories;
 using System;
-using System.Configuration;
 using Unity;
-using Unity.Injection;
 
 namespace WebMVC
 {

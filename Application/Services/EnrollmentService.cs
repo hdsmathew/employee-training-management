@@ -88,16 +88,18 @@ namespace Core.Application.Services
                         ApprovalStatusEnum.Pending
                     });
 
-                response.Entities = (IEnumerable<EnrollmentViewModel>)enrollments.Select(async enrollment =>
+                List<EnrollmentViewModel> enrollmentViewModels = new List<EnrollmentViewModel>();
+                foreach (Enrollment enrollment in enrollments)
                 {
                     Employee employee = await _employeeRepository.GetAsync(enrollment.EmployeeId);
                     Training training = await _trainingRepository.GetAsync(enrollment.TrainingId);
-                    return new EnrollmentViewModel(enrollment)
+                    enrollmentViewModels.Add(new EnrollmentViewModel(enrollment)
                     {
                         EmployeeName = employee?.GetFullName(),
                         TrainingName = training?.TrainingName
-                    };
-                });
+                    });
+                }
+                response.Entities = enrollmentViewModels;
             }
             catch (DALException dalEx)
             {
@@ -116,18 +118,21 @@ namespace Core.Application.Services
             ResponseModel<EnrollmentViewModel> response = new ResponseModel<EnrollmentViewModel>();
             try
             {
-                response.Entities = (IEnumerable<EnrollmentViewModel>)(await _enrollmentRepository.GetAllByEmployeeIdAndApprovalStatusAsync(
+                IEnumerable<Enrollment> enrollments = await _enrollmentRepository.GetAllByEmployeeIdAndApprovalStatusAsync(
                     employeeId,
                     new List<ApprovalStatusEnum>() {
-                        ApprovalStatusEnum.Pending, ApprovalStatusEnum.Approved, ApprovalStatusEnum.Declined, ApprovalStatusEnum.Confirmed}))
-                    .Select(async enrollment =>
+                        ApprovalStatusEnum.Pending, ApprovalStatusEnum.Approved, ApprovalStatusEnum.Declined, ApprovalStatusEnum.Confirmed});
+
+                List<EnrollmentViewModel> enrollmentViewModels = new List<EnrollmentViewModel>();
+                foreach (Enrollment enrollment in enrollments)
+                {
+                    Training training = await _trainingRepository.GetAsync(enrollment.TrainingId);
+                    enrollmentViewModels.Add(new EnrollmentViewModel(enrollment)
                     {
-                        Training training = await _trainingRepository.GetAsync(enrollment.TrainingId);
-                        return new EnrollmentViewModel(enrollment)
-                        {
-                            TrainingName = training?.TrainingName
-                        };
+                        TrainingName = training?.TrainingName
                     });
+                }
+                response.Entities = enrollmentViewModels;
             }
             catch (DALException dalEx)
             {
@@ -225,13 +230,15 @@ namespace Core.Application.Services
             try
             {
                 short accountId = approverAccountId ?? await _accountRepository.GetAccountIdByAccountType(AccountTypeEnum.SysAdmin);
-                response.Entities = (IEnumerable<ResponseModel<Enrollment>>)(await _trainingRepository.GetAllByRegistrationDeadlineDueAsync(DateTime.Now))
-                    .Select(async training =>
-                    {
-                        ResponseModel<Enrollment> responseModel = await ValidateApprovedEnrollmentsByTrainingAsync(accountId, training);
-                        return responseModel;
-                    })
-                    .ToList();
+
+                IEnumerable<Training> trainings = await _trainingRepository.GetAllByRegistrationDeadlineDueAsync(DateTime.Now);
+                List<ResponseModel<Enrollment>> trainingEnrollmentsResponses = new List<ResponseModel<Enrollment>>();
+                foreach (Training training in trainings)
+                {
+                    ResponseModel<Enrollment> responseModel = await ValidateApprovedEnrollmentsByTrainingAsync(accountId, training);
+                    trainingEnrollmentsResponses.Add(responseModel);
+                }
+                response.Entities = trainingEnrollmentsResponses;
             }
             catch (DALException dalEx)
             {

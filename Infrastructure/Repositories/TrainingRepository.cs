@@ -76,8 +76,10 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Training>> GetAllWithPrerequisitesAsync()
         {
             IEnumerable<Training> trainings = await GetAllAsync();
-            trainings.ToList()
-                .ForEach(async t => t.SetPrerequisites(_prerequisiteMapper.MapDataModelsToEntities(await _prerequisiteDAL.GetAllByTrainingIdAsync(t.TrainingId))));
+            foreach (Training training in trainings)
+            {
+                training.SetPrerequisites(_prerequisiteMapper.MapDataModelsToEntities(await _prerequisiteDAL.GetAllByTrainingIdAsync(training.TrainingId)));
+            }
             return trainings;
         }
 
