@@ -4,6 +4,7 @@ using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
 using Infrastructure.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -18,28 +19,28 @@ namespace Infrastructure.Repositories
             _enrollmentNotificationMapper = enrollmentNotificationMapper;
         }
 
-        public int Add(EnrollmentNotification enrollmentNotification)
+        public Task<int> Add(EnrollmentNotification enrollmentNotification)
         {
             EnrollmentNotificationModel enrollmentNotificationModel = _enrollmentNotificationMapper.MapEntityToDataModel(enrollmentNotification);
-            return _enrollmentNotificationDAL.Add(enrollmentNotificationModel);
+            return _enrollmentNotificationDAL.AddAsync(enrollmentNotificationModel);
         }
 
-        public int AddBatch(IEnumerable<EnrollmentNotification> enrollmentNotifications)
+        public Task<int> AddBatch(IEnumerable<EnrollmentNotification> enrollmentNotifications)
         {
             IEnumerable<EnrollmentNotificationModel> enrollmentNotificationModels = _enrollmentNotificationMapper.MapEntitiesToDataModels(enrollmentNotifications);
-            return _enrollmentNotificationDAL.AddBatch(enrollmentNotificationModels);
+            return _enrollmentNotificationDAL.AddBatchAsync(enrollmentNotificationModels);
         }
 
-        public IEnumerable<EnrollmentNotification> GetAllByRecipientIdAndSeenStatus(short recipientId, bool hasSeen)
+        public async Task<IEnumerable<EnrollmentNotification>> GetAllByRecipientIdAndSeenStatusAsync(short recipientId, bool hasSeen)
         {
-            IEnumerable<EnrollmentNotificationModel> enrollmentNotificationModels = _enrollmentNotificationDAL.GetAllByRecipientIdAndSeenStatus(recipientId, hasSeen);
+            IEnumerable<EnrollmentNotificationModel> enrollmentNotificationModels = await _enrollmentNotificationDAL.GetAllByRecipientIdAndSeenStatusAsync(recipientId, hasSeen);
             return _enrollmentNotificationMapper.MapDataModelsToEntities(enrollmentNotificationModels);
         }
 
-        public int Update(EnrollmentNotification enrollmentNotification)
+        public Task<int> Update(EnrollmentNotification enrollmentNotification)
         {
             EnrollmentNotificationModel enrollmentNotificationModel = _enrollmentNotificationMapper.MapEntityToDataModel(enrollmentNotification);
-            return _enrollmentNotificationDAL.Update(enrollmentNotificationModel);
+            return _enrollmentNotificationDAL.UpdateAsync(enrollmentNotificationModel);
         }
     }
 }

@@ -2,6 +2,7 @@
 using Core.Application.Services;
 using Core.Domain;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace WebMVC.Controllers
@@ -15,9 +16,9 @@ namespace WebMVC.Controllers
             _employeeService = employeeService;
         }
 
-        public JsonResult GetEmployeeUploads(short employeeId)
+        public async Task<JsonResult> GetEmployeeUploads(short employeeId)
         {
-            ResponseModel<Employee> response = _employeeService.GetEmployeeUploads(employeeId);
+            ResponseModel<Employee> response = await _employeeService.GetEmployeeUploadsAsync(employeeId);
             return Json(
                 new
                 {
@@ -32,10 +33,10 @@ namespace WebMVC.Controllers
                 JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetEmployeeUploadsByEnrollmentId(short employeeId, int enrollmentId)
+        public async Task<JsonResult> GetEmployeeUploadsByEnrollmentId(short employeeId, int enrollmentId)
         {
             // TODO: Fetch uploads for an enrollment
-            ResponseModel<Employee> response = _employeeService.GetEmployeeUploads(employeeId);
+            ResponseModel<Employee> response = await _employeeService.GetEmployeeUploadsAsync(employeeId);
             return Json(
                 new
                 {
@@ -50,9 +51,9 @@ namespace WebMVC.Controllers
                 JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetManagers()
+        public async Task<JsonResult> GetManagers()
         {
-            ResponseModel<Employee> response = _employeeService.GetManagers();
+            ResponseModel<Employee> response = await _employeeService.GetManagersAsync();
             return Json(
                 new
                 {

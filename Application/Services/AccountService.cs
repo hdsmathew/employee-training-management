@@ -1,7 +1,7 @@
 ﻿using Core.Application.Models;
 using Core.Application.Repositories;
 using Core.Domain;
-using System;
+using System.Threading.Tasks;
 
 namespace Core.Application.Services
 {
@@ -18,13 +18,13 @@ namespace Core.Application.Services
             _employeeRepository = employeeRepository;
         }
 
-        public ResponseModel<AuthenticatedUser> Authenticate(LoginViewModel model)
+        public async Task<ResponseModel<AuthenticatedUser>> AuthenticateAsync(LoginViewModel model)
         {
             // TODO: Hash password
             ResponseModel<AuthenticatedUser> response = new ResponseModel<AuthenticatedUser>();
             try
             {
-                Account account = _accountRepository.Get(model.EmailAddress, model.Password);
+                Account account = await _accountRepository.GetAsync(model.EmailAddress, model.Password);
                 if (account == null)
                 {
                     response.AddError(new ErrorModel()
@@ -33,7 +33,7 @@ namespace Core.Application.Services
                     });
                     return response;
                 }
-                Employee employee = _employeeRepository.GetByAccountId(account.AccountId);
+                Employee employee = await _employeeRepository.GetByAccountIdAsync(account.AccountId);
                 response.Entity = new AuthenticatedUser(account, employee);
             }
             catch (DALException dalEx)
@@ -48,13 +48,13 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<Account> Create(Account account)
+        public async Task<ResponseModel<Account>> CreateAsync(Account account)
         {
             // TODO: Hash password
             ResponseModel<Account> response = new ResponseModel<Account>();
             try
             {
-                if (_accountRepository.ExistsByEmailAddress(account.EmailAddress))
+                if (await _accountRepository.ExistsByEmailAddress(account.EmailAddress))
                 {
                     response.AddError(new ErrorModel()
                     {
@@ -62,7 +62,7 @@ namespace Core.Application.Services
                     });
                     return response;
                 }
-                response.AddedRows = _accountRepository.Add(account);
+                response.AddedRows = await _accountRepository.Add(account);
             }
             catch (DALException dalEx)
             {

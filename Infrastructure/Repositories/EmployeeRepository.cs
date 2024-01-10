@@ -4,6 +4,7 @@ using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
 using Infrastructure.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -28,70 +29,70 @@ namespace Infrastructure.Repositories
             _enrollmentDAL = enrollmentDAL;
         }
 
-        public int Add(Employee employee)
+        public Task<int> Add(Employee employee)
         {
             EmployeeModel employeeEntity = _employeeMapper.MapEntityToDataModel(employee);
-            return _employeeDAL.Add(employeeEntity);
+            return _employeeDAL.AddAsync(employeeEntity);
         }
 
-        public int Delete(short employeeId)
+        public Task<int> Delete(short employeeId)
         {
-            return _employeeDAL.Delete(employeeId);
+            return _employeeDAL.DeleteAsync(employeeId);
         }
 
-        public bool ExistsByNationalIdOrMobileNumber(string mobileNumber, string nationalId)
+        public Task<bool> ExistsByNationalIdOrMobileNumber(string mobileNumber, string nationalId)
         {
-            return _employeeDAL.ExistsByNationalIdOrMobileNumber(mobileNumber, nationalId);
+            return _employeeDAL.ExistsByNationalIdOrMobileNumberAsync(mobileNumber, nationalId);
         }
 
-        public Employee Get(short employeeId)
+        public async Task<Employee> GetAsync(short employeeId)
         {
-            EmployeeModel employeeModel = _employeeDAL.Get(employeeId);
+            EmployeeModel employeeModel = await _employeeDAL.GetAsync(employeeId);
             return _employeeMapper.MapDataModelToEntity(employeeModel);
         }
 
-        public Employee GetByAccountId(short accountId)
+        public async Task<Employee> GetByAccountIdAsync(short accountId)
         {
-            EmployeeModel employeeModel = _employeeDAL.GetByAccountId(accountId);
+            EmployeeModel employeeModel = await _employeeDAL.GetByAccountIdAsync(accountId);
             return _employeeMapper.MapDataModelToEntity(employeeModel);
         }
 
-        public Employee GetWithEmployeeUploads(short employeeId)
+        public async Task<Employee> GetWithEmployeeUploadsAsync(short employeeId)
         {
-            Employee employee = Get(employeeId);
-            employee.SetEmployeeUploads(_employeeUploadMapper.MapDataModelsToEntities(_employeeUploadDAL.GetAllByEmployeeId(employeeId)));
+            Employee employee = await GetAsync(employeeId);
+            employee.SetEmployeeUploads(_employeeUploadMapper.MapDataModelsToEntities(await _employeeUploadDAL.GetAllByEmployeeIdAsync(employeeId)));
             return employee;
         }
 
-        public Employee GetWithEnrollmentsByApprovalStatus(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        public async Task<Employee> GetWithEnrollmentsByApprovalStatusAsync(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
         {
-            Employee employee = Get(employeeId);
-            employee.SetEnrollments(_enrollmentMapper.MapDataModelsToEntities(_enrollmentDAL.GetAllByEmployeeIdAndApprovalStatus(employeeId, approvalStatusEnums)));
+            Employee employee = await GetAsync(employeeId);
+            employee.SetEnrollments(_enrollmentMapper.MapDataModelsToEntities(await _enrollmentDAL.GetAllByEmployeeIdAndApprovalStatusAsync(employeeId, approvalStatusEnums)));
             return employee;
         }
 
-        public IEnumerable<Employee> GetAll()
+        public async Task<IEnumerable<Employee>> GetAllAsync()
         {
-            IEnumerable<EmployeeModel> employeeModels = _employeeDAL.GetAll();
+            IEnumerable<EmployeeModel> employeeModels = await _employeeDAL.GetAllAsync();
             return _employeeMapper.MapDataModelsToEntities(employeeModels);
         }
 
-        public IEnumerable<Employee> GetAllByEmployeeIds(IEnumerable<short> employeeIds)
+        public async Task<IEnumerable<Employee>> GetAllByEmployeeIdsAsync(IEnumerable<short> employeeIds)
         {
-            IEnumerable<EmployeeModel> employeeModels = _employeeDAL.GetAllByEmployeeIds(employeeIds);
+            IEnumerable<EmployeeModel> employeeModels = await _employeeDAL.GetAllByEmployeeIdsAsync(employeeIds);
             return _employeeMapper.MapDataModelsToEntities(employeeModels);
         }
 
-        public IEnumerable<Employee> GetAllByAccountType(AccountTypeEnum accountType)
+        public async Task<IEnumerable<Employee>> GetAllByAccountTypeAsync(AccountTypeEnum accountType)
         {
-            IEnumerable<EmployeeModel> employeeModels = _employeeDAL.GetAllByAccountType((byte)accountType);
+            IEnumerable<EmployeeModel> employeeModels = await _employeeDAL.GetAllByAccountTypeAsync((byte)accountType);
             return _employeeMapper.MapDataModelsToEntities(employeeModels);
         }
 
-        public int Update(Employee employee)
+        public Task<int> Update(Employee employee)
         {
             EmployeeModel employeeModel = _employeeMapper.MapEntityToDataModel(employee);
-            return _employeeDAL.Update(employeeModel);
+            return _employeeDAL.UpdateAsync(employeeModel);
         }
     }
 }

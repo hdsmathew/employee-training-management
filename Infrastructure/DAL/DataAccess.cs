@@ -1,29 +1,32 @@
-﻿using Core.Application;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.Threading.Tasks;
 
 namespace Infrastructure.DAL
 {
     public class DataAccess
     {
-        private readonly SqlConnection _connection;
+        private SqlConnection _connection;
+        private readonly string _connectionString;
 
-        public DataAccess(string connectionString)
+        public DataAccess()
         {
-            _connection = new SqlConnection(connectionString);
+            _connectionString = ConfigurationManager.AppSettings["DefaultConnectionString"];
+            _connection = new SqlConnection(_connectionString);
         }
 
-        public int ExecuteNonQuery(string sqlQuery, List<SqlParameter> queryParameters)
+        public Task<int> ExecuteNonQuery(string sqlQuery, List<SqlParameter> queryParameters)
         {
             try
             {
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, _connection))
                 {
                     sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                    SafelyOpenConnection();
-                    return sqlCommand.ExecuteNonQuery();
+                    SafelyOpenConnectionAsync();
+                    return sqlCommand.ExecuteNonQueryAsync();
                 }
             }
             finally
@@ -32,7 +35,7 @@ namespace Infrastructure.DAL
             }
         }
 
-        public IEnumerable<(string, object)[]> ExecuteReader(string sqlQuery, List<SqlParameter> queryParameters)
+        public async Task<IEnumerable<(string, object)[]>> ExecuteReaderAsync(string sqlQuery, List<SqlParameter> queryParameters)
         {
             List<(string, object)[]> entityValueTuplesArrays = new List<(string, object)[]>();
 
@@ -41,18 +44,16 @@ namespace Infrastructure.DAL
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, _connection))
                 {
                     sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                    SafelyOpenConnection();
-                    using (SqlDataReader reader = sqlCommand.ExecuteReader())
+                    SafelyOpenConnectionAsync();
+                    SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
+                    while (await reader.ReadAsync())
                     {
-                        while (reader.Read())
+                        (string, object)[] row = new (string, object)[reader.FieldCount];
+                        for (int i = 0; i < reader.FieldCount; i++)
                         {
-                            (string, object)[] row = new (string, object)[reader.FieldCount];
-                            for (int i = 0; i < reader.FieldCount; i++)
-                            {
-                                row[i] = (reader.GetName(i), reader.GetValue(i));
-                            }
-                            entityValueTuplesArrays.Add(row);
+                            row[i] = (reader.GetName(i), reader.GetValue(i));
                         }
+                        entityValueTuplesArrays.Add(row);
                     }
                 }
             }
@@ -64,15 +65,15 @@ namespace Infrastructure.DAL
             return entityValueTuplesArrays;
         }
 
-        public object ExecuteScalar(string sqlQuery, List<SqlParameter> queryParameters)
+        public Task<object> ExecuteScalar(string sqlQuery, List<SqlParameter> queryParameters)
         {
             try
             {
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, _connection))
                 {
                     sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                    SafelyOpenConnection();
-                    return sqlCommand.ExecuteScalar();
+                    SafelyOpenConnectionAsync();
+                    return sqlCommand.ExecuteScalarAsync();
                 }
             }
             finally
@@ -81,7 +82,7 @@ namespace Infrastructure.DAL
             }
         }
 
-        private void SafelyOpenConnection()
+        private void SafelyOpenConnectionAsync()
         {
             if (_connection != null && _connection.State == ConnectionState.Closed)
             {

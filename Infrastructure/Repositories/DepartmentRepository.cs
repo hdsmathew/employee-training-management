@@ -4,6 +4,7 @@ using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
 using Infrastructure.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -18,9 +19,9 @@ namespace Infrastructure.Repositories
             _departmentDAL = departmentDAL;
         }
 
-        public IEnumerable<Department> GetAll()
+        public async Task<IEnumerable<Department>> GetAllAsync()
         {
-            IEnumerable<DepartmentModel> departmentModels = _departmentDAL.GetAll();
+            IEnumerable<DepartmentModel> departmentModels = await _departmentDAL.GetAllAsync();
             return _departmentMapper.MapDataModelsToEntities(departmentModels);
         }
     }

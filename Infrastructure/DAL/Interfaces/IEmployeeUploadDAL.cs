@@ -1,10 +1,11 @@
 ﻿using Infrastructure.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Infrastructure.DAL.Interfaces
 {
     public interface IEmployeeUploadDAL
     {
-        IEnumerable<EmployeeUploadModel> GetAllByEmployeeId(short employeeId);
+        Task<IEnumerable<EmployeeUploadModel>> GetAllByEmployeeIdAsync(short employeeId);
     }
 }

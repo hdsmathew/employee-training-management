@@ -1,13 +1,14 @@
 ﻿using Core.Domain;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Core.Application.Repositories
 {
     public interface IEnrollmentNotificationRepository
     {
-        int Add(EnrollmentNotification enrollmentNotification);
-        int AddBatch(IEnumerable<EnrollmentNotification> enrollmentNotifications);
-        IEnumerable<EnrollmentNotification> GetAllByRecipientIdAndSeenStatus(short recipientId, bool hasSeen);
-        int Update(EnrollmentNotification enrollmentNotification);
+        Task<int> Add(EnrollmentNotification enrollmentNotification);
+        Task<int> AddBatch(IEnumerable<EnrollmentNotification> enrollmentNotifications);
+        Task<IEnumerable<EnrollmentNotification>> GetAllByRecipientIdAndSeenStatusAsync(short recipientId, bool hasSeen);
+        Task<int> Update(EnrollmentNotification enrollmentNotification);
     }
 }

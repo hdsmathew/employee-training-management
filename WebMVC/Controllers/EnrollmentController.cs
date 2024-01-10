@@ -4,6 +4,7 @@ using Core.Domain;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using WebMVC.ViewModels;
@@ -20,9 +21,9 @@ namespace WebMVC.Controllers
         }
 
         [CustomAuthorize(AccountTypeEnum.Manager, AccountTypeEnum.Employee)]
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
-            ResponseModel<EnrollmentViewModel> response = GetEnrollmentViewModelsByRole(AuthenticatedUser.AccountType);
+            ResponseModel<EnrollmentViewModel> response = await GetEnrollmentViewModelsByRoleAsync(AuthenticatedUser.AccountType);
             if (response is null || response.Failure())
             {
                 RedirectToAction("Error", "ServerFault");
@@ -32,9 +33,9 @@ namespace WebMVC.Controllers
 
         [CustomAuthorize(AccountTypeEnum.Manager)]
         [HttpPost]
-        public JsonResult Approve(int enrollmentId)
+        public async Task<JsonResult> Approve(int enrollmentId)
         {
-            ResponseModel<EnrollmentViewModel> response = _enrollmentService.Approve(enrollmentId, AuthenticatedUser.AccountId);
+            ResponseModel<EnrollmentViewModel> response = await _enrollmentService.ApproveAsync(enrollmentId, AuthenticatedUser.AccountId);
             return Json(
                 new
                 {
@@ -49,10 +50,10 @@ namespace WebMVC.Controllers
 
         [CustomAuthorize(AccountTypeEnum.Manager)]
         [HttpPost]
-        public JsonResult Decline(DeclineEnrollmentViewModel declineEnrollmentViewModel)
+        public async Task<JsonResult> Decline(DeclineEnrollmentViewModel declineEnrollmentViewModel)
         {
             // TODO: Validate decline reason message
-            ResponseModel<EnrollmentViewModel> response = _enrollmentService.Decline(declineEnrollmentViewModel, AuthenticatedUser.AccountId);
+            ResponseModel<EnrollmentViewModel> response = await _enrollmentService.DeclineAsync(declineEnrollmentViewModel, AuthenticatedUser.AccountId);
             return Json(
                 new
                 {
@@ -67,18 +68,18 @@ namespace WebMVC.Controllers
 
         [CustomAuthorize(AccountTypeEnum.Manager, AccountTypeEnum.Employee)]
         [HttpPost]
-        public JsonResult SubmitEnrollment(EnrollmentSubmissionViewModel enrollmentSubmissionViewModel)
+        public async Task<JsonResult> SubmitEnrollment(EnrollmentSubmissionViewModel enrollmentSubmissionViewModel)
         {
             // TODO : Validate file input
             ResponseModel<Enrollment> response;
             if (enrollmentSubmissionViewModel.EmployeeUploads is null)
             {
-                response = _enrollmentService.Submit(AuthenticatedUser.EmployeeId, enrollmentSubmissionViewModel.TrainingId);
+                response = await _enrollmentService.SubmitAsync(AuthenticatedUser.EmployeeId, enrollmentSubmissionViewModel.TrainingId);
             }
             else
             {
                 IEnumerable<EmployeeUpload> employeeUploads = SaveUploadedFiles(enrollmentSubmissionViewModel.EmployeeUploads, enrollmentSubmissionViewModel.PrerequisiteIds);
-                response = _enrollmentService.Submit(AuthenticatedUser.EmployeeId, enrollmentSubmissionViewModel.TrainingId, employeeUploads);
+                response = await _enrollmentService.SubmitAsync(AuthenticatedUser.EmployeeId, enrollmentSubmissionViewModel.TrainingId, employeeUploads);
             }
 
             return Json(
@@ -93,15 +94,15 @@ namespace WebMVC.Controllers
                 System.Text.Encoding.UTF8);
         }
 
-        private ResponseModel<EnrollmentViewModel> GetEnrollmentViewModelsByRole(AccountTypeEnum accountType)
+        private async Task<ResponseModel<EnrollmentViewModel>> GetEnrollmentViewModelsByRoleAsync(AccountTypeEnum accountType)
         {
             switch (accountType)
             {
                 case AccountTypeEnum.Manager:
-                    return _enrollmentService.GetEnrollmentSubmissionsForApproval(AuthenticatedUser.EmployeeId);
+                    return await _enrollmentService.GetEnrollmentSubmissionsForApprovalAsync(AuthenticatedUser.EmployeeId);
 
                 case AccountTypeEnum.Employee:
-                    return _enrollmentService.GetEnrollments(AuthenticatedUser.EmployeeId);
+                    return await _enrollmentService.GetEnrollmentsAsync(AuthenticatedUser.EmployeeId);
 
                 default:
                     return null;

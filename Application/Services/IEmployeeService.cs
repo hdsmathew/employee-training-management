@@ -1,13 +1,14 @@
 ﻿using Core.Application.Models;
 using Core.Domain;
+using System.Threading.Tasks;
 
 namespace Core.Application.Services
 {
     public interface IEmployeeService
     {
-        ResponseModel<Employee> GetEmployeeUploads(short employeeId);
-        ResponseModel<Employee> GetManagers();
-        ResponseModel<Employee> Register(RegisterViewModel model);
-        ResponseModel<Employee> Update(Employee employee);
+        Task<ResponseModel<Employee>> GetEmployeeUploadsAsync(short employeeId);
+        Task<ResponseModel<Employee>> GetManagersAsync();
+        Task<ResponseModel<Employee>> RegisterAsync(RegisterViewModel model);
+        Task<ResponseModel<Employee>> UpdateAsync(Employee employee);
     }
 }

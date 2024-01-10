@@ -1,18 +1,19 @@
 ﻿using Core.Application.Models;
 using Core.Domain;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Core.Application.Services
 {
     public interface IEnrollmentService
     {
-        ResponseModel<EnrollmentViewModel> Approve(int enrollmentId, short approverAccountId);
-        ResponseModel<EnrollmentViewModel> Decline(DeclineEnrollmentViewModel declineEnrollmentViewModel, short approverAccountId);
-        ResponseModel<EnrollmentViewModel> GetEnrollments(short employeeId);
-        ResponseModel<EnrollmentViewModel> GetEnrollmentSubmissionsForApproval(short managerId);
-        ResponseModel<Enrollment> Submit(short employeeId, short trainingId, IEnumerable<EmployeeUpload> employeeUploads);
-        ResponseModel<Enrollment> Submit(short employeeId, short trainingId);
-        ResponseModel<ResponseModel<Enrollment>> ValidateApprovedEnrollments(short? approverAccountId);
-        ResponseModel<Enrollment> ValidateApprovedEnrollmentsByTraining(short approverAccountId, short trainingId);
+        Task<ResponseModel<EnrollmentViewModel>> ApproveAsync(int enrollmentId, short approverAccountId);
+        Task<ResponseModel<EnrollmentViewModel>> DeclineAsync(DeclineEnrollmentViewModel declineEnrollmentViewModel, short approverAccountId);
+        Task<ResponseModel<EnrollmentViewModel>> GetEnrollmentsAsync(short employeeId);
+        Task<ResponseModel<EnrollmentViewModel> > GetEnrollmentSubmissionsForApprovalAsync(short managerId);
+        Task<ResponseModel<Enrollment>> SubmitAsync(short employeeId, short trainingId, IEnumerable<EmployeeUpload> employeeUploads);
+        Task<ResponseModel<Enrollment>> SubmitAsync(short employeeId, short trainingId);
+        Task<ResponseModel<ResponseModel<Enrollment>>> ValidateApprovedEnrollmentsAsync(short? approverAccountId);
+        Task<ResponseModel<Enrollment>> ValidateApprovedEnrollmentsByTrainingAsync(short approverAccountId, short trainingId);
     }
 }

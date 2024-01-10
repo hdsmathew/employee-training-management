@@ -6,8 +6,8 @@ using Infrastructure.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Infrastructure.DAL
 {
@@ -22,7 +22,7 @@ namespace Infrastructure.DAL
             _enrollmentNotificationMapper = enrollmentNotificationMapper;
         }
 
-        public int Add(EnrollmentNotificationModel notification)
+        public async Task<int> AddAsync(EnrollmentNotificationModel notification)
         {
             string insertQuery = @"INSERT INTO EnrollmentNotification (NotificationMessage, RecipientId, SentAt)
                                    VALUES (@NotificationMessage, @RecipientId, GETDATE());";
@@ -35,7 +35,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -49,7 +49,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public int AddBatch(IEnumerable<EnrollmentNotificationModel> notifications)
+        public async Task<int> AddBatchAsync(IEnumerable<EnrollmentNotificationModel> notifications)
         {
             StringBuilder insertQuery = new StringBuilder(@"INSERT INTO EnrollmentNotification (NotificationMessage, RecipientId, SentAt) VALUES");
             List<SqlParameter> parameters = new List<SqlParameter>();
@@ -71,7 +71,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
             }
             catch (Exception ex)
             {
@@ -86,7 +86,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public IEnumerable<EnrollmentNotificationModel> GetAllByRecipientIdAndSeenStatus(short recipientId, bool hasSeen)
+        public async Task<IEnumerable<EnrollmentNotificationModel>> GetAllByRecipientIdAndSeenStatusAsync(short recipientId, bool hasSeen)
         {
             string selectQuery = @"SELECT EnrollmentNotificationId, NotificationMessage, SentAt
                                    FROM EnrollmentNotification
@@ -100,7 +100,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -110,7 +110,7 @@ namespace Infrastructure.DAL
             return _enrollmentNotificationMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
-        public int Update(EnrollmentNotificationModel model)
+        public async Task<int> UpdateAsync(EnrollmentNotificationModel model)
         {
             string updateQuery = @"UPDATE EnrollmentNotificationId SET 
                                    HasSeen =  @HasSeen, 
@@ -125,7 +125,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(updateQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(updateQuery, parameters);
             }
             catch (Exception ex)
             {

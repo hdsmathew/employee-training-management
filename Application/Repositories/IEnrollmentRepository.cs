@@ -1,20 +1,21 @@
 ﻿using Core.Domain;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Core.Application.Repositories
 {
     public interface IEnrollmentRepository
     {
-        int Add(Enrollment enrollment);
-        int AddWithEmployeeUploads(Enrollment enrollment, IEnumerable<EmployeeUpload> employeeUploads);
-        int Delete(int enrollmentID);
-        bool Exists(short employeeID, short trainingID);
-        Enrollment Get(int enrollmentID);
-        IEnumerable<Enrollment> GetAll();
-        IEnumerable<Enrollment> GetAllByEmployeeIdAndApprovalStatus(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
-        IEnumerable<Enrollment> GetAllByManagerIdAndApprovalStatus(short managerId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
-        IEnumerable<Enrollment> GetAllByTrainingIdAndApprovalStatus(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
-        int Update(Enrollment enrollment);
-        int UpdateBatch(IEnumerable<Enrollment> enrollments);
+        Task<int> Add(Enrollment enrollment);
+        Task<int> AddWithEmployeeUploads(Enrollment enrollment, IEnumerable<EmployeeUpload> employeeUploads);
+        Task<int> Delete(int enrollmentID);
+        Task<bool> Exists(short employeeID, short trainingID);
+        Task<Enrollment> GetAsync(int enrollmentID);
+        Task<IEnumerable<Enrollment>> GetAllAsync();
+        Task<IEnumerable<Enrollment>> GetAllByEmployeeIdAndApprovalStatusAsync(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
+        Task<IEnumerable<Enrollment>> GetAllByManagerIdAndApprovalStatusAsync(short managerId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
+        Task<IEnumerable<Enrollment>> GetAllByTrainingIdAndApprovalStatusAsync(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
+        Task<int> Update(Enrollment enrollment);
+        Task<int> UpdateBatch(IEnumerable<Enrollment> enrollments);
     }
 }

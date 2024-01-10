@@ -2,6 +2,7 @@
 using Core.Application.Repositories;
 using Core.Domain;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Core.Application.Services
 {
@@ -20,12 +21,12 @@ namespace Core.Application.Services
             _departmentRepository = departmentRepository;
         }
 
-        public ResponseModel<Training> Add(Training training)
+        public async Task<ResponseModel<Training>> AddAsync(Training training)
         {
             ResponseModel<Training> response = new ResponseModel<Training>();
             try
             {
-                if (_trainingRepository.ExistsByName(training.TrainingName))
+                if (await _trainingRepository.ExistsByName(training.TrainingName))
                 {
                     response.AddError(new ErrorModel()
                     {
@@ -35,11 +36,11 @@ namespace Core.Application.Services
                 }
                 if (training.Prerequisites.Any())
                 {
-                    response.AddedRows = _trainingRepository.AddWithPrerequisites(training);
+                    response.AddedRows = await _trainingRepository.AddWithPrerequisites(training);
                 }
                 else
                 {
-                    response.AddedRows = _trainingRepository.Add(training);
+                    response.AddedRows = await _trainingRepository.Add(training);
                 }
             }
             catch (DALException dalEx)
@@ -54,12 +55,12 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<Training> Delete(short trainingId)
+        public async Task<ResponseModel<Training>> DeleteAsync(short trainingId)
         {
             ResponseModel<Training> response = new ResponseModel<Training>();
             try
             {
-                if (_trainingRepository.HasEnrollments(trainingId))
+                if (await _trainingRepository.HasEnrollments(trainingId))
                 {
                     response.AddError(new ErrorModel()
                     {
@@ -67,7 +68,7 @@ namespace Core.Application.Services
                     });
                     return response;
                 }
-                response.DeletedRows = _trainingRepository.Delete(trainingId);
+                response.DeletedRows = await _trainingRepository.Delete(trainingId);
             }
             catch (DALException dalEx)
             {
@@ -81,15 +82,15 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<TrainingViewModel> GetTrainingDetails()
+        public async Task<ResponseModel<TrainingViewModel>> GetTrainingDetailsAsync()
         {
             ResponseModel<TrainingViewModel> response = new ResponseModel<TrainingViewModel>();
             try
             {
                 response.Entity = new TrainingViewModel
                 {
-                    Departments = _departmentRepository.GetAll(),
-                    Prerequisites = _prerequisiteRepository.GetAll()
+                    Departments = await _departmentRepository.GetAllAsync(),
+                    Prerequisites = await _prerequisiteRepository.GetAllAsync()
                 };
             }
             catch (DALException dalEx)
@@ -104,12 +105,12 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<TrainingViewModel> GetTrainingDetails(short trainingId)
+        public async Task<ResponseModel<TrainingViewModel>> GetTrainingDetailsAsync(short trainingId)
         {
-            ResponseModel<TrainingViewModel> response = GetTrainingDetails();
+            ResponseModel<TrainingViewModel> response = await GetTrainingDetailsAsync();
             try
             {
-                Training training = _trainingRepository.Get(trainingId);
+                Training training = await _trainingRepository.GetAsync(trainingId);
                 response.Entity.PreferredDepartmentId = training.PreferredDepartmentId;
                 response.Entity.TrainingDescription = training.TrainingDescription;
                 response.Entity.TrainingName = training.TrainingName;
@@ -128,12 +129,12 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<Training> Update(Training training)
+        public async Task<ResponseModel<Training>> UpdateAsync(Training training)
         {
             ResponseModel<Training> response = new ResponseModel<Training>();
             try
             {
-                response.UpdatedRows = _trainingRepository.Update(training);
+                response.UpdatedRows = await _trainingRepository.Update(training);
             }
             catch (DALException dalEx)
             {

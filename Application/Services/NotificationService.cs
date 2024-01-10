@@ -2,7 +2,9 @@
 using Core.Application.Repositories;
 using Core.Domain;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Core.Application.Services
 {
@@ -17,13 +19,13 @@ namespace Core.Application.Services
             _logger = logger;
         }
 
-        public ResponseModel<EnrollmentNotification> GetUnSeenEnrollmentNotifications(short recipientId)
+        public async Task<ResponseModel<EnrollmentNotification>> GetUnSeenEnrollmentNotificationsAsync(short recipientId)
         {
             ResponseModel<EnrollmentNotification> response = new ResponseModel<EnrollmentNotification>();
             try
             {
-                response.Entities = _enrollmentNotificationRepository.GetAllByRecipientIdAndSeenStatus(recipientId, false)
-                    .OrderByDescending(notification => notification.SentAt);
+                IEnumerable<EnrollmentNotification> notifications = await _enrollmentNotificationRepository.GetAllByRecipientIdAndSeenStatusAsync(recipientId, false);
+                response.Entities = notifications.OrderByDescending(notification => notification.SentAt);
             }
             catch (DALException dalEx)
             {
@@ -37,12 +39,12 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<EnrollmentNotification> SendEnrollmentNotification(string notificationMessage, short recipientId)
+        public async Task<ResponseModel<EnrollmentNotification>> SendEnrollmentNotificationAsync(string notificationMessage, short recipientId)
         {
             ResponseModel<EnrollmentNotification> response = new ResponseModel<EnrollmentNotification>();
             try
             {
-                response.AddedRows = _enrollmentNotificationRepository.Add(new EnrollmentNotification()
+                response.AddedRows = await _enrollmentNotificationRepository.Add(new EnrollmentNotification()
                 {
                     HasSeen = false,
                     NotificationMessage = notificationMessage,

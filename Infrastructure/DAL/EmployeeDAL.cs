@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Infrastructure.DAL
 {
@@ -21,7 +22,7 @@ namespace Infrastructure.DAL
             _employeeMapper = employeeMapper;
         }
 
-        public int Add(EmployeeModel employee)
+        public async Task<int> AddAsync(EmployeeModel employee)
         {
             string insertQuery = @"INSERT INTO Employee (AccountId, DepartmentId, FirstName, LastName, ManagerId, MobileNumber, NationalId)
                                    VALUES (@AccountId, @DepartmentId, @FirstName, @LastName, @ManagerId, @MobileNumber, @NationalId);";
@@ -39,7 +40,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -53,7 +54,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public int Delete(int employeeId)
+        public async Task<int> DeleteAsync(int employeeId)
         {
             string deleteQuery = "DELETE FROM Employee WHERE EmployeeId = @EmployeeId";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -64,7 +65,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -78,7 +79,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public bool ExistsByNationalIdOrMobileNumber(string mobileNumber, string nationalId)
+        public async Task<bool> ExistsByNationalIdOrMobileNumberAsync(string mobileNumber, string nationalId)
         {
             string selectQuery = @"SELECT COUNT(EmployeeId) FROM Employee WHERE 
                                    MobileNumber = @MobileNumber OR 
@@ -92,7 +93,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
+                scalarObject = await _dataAccess.ExecuteScalar(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -103,7 +104,7 @@ namespace Infrastructure.DAL
             return scalarValue > 0;
         }
 
-        public EmployeeModel Get(int employeeId)
+        public async Task<EmployeeModel> GetAsync(int employeeId)
         {
             string selectQuery = "SELECT * FROM Employee WHERE EmployeeId = @EmployeeId";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -114,7 +115,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -128,7 +129,7 @@ namespace Infrastructure.DAL
             return _employeeMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
         }
 
-        public EmployeeModel GetByAccountId(short accountId)
+        public async Task<EmployeeModel> GetByAccountIdAsync(short accountId)
         {
             string selectQuery = "SELECT * FROM Employee WHERE AccountId = @AccountId";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -139,7 +140,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -153,7 +154,7 @@ namespace Infrastructure.DAL
             return _employeeMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
         }
 
-        public IEnumerable<EmployeeModel> GetAll()
+        public async Task<IEnumerable<EmployeeModel>> GetAllAsync()
         {
             string selectQuery = "SELECT * FROM Employee";
             List<SqlParameter> parameters = new List<SqlParameter>();
@@ -161,7 +162,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -171,7 +172,7 @@ namespace Infrastructure.DAL
             return _employeeMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
-        public IEnumerable<EmployeeModel> GetAllByEmployeeIds(IEnumerable<short> employeeIds)
+        public async Task<IEnumerable<EmployeeModel>> GetAllByEmployeeIdsAsync(IEnumerable<short> employeeIds)
         {
             string selectQuery = $"SELECT EmployeeId, DepartmentId FROM Employee WHERE EmployeeId IN ({string.Join(", ", employeeIds.ToList())})";
             List<SqlParameter> parameters = new List<SqlParameter>();
@@ -179,7 +180,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -189,7 +190,7 @@ namespace Infrastructure.DAL
             return _employeeMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
-        public IEnumerable<EmployeeModel> GetAllByAccountType(byte accountTypeId)
+        public async Task<IEnumerable<EmployeeModel>> GetAllByAccountTypeAsync(byte accountTypeId)
         {
             string selectQuery = @"WITH AccountIds (AccountId) AS (
                                         SELECT AccountId FROM Account WHERE AccountTypeId = @AccountTypeId
@@ -205,7 +206,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -215,7 +216,7 @@ namespace Infrastructure.DAL
             return _employeeMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
-        public int Update(EmployeeModel employee)
+        public async Task<int> UpdateAsync(EmployeeModel employee)
         {
             string updateQuery = @"UPDATE Employee SET 
                                    AccountId =  @AccountId, 
@@ -241,7 +242,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(updateQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(updateQuery, parameters);
             }
             catch (Exception ex)
             {

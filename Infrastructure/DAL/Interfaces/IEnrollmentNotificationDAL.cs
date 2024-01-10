@@ -1,14 +1,15 @@
 ﻿using Core.Domain;
 using Infrastructure.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Infrastructure.DAL.Interfaces
 {
     public interface IEnrollmentNotificationDAL
     {
-        int Add(EnrollmentNotificationModel model);
-        int AddBatch(IEnumerable<EnrollmentNotificationModel> models);
-        IEnumerable<EnrollmentNotificationModel> GetAllByRecipientIdAndSeenStatus(short recipientId, bool hasSeen);
-        int Update(EnrollmentNotificationModel model);
+        Task<int> AddAsync(EnrollmentNotificationModel model);
+        Task<int> AddBatchAsync(IEnumerable<EnrollmentNotificationModel> models);
+        Task<IEnumerable<EnrollmentNotificationModel>> GetAllByRecipientIdAndSeenStatusAsync(short recipientId, bool hasSeen);
+        Task<int> UpdateAsync(EnrollmentNotificationModel model);
     }
 }

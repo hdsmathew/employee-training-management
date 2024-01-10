@@ -1,21 +1,22 @@
 ﻿using Core.Domain;
 using Infrastructure.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Infrastructure.DAL.Interfaces
 {
     public interface IEnrollmentDAL
     {
-        int Add(EnrollmentModel enrollment);
-        int AddWithEmployeeUploads(EnrollmentModel enrollment, IEnumerable<EmployeeUploadModel> employeeUploads);
-        int Delete(int enrollmentID);
-        bool Exists(short employeeID, short trainingID);
-        EnrollmentModel Get(int enrollmentID);
-        IEnumerable<EnrollmentModel> GetAll();
-        IEnumerable<EnrollmentModel> GetAllByTrainingIdAndApprovalStatus(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
-        IEnumerable<EnrollmentModel> GetAllByEmployeeIdAndApprovalStatus(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
-        IEnumerable<EnrollmentModel> GetAllByManagerIdAndApprovalStatus(short managerId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
-        int Update(EnrollmentModel enrollment);
-        int UpdateBatch(IEnumerable<EnrollmentModel> enrollments);
+        Task<int> AddAsync(EnrollmentModel enrollment);
+        Task<int> AddWithEmployeeUploadsAsync(EnrollmentModel enrollment, IEnumerable<EmployeeUploadModel> employeeUploads);
+        Task<int> DeleteAsync(int enrollmentID);
+        Task<bool> ExistsAsync(short employeeID, short trainingID);
+        Task<EnrollmentModel> GetAsync(int enrollmentID);
+        Task<IEnumerable<EnrollmentModel>> GetAllAsync();
+        Task<IEnumerable<EnrollmentModel>> GetAllByTrainingIdAndApprovalStatusAsync(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
+        Task<IEnumerable<EnrollmentModel>> GetAllByEmployeeIdAndApprovalStatusAsync(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
+        Task<IEnumerable<EnrollmentModel>> GetAllByManagerIdAndApprovalStatusAsync(short managerId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
+        Task<int> UpdateAsync(EnrollmentModel enrollment);
+        Task<int> UpdateBatchAsync(IEnumerable<EnrollmentModel> enrollments);
     }
 }

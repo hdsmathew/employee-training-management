@@ -4,6 +4,7 @@ using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
 using Infrastructure.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -20,69 +21,69 @@ namespace Infrastructure.Repositories
             _enrollmentMapper = enrollmentMapper;
         }
 
-        public int Add(Enrollment enrollment)
+        public Task<int> Add(Enrollment enrollment)
         {
             EnrollmentModel enrollmentEntity = _enrollmentMapper.MapEntityToDataModel(enrollment);
-            return _enrollmentDAL.Add(enrollmentEntity);
+            return _enrollmentDAL.AddAsync(enrollmentEntity);
         }
 
-        public int AddWithEmployeeUploads(Enrollment enrollment, IEnumerable<EmployeeUpload> employeeUploads)
+        public Task<int> AddWithEmployeeUploads(Enrollment enrollment, IEnumerable<EmployeeUpload> employeeUploads)
         {
             EnrollmentModel enrollmentEntity = _enrollmentMapper.MapEntityToDataModel(enrollment);
             IEnumerable<EmployeeUploadModel> employeeUploadEntities = _employeeUploadMapper.MapEntitiesToDataModels(employeeUploads);
-            return _enrollmentDAL.AddWithEmployeeUploads(enrollmentEntity, employeeUploadEntities);
+            return _enrollmentDAL.AddWithEmployeeUploadsAsync(enrollmentEntity, employeeUploadEntities);
         }
 
-        public int Delete(int enrollmentID)
+        public Task<int> Delete(int enrollmentID)
         {
-            return _enrollmentDAL.Delete(enrollmentID);
+            return _enrollmentDAL.DeleteAsync(enrollmentID);
         }
 
-        public bool Exists(short employeeID, short trainingID)
+        public Task<bool> Exists(short employeeID, short trainingID)
         {
-            return _enrollmentDAL.Exists(employeeID, trainingID);
+            return _enrollmentDAL.ExistsAsync(employeeID, trainingID);
         }
 
-        public Enrollment Get(int enrollmentID)
+        public async Task<Enrollment> GetAsync(int enrollmentID)
         {
-            EnrollmentModel enrollmentEntity = _enrollmentDAL.Get(enrollmentID);
+            EnrollmentModel enrollmentEntity = await _enrollmentDAL.GetAsync(enrollmentID);
             return _enrollmentMapper.MapDataModelToEntity(enrollmentEntity);
         }
 
-        public IEnumerable<Enrollment> GetAll()
+        public async Task<IEnumerable<Enrollment>> GetAllAsync()
         {
-            IEnumerable<EnrollmentModel> enrollmentEntities = _enrollmentDAL.GetAll();
+            IEnumerable<EnrollmentModel> enrollmentEntities = await _enrollmentDAL.GetAllAsync();
             return _enrollmentMapper.MapDataModelsToEntities(enrollmentEntities);
         }
 
-        public IEnumerable<Enrollment> GetAllByTrainingIdAndApprovalStatus(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        public async Task<IEnumerable<Enrollment>> GetAllByTrainingIdAndApprovalStatusAsync(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
         {
-            IEnumerable<EnrollmentModel> enrollmentEntities = _enrollmentDAL.GetAllByTrainingIdAndApprovalStatus(trainingId, approvalStatusEnums);
+            IEnumerable<EnrollmentModel> enrollmentEntities = await _enrollmentDAL.GetAllByTrainingIdAndApprovalStatusAsync(trainingId, approvalStatusEnums);
             return _enrollmentMapper.MapDataModelsToEntities(enrollmentEntities);
         }
 
-        public IEnumerable<Enrollment> GetAllByEmployeeIdAndApprovalStatus(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        public async Task<IEnumerable<Enrollment>> GetAllByEmployeeIdAndApprovalStatusAsync(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
         {
-            IEnumerable<EnrollmentModel> enrollmentEntities = _enrollmentDAL.GetAllByEmployeeIdAndApprovalStatus(employeeId, approvalStatusEnums);
+            IEnumerable<EnrollmentModel> enrollmentEntities = await _enrollmentDAL.GetAllByEmployeeIdAndApprovalStatusAsync(employeeId, approvalStatusEnums);
             return _enrollmentMapper.MapDataModelsToEntities(enrollmentEntities);
         }
 
-        public IEnumerable<Enrollment> GetAllByManagerIdAndApprovalStatus(short managerId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        public async Task<IEnumerable<Enrollment>> GetAllByManagerIdAndApprovalStatusAsync(short managerId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
         {
-            IEnumerable<EnrollmentModel> enrollmentEntities = _enrollmentDAL.GetAllByManagerIdAndApprovalStatus(managerId, approvalStatusEnums);
+            IEnumerable<EnrollmentModel> enrollmentEntities = await _enrollmentDAL.GetAllByManagerIdAndApprovalStatusAsync(managerId, approvalStatusEnums);
             return _enrollmentMapper.MapDataModelsToEntities(enrollmentEntities);
         }
 
-        public int Update(Enrollment enrollment)
+        public Task<int> Update(Enrollment enrollment)
         {
             EnrollmentModel enrollmentEntity = _enrollmentMapper.MapEntityToDataModel(enrollment);
-            return _enrollmentDAL.Update(enrollmentEntity);
+            return _enrollmentDAL.UpdateAsync(enrollmentEntity);
         }
 
-        public int UpdateBatch(IEnumerable<Enrollment> enrollments)
+        public Task<int> UpdateBatch(IEnumerable<Enrollment> enrollments)
         {
             IEnumerable<EnrollmentModel> enrollmentEntities = _enrollmentMapper.MapEntitiesToDataModels(enrollments);
-            return _enrollmentDAL.UpdateBatch(enrollmentEntities);
+            return _enrollmentDAL.UpdateBatchAsync(enrollmentEntities);
         }
     }
 }

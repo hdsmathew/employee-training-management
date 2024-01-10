@@ -4,6 +4,7 @@ using Core.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Core.Application.Services
 {
@@ -26,15 +27,15 @@ namespace Core.Application.Services
             _enrollmentNotificationRepository = enrollmentNotificationRepository;
         }
 
-        public ResponseModel<EnrollmentViewModel> Approve(int enrollmentId, short approverAccountId)
+        public async Task<ResponseModel<EnrollmentViewModel>> ApproveAsync(int enrollmentId, short approverAccountId)
         {
             ResponseModel<EnrollmentViewModel> response = new ResponseModel<EnrollmentViewModel>();
             try
             {
-                Enrollment enrollment = _enrollmentRepository.Get(enrollmentId);
+                Enrollment enrollment = await _enrollmentRepository.GetAsync(enrollmentId);
                 Employee approver = new Employee() { AccountId = approverAccountId };
                 approver.ApproveEnrollment(enrollment);
-                response.UpdatedRows = _enrollmentRepository.Update(enrollment);
+                response.UpdatedRows = await _enrollmentRepository.Update(enrollment);
             }
             catch (DALException dalEx)
             {
@@ -48,18 +49,18 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<EnrollmentViewModel> Decline(DeclineEnrollmentViewModel declineEnrollmentViewModel, short approverAccountId)
+        public async Task<ResponseModel<EnrollmentViewModel>> DeclineAsync(DeclineEnrollmentViewModel declineEnrollmentViewModel, short approverAccountId)
         {
             ResponseModel<EnrollmentViewModel> response = new ResponseModel<EnrollmentViewModel>();
             try
             {
-                Enrollment enrollment = _enrollmentRepository.Get(declineEnrollmentViewModel.EnrollmentId);
+                Enrollment enrollment = await _enrollmentRepository.GetAsync(declineEnrollmentViewModel.EnrollmentId);
                 Employee approver = new Employee() { AccountId = approverAccountId };
                 approver.DeclineEnrollment(enrollment);
-                response.UpdatedRows = _enrollmentRepository.Update(enrollment);
+                response.UpdatedRows = await _enrollmentRepository.Update(enrollment);
                 // Assume both enrollment and notification inserted
-                Training training = _trainingRepository.Get(enrollment.TrainingId);
-                _enrollmentNotificationRepository.Add(new EnrollmentNotification(
+                Training training = await _trainingRepository.GetAsync(enrollment.TrainingId);
+                await _enrollmentNotificationRepository.Add(new EnrollmentNotification(
                     $"Your enrollment application for training: {training.TrainingName} has been declined. Reason: {declineEnrollmentViewModel.ReasonMessage}",
                     enrollment.EmployeeId)
                 );
@@ -76,20 +77,27 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<EnrollmentViewModel> GetEnrollmentSubmissionsForApproval(short managerId)
+        public async Task<ResponseModel<EnrollmentViewModel>> GetEnrollmentSubmissionsForApprovalAsync(short managerId)
         {
             ResponseModel<EnrollmentViewModel> response = new ResponseModel<EnrollmentViewModel>();
             try
             {
-                response.Entities = _enrollmentRepository.GetAllByManagerIdAndApprovalStatus(
+                IEnumerable<Enrollment> enrollments = await _enrollmentRepository.GetAllByManagerIdAndApprovalStatusAsync(
                     managerId,
                     new List<ApprovalStatusEnum>() {
                         ApprovalStatusEnum.Pending
-                    }).Select(enrollment => new EnrollmentViewModel(enrollment)
-                    {
-                        EmployeeName = _employeeRepository.Get(enrollment.EmployeeId)?.GetFullName(),
-                        TrainingName = _trainingRepository.Get(enrollment.TrainingId)?.TrainingName
                     });
+
+                response.Entities = (IEnumerable<EnrollmentViewModel>)enrollments.Select(async enrollment =>
+                {
+                    Employee employee = await _employeeRepository.GetAsync(enrollment.EmployeeId);
+                    Training training = await _trainingRepository.GetAsync(enrollment.TrainingId);
+                    return new EnrollmentViewModel(enrollment)
+                    {
+                        EmployeeName = employee?.GetFullName(),
+                        TrainingName = training?.TrainingName
+                    };
+                });
             }
             catch (DALException dalEx)
             {
@@ -103,18 +111,22 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<EnrollmentViewModel> GetEnrollments(short employeeId)
+        public async Task<ResponseModel<EnrollmentViewModel>> GetEnrollmentsAsync(short employeeId)
         {
             ResponseModel<EnrollmentViewModel> response = new ResponseModel<EnrollmentViewModel>();
             try
             {
-                response.Entities = _enrollmentRepository.GetAllByEmployeeIdAndApprovalStatus(
+                response.Entities = (IEnumerable<EnrollmentViewModel>)(await _enrollmentRepository.GetAllByEmployeeIdAndApprovalStatusAsync(
                     employeeId,
                     new List<ApprovalStatusEnum>() {
-                        ApprovalStatusEnum.Pending, ApprovalStatusEnum.Approved, ApprovalStatusEnum.Declined, ApprovalStatusEnum.Confirmed})
-                    .Select(enrollment => new EnrollmentViewModel(enrollment)
+                        ApprovalStatusEnum.Pending, ApprovalStatusEnum.Approved, ApprovalStatusEnum.Declined, ApprovalStatusEnum.Confirmed}))
+                    .Select(async enrollment =>
                     {
-                        TrainingName = _trainingRepository.Get(enrollment.TrainingId)?.TrainingName
+                        Training training = await _trainingRepository.GetAsync(enrollment.TrainingId);
+                        return new EnrollmentViewModel(enrollment)
+                        {
+                            TrainingName = training?.TrainingName
+                        };
                     });
             }
             catch (DALException dalEx)
@@ -129,12 +141,12 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<Enrollment> Submit(short employeeId, short trainingId)
+        public async Task<ResponseModel<Enrollment>> SubmitAsync(short employeeId, short trainingId)
         {
             ResponseModel<Enrollment> response = new ResponseModel<Enrollment>();
             try
             {
-                if (_enrollmentRepository.Exists(employeeId, trainingId))
+                if (await _enrollmentRepository.Exists(employeeId, trainingId))
                 {
                     response.AddError(new ErrorModel()
                     {
@@ -142,16 +154,16 @@ namespace Core.Application.Services
                     });
                     return response;
                 }
-                response.AddedRows = _enrollmentRepository.Add(new Enrollment()
+                response.AddedRows = await _enrollmentRepository.Add(new Enrollment()
                 {
                     ApprovalStatus = ApprovalStatusEnum.Pending,
                     EmployeeId = employeeId,
                     TrainingId = trainingId
                 });
                 // Assume both enrollment and notification inserted
-                Training training = _trainingRepository.Get(trainingId);
-                Employee employee = _employeeRepository.Get(employeeId);
-                _enrollmentNotificationRepository.Add(new EnrollmentNotification(
+                Training training = await _trainingRepository.GetAsync(trainingId);
+                Employee employee = await _employeeRepository.GetAsync(employeeId);
+                await _enrollmentNotificationRepository.Add(new EnrollmentNotification(
                     $"{employee.GetFullName()} has submitted an enrollment application for training: {training.TrainingName}",
                     employeeId)
                 );
@@ -168,12 +180,12 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<Enrollment> Submit(short employeeId, short trainingId, IEnumerable<EmployeeUpload> employeeUploads)
+        public async Task<ResponseModel<Enrollment>> SubmitAsync(short employeeId, short trainingId, IEnumerable<EmployeeUpload> employeeUploads)
         {
             ResponseModel<Enrollment> response = new ResponseModel<Enrollment>();
             try
             {
-                if (_enrollmentRepository.Exists(employeeId, trainingId))
+                if (await _enrollmentRepository.Exists(employeeId, trainingId))
                 {
                     response.AddError(new ErrorModel()
                     {
@@ -181,16 +193,16 @@ namespace Core.Application.Services
                     });
                     return response;
                 }
-                response.AddedRows = _enrollmentRepository.AddWithEmployeeUploads(new Enrollment()
+                response.AddedRows = await _enrollmentRepository.AddWithEmployeeUploads(new Enrollment()
                 {
                     ApprovalStatus = ApprovalStatusEnum.Pending,
                     EmployeeId = employeeId,
                     TrainingId = trainingId
                 }, employeeUploads);
                 // Assume both enrollment and notification inserted
-                Training training = _trainingRepository.Get(trainingId);
-                Employee employee = _employeeRepository.Get(employeeId);
-                _enrollmentNotificationRepository.Add(new EnrollmentNotification(
+                Training training = await _trainingRepository.GetAsync(trainingId);
+                Employee employee = await _employeeRepository.GetAsync(employeeId);
+                await _enrollmentNotificationRepository.Add(new EnrollmentNotification(
                     $"{employee.GetFullName()} has submitted an enrollment application for training: {training.TrainingName}",
                     employeeId)
                 );
@@ -207,14 +219,18 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<ResponseModel<Enrollment>> ValidateApprovedEnrollments(short? approverAccountId)
+        public async Task<ResponseModel<ResponseModel<Enrollment>>> ValidateApprovedEnrollmentsAsync(short? approverAccountId)
         {
             ResponseModel<ResponseModel<Enrollment>> response = new ResponseModel<ResponseModel<Enrollment>>();
             try
             {
-                short accountId = approverAccountId ?? _accountRepository.GetAccountIdByAccountType(AccountTypeEnum.SysAdmin);
-                response.Entities = _trainingRepository.GetAllByRegistrationDeadlineDue(DateTime.Now)
-                    .Select(training => ValidateApprovedEnrollmentsByTraining(accountId, training))
+                short accountId = approverAccountId ?? await _accountRepository.GetAccountIdByAccountType(AccountTypeEnum.SysAdmin);
+                response.Entities = (IEnumerable<ResponseModel<Enrollment>>)(await _trainingRepository.GetAllByRegistrationDeadlineDueAsync(DateTime.Now))
+                    .Select(async training =>
+                    {
+                        ResponseModel<Enrollment> responseModel = await ValidateApprovedEnrollmentsByTrainingAsync(accountId, training);
+                        return responseModel;
+                    })
                     .ToList();
             }
             catch (DALException dalEx)
@@ -229,13 +245,13 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<Enrollment> ValidateApprovedEnrollmentsByTraining(short approverAccountId, short trainingId)
+        public async Task<ResponseModel<Enrollment>> ValidateApprovedEnrollmentsByTrainingAsync(short approverAccountId, short trainingId)
         {
             ResponseModel<Enrollment> response = new ResponseModel<Enrollment>();
             try
             {
-                Training training = _trainingRepository.Get(trainingId);
-                response = ValidateApprovedEnrollmentsByTraining(approverAccountId, training);
+                Training training = await _trainingRepository.GetAsync(trainingId);
+                response = await ValidateApprovedEnrollmentsByTrainingAsync(approverAccountId, training);
             }
             catch (DALException dalEx)
             {
@@ -249,14 +265,14 @@ namespace Core.Application.Services
             return response;
         }
 
-        private ResponseModel<Enrollment> ValidateApprovedEnrollmentsByTraining(short? approverAccountId, Training training)
+        private async Task<ResponseModel<Enrollment>> ValidateApprovedEnrollmentsByTrainingAsync(short? approverAccountId, Training training)
         {
             ResponseModel<Enrollment> response = new ResponseModel<Enrollment>();
             try
             {
-                short accountId = approverAccountId ?? _accountRepository.GetAccountIdByAccountType(AccountTypeEnum.SysAdmin);
+                short accountId = approverAccountId ?? await _accountRepository.GetAccountIdByAccountType(AccountTypeEnum.SysAdmin);
 
-                IEnumerable<Enrollment> approvedEnrollments = _enrollmentRepository.GetAllByTrainingIdAndApprovalStatus(
+                IEnumerable<Enrollment> approvedEnrollments = await _enrollmentRepository.GetAllByTrainingIdAndApprovalStatusAsync(
                     training.TrainingId,
                     new List<ApprovalStatusEnum>() { ApprovalStatusEnum.Approved });
                 if (!approvedEnrollments.Any())
@@ -272,7 +288,7 @@ namespace Core.Application.Services
                 }
                 else
                 {
-                    IEnumerable<Employee> approvedEmployees = _employeeRepository.GetAllByEmployeeIds(approvedEnrollments.Select(enrollment => enrollment.EmployeeId));
+                    IEnumerable<Employee> approvedEmployees = await _employeeRepository.GetAllByEmployeeIdsAsync(approvedEnrollments.Select(enrollment => enrollment.EmployeeId));
                     IEnumerable<short> confirmedEmployeesBasedOnTrainingPriority = approvedEmployees
                         .Where(employee => employee.DepartmentId == training.PreferredDepartmentId)
                         .Select(employee => employee.EmployeeId);
@@ -291,8 +307,8 @@ namespace Core.Application.Services
                     approver.DeclineEnrollment(approvedEnrollments.Except(enrollmentsToConfirm));
                 }
                 // Assume both enrollment and notification inserted
-                _enrollmentRepository.UpdateBatch(approvedEnrollments);
-                _enrollmentNotificationRepository.AddBatch(approvedEnrollments.Select(enrollment =>
+                await _enrollmentRepository.UpdateBatch(approvedEnrollments);
+                await _enrollmentNotificationRepository.AddBatch(approvedEnrollments.Select(enrollment =>
                     new EnrollmentNotification(
                         $"You have been {enrollment.ApprovalStatus} for training: {training.TrainingName}",
                         enrollment.EmployeeId)

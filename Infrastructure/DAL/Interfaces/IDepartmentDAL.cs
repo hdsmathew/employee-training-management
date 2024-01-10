@@ -1,11 +1,11 @@
 ﻿using Infrastructure.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Infrastructure.DAL.Interfaces
 {
     public interface IDepartmentDAL
     {
-        IEnumerable<DepartmentModel> GetAll();
-
+        Task<IEnumerable<DepartmentModel>> GetAllAsync();
     }
 }

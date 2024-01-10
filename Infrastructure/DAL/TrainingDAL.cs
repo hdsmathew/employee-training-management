@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Infrastructure.DAL
 {
@@ -22,7 +23,7 @@ namespace Infrastructure.DAL
             _trainingMapper = trainingMapper;
         }
 
-        public int Add(TrainingModel training)
+        public async Task<int> AddAsync(TrainingModel training)
         {
             string insertQuery = @"INSERT INTO Training (CreatedAt, PreferredDepartmentId, RegistrationDeadline, SeatsAvailable, TrainingDescription, TrainingName) 
                                    VALUES (GETDATE(), @PreferredDepartmentId, @RegistrationDeadline, @SeatsAvailable, @TrainingDescription, @TrainingName)";
@@ -38,7 +39,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -52,7 +53,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public int AddWithPrerequisites(TrainingModel training, IEnumerable<PrerequisiteModel> prerequisites)
+        public async Task<int> AddWithPrerequisitesAsync(TrainingModel training, IEnumerable<PrerequisiteModel> prerequisites)
         {
             StringBuilder insertQuery = new StringBuilder();
             insertQuery.Append(@"
@@ -96,7 +97,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
             }
             catch (Exception ex)
             {
@@ -110,7 +111,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public int Delete(short trainingId)
+        public async Task<int> DeleteAsync(short trainingId)
         {
             string deleteQuery = "UPDATE Training SET IsActive = 0, UpdatedAt = GETDATE() WHERE TrainingId = @TrainingId";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -121,7 +122,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -135,7 +136,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public bool ExistsByName(string trainingName)
+        public async Task<bool> ExistsByNameAsync(string trainingName)
         {
             string selectQuery = @"SELECT COUNT(*) FROM Training WHERE 
                                    TrainingName = @TrainingName";
@@ -147,7 +148,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
+                scalarObject = await _dataAccess.ExecuteScalar(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -158,7 +159,7 @@ namespace Infrastructure.DAL
             return scalarValue > 0;
         }
 
-        public TrainingModel Get(short trainingId)
+        public async Task<TrainingModel> GetAsync(short trainingId)
         {
             string selectQuery = "SELECT * FROM Training WHERE TrainingId = @TrainingId";
             List<SqlParameter> parameters = new List<SqlParameter>
@@ -169,7 +170,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -183,7 +184,7 @@ namespace Infrastructure.DAL
             return _trainingMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
         }
 
-        public IEnumerable<TrainingModel> GetAll()
+        public async Task<IEnumerable<TrainingModel>> GetAllAsync()
         {
             string selectQuery = "SELECT * FROM Training WHERE IsActive = 1";
             List<SqlParameter> parameters = new List<SqlParameter>();
@@ -191,7 +192,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -201,7 +202,7 @@ namespace Infrastructure.DAL
             return _trainingMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
-        public IEnumerable<TrainingModel> GetAllByRegistrationDeadlineDue(DateTime registrationDeadline)
+        public async Task<IEnumerable<TrainingModel>> GetAllByRegistrationDeadlineDueAsync(DateTime registrationDeadline)
         {
             string selectQuery = "SELECT * FROM Training WHERE IsActive = 1 AND RegistrationDeadline <= GETDATE()";
             List<SqlParameter> parameters = new List<SqlParameter>();
@@ -209,7 +210,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -219,7 +220,7 @@ namespace Infrastructure.DAL
             return _trainingMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
-        public bool HasEnrollments(short trainingId)
+        public async Task<bool> HasEnrollmentsAsync(short trainingId)
         {
             string selectQuery = @"SELECT COUNT(trainingId) 
                                    FROM Training t
@@ -235,7 +236,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
+                scalarObject = await _dataAccess.ExecuteScalar(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -246,7 +247,7 @@ namespace Infrastructure.DAL
             return scalarValue > 0;
         }
 
-        public int Update(TrainingModel training)
+        public async Task<int> UpdateAsync(TrainingModel training)
         {
             string updateQuery = @"UPDATE Training SET 
                                    PreferredDepartmentId = @PreferredDepartmentId, 
@@ -269,7 +270,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(updateQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(updateQuery, parameters);
             }
             catch (Exception ex)
             {

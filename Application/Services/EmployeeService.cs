@@ -3,6 +3,7 @@ using Core.Application.Repositories;
 using Core.Domain;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Core.Application.Services
 {
@@ -19,12 +20,12 @@ namespace Core.Application.Services
             _accountRepository = accountRepository;
         }
 
-        public ResponseModel<Employee> GetEmployeeUploads(short employeeId)
+        public async Task<ResponseModel<Employee>> GetEmployeeUploadsAsync(short employeeId)
         {
             ResponseModel<Employee> response = new ResponseModel<Employee>();
             try
             {
-                response.Entity = _employeeRepository.GetWithEmployeeUploads(employeeId);
+                response.Entity = await _employeeRepository.GetWithEmployeeUploadsAsync(employeeId);
             }
             catch (DALException dalEx)
             {
@@ -38,12 +39,12 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<Employee> GetManagers()
+        public async Task<ResponseModel<Employee>> GetManagersAsync()
         {
             ResponseModel<Employee> response = new ResponseModel<Employee>();
             try
             {
-                response.Entities = _employeeRepository.GetAllByAccountType(AccountTypeEnum.Manager);
+                response.Entities = await _employeeRepository.GetAllByAccountTypeAsync(AccountTypeEnum.Manager);
                 if (!response.Entities.Any())
                 {
                     response.AddError(new ErrorModel()
@@ -65,13 +66,13 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<Employee> Register(RegisterViewModel model)
+        public async Task<ResponseModel<Employee>> RegisterAsync(RegisterViewModel model)
         {
             // TODO: Hash password
             ResponseModel<Employee> response = new ResponseModel<Employee>();
             try
             {
-                if (_accountRepository.ExistsByEmailAddress(model.EmailAddress))
+                if (await _accountRepository.ExistsByEmailAddress(model.EmailAddress))
                 {
                     response.AddError(new ErrorModel()
                     {
@@ -80,7 +81,7 @@ namespace Core.Application.Services
                     return response;
                 }
 
-                if (_employeeRepository.ExistsByNationalIdOrMobileNumber(model.MobileNumber, model.NationalId))
+                if (await _employeeRepository.ExistsByNationalIdOrMobileNumber(model.MobileNumber, model.NationalId))
                 {
                     response.AddError(new ErrorModel()
                     {
@@ -88,7 +89,7 @@ namespace Core.Application.Services
                     });
                     return response;
                 }
-                response.AddedRows = _accountRepository.AddWithEmployeeDetails(
+                response.AddedRows = await _accountRepository.AddWithEmployeeDetails(
                     new Account()
                     {
                         AccountType = AccountTypeEnum.Employee,
@@ -117,12 +118,12 @@ namespace Core.Application.Services
             return response;
         }
 
-        public ResponseModel<Employee> Update(Employee employee)
+        public async Task<ResponseModel<Employee>> UpdateAsync(Employee employee)
         {
             ResponseModel<Employee> response = new ResponseModel<Employee>();
             try
             {
-                response.UpdatedRows = _employeeRepository.Update(employee);
+                response.UpdatedRows = await _employeeRepository.Update(employee);
             }
             catch (DALException dalEx)
             {

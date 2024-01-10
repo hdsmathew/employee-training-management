@@ -2,6 +2,7 @@
 using Core.Application.Services;
 using Core.Domain;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace WebMVC.Controllers
@@ -19,9 +20,9 @@ namespace WebMVC.Controllers
             return View();
         }
 
-        public JsonResult GetNotifications()
+        public async Task<JsonResult> GetNotifications()
         {
-            ResponseModel<EnrollmentNotification> response = _notificationService.GetUnSeenEnrollmentNotifications(AuthenticatedUser.EmployeeId);
+            ResponseModel<EnrollmentNotification> response = await _notificationService.GetUnSeenEnrollmentNotificationsAsync(AuthenticatedUser.EmployeeId);
             return Json(
                 new
                 {

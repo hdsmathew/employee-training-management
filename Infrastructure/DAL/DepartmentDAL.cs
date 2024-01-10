@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Infrastructure.DAL
 {
@@ -21,7 +22,7 @@ namespace Infrastructure.DAL
             _departmentMapper = departmentMapper;
         }
 
-        public IEnumerable<DepartmentModel> GetAll()
+        public async Task<IEnumerable<DepartmentModel>> GetAllAsync()
         {
             string selectQuery = "SELECT * FROM Department";
             List<SqlParameter> parameters = new List<SqlParameter>();
@@ -29,7 +30,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {

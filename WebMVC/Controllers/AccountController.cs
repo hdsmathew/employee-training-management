@@ -3,6 +3,7 @@ using Core.Application.Repositories;
 using Core.Application.Services;
 using Core.Domain;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace WebMVC.Controllers
@@ -27,11 +28,11 @@ namespace WebMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult Login(LoginViewModel model)
+        public async Task<ActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
-                ResponseModel<AuthenticatedUser> response = _accountService.Authenticate(model);
+                ResponseModel<AuthenticatedUser> response = await _accountService.AuthenticateAsync(model);
                 if (response.Success())
                 {
                     Session["AuthenticatedUser"] = response.Entity;
@@ -56,11 +57,11 @@ namespace WebMVC.Controllers
         }
 
         [HttpPost]
-        public ActionResult Register(RegisterViewModel model)
+        public async Task<ActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                ResponseModel<Employee> response = _employeeService.Register(model);
+                ResponseModel<Employee> response = await _employeeService.RegisterAsync(model);
                 if (response.Success())
                 {
                     return RedirectToAction("Login");

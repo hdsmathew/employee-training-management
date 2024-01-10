@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Infrastructure.DAL
 {
@@ -21,7 +22,7 @@ namespace Infrastructure.DAL
             _accountMapper = accountMapper;
         }
 
-        public int Add(AccountModel account)
+        public async Task<int> AddAsync(AccountModel account)
         {
             string insertQuery = @"INSERT INTO Account (AccountTypeId, CreatedAt, EmailAddress, PasswordHash)
                                    VALUES (@AccountTypeId, GETDATE(), @EmailAddress, @PasswordHash);";
@@ -35,7 +36,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -49,7 +50,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public int AddWithEmployeeDetails(AccountModel account, EmployeeModel employee)
+        public async Task<int> AddWithEmployeeDetailsAsync(AccountModel account, EmployeeModel employee)
         {
             string insertQuery = @"
             BEGIN TRY
@@ -84,7 +85,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -98,7 +99,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public int Delete(int accountId)
+        public async Task<int> DeleteAsync(int accountId)
         {
             string deleteQuery = "UPDATE Account SET IsActive = 0 WHERE AccountId = @AccountId";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -109,7 +110,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -123,7 +124,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public bool ExistsByEmailAddress(string emailAddress)
+        public async Task<bool> ExistsByEmailAddressAsync(string emailAddress)
         {
             string selectQuery = @"SELECT COUNT(*) FROM Account WHERE 
                                    EmailAddress = @EmailAddress";
@@ -135,7 +136,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
+                scalarObject = await _dataAccess.ExecuteScalar(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -146,7 +147,7 @@ namespace Infrastructure.DAL
             return scalarValue > 0;
         }
 
-        public AccountModel Get(int accountId)
+        public async Task<AccountModel> GetAsync(int accountId)
         {
             string selectQuery = "SELECT AccountId, AccountTypeId, EmailAddress, PasswordHash FROM Account WHERE AccountId = @AccountId";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -157,7 +158,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -171,7 +172,7 @@ namespace Infrastructure.DAL
             return _accountMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
         }
 
-        public AccountModel Get(string emailAddress, string passwordHash)
+        public async Task<AccountModel> GetAsync(string emailAddress, string passwordHash)
         {
             string selectQuery = @"SELECT AccountId, AccountTypeId, EmailAddress FROM Account WHERE 
                                    EmailAddress = @EmailAddress AND 
@@ -185,7 +186,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -199,7 +200,7 @@ namespace Infrastructure.DAL
             return _accountMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
         }
 
-        public short GetAccountIdByEmailAddress(string emailAddress)
+        public async Task<short> GetAccountIdByEmailAddressAsync(string emailAddress)
         {
             string selectQuery = "SELECT AccountId FROM Account WHERE EmailAddress = @EmailAddress";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -210,7 +211,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
+                scalarObject = await _dataAccess.ExecuteScalar(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -221,7 +222,7 @@ namespace Infrastructure.DAL
             return scalarValue;
         }
 
-        public short GetAccountIdByAccountType(AccountTypeEnum accountType)
+        public async Task<short> GetAccountIdByAccountTypeAsync(AccountTypeEnum accountType)
         {
             string selectQuery = @"SELECT AccountId 
                                    FROM Account acc 
@@ -236,7 +237,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
+                scalarObject = await _dataAccess.ExecuteScalar(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -245,16 +246,6 @@ namespace Infrastructure.DAL
 
             short.TryParse(scalarObject?.ToString(), out short scalarValue);
             return scalarValue;
-        }
-
-        public IEnumerable<AccountModel> GetAll()
-        {
-            throw new System.NotImplementedException();
-        }
-
-        public int Update(AccountModel account)
-        {
-            throw new System.NotImplementedException();
         }
     }
 }

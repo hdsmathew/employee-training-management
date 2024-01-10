@@ -4,6 +4,7 @@ using Infrastructure.Common;
 using Infrastructure.DAL;
 using Infrastructure.Models;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -18,9 +19,9 @@ namespace Infrastructure.Repositories
             _prerequisiteDAL = prerequisiteDAL;
         }
 
-        public IEnumerable<Prerequisite> GetAll()
+        public async Task<IEnumerable<Prerequisite>> GetAllAsync()
         {
-            IEnumerable<PrerequisiteModel> prerequisiteModels = _prerequisiteDAL.GetAll();
+            IEnumerable<PrerequisiteModel> prerequisiteModels = await _prerequisiteDAL.GetAllAsync();
             return _prerequisiteMapper.MapDataModelsToEntities(prerequisiteModels);
         }
     }

@@ -3,6 +3,7 @@ using Core.Domain;
 using Infrastructure.Common;
 using Infrastructure.DAL.Interfaces;
 using Infrastructure.Models;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -19,44 +20,44 @@ namespace Infrastructure.Repositories
             _employeeMapper = employeeMapper;
         }
 
-        public int Add(Account account)
+        public Task<int> Add(Account account)
         {
             AccountModel accountModel = _accountMapper.MapEntityToDataModel(account);
-            return _accountDAL.Add(accountModel);
+            return _accountDAL.AddAsync(accountModel);
         }
 
-        public int AddWithEmployeeDetails(Account account, Employee employee)
+        public Task<int> AddWithEmployeeDetails(Account account, Employee employee)
         {
             AccountModel accountModel = _accountMapper.MapEntityToDataModel(account);
             EmployeeModel employeeModel = _employeeMapper.MapEntityToDataModel(employee);
-            return _accountDAL.AddWithEmployeeDetails(accountModel, employeeModel);
+            return _accountDAL.AddWithEmployeeDetailsAsync(accountModel, employeeModel);
         }
 
-        public bool ExistsByEmailAddress(string emailAddress)
+        public Task<bool> ExistsByEmailAddress(string emailAddress)
         {
-            return _accountDAL.ExistsByEmailAddress(emailAddress);
+            return _accountDAL.ExistsByEmailAddressAsync(emailAddress);
         }
 
-        public Account Get(int accountId)
+        public async Task<Account> GetAsync(int accountId)
         {
-            AccountModel accountModel = _accountDAL.Get(accountId);
+            AccountModel accountModel = await _accountDAL.GetAsync(accountId);
             return _accountMapper.MapDataModelToEntity(accountModel);
         }
 
-        public Account Get(string emailAddress, string passwordHash)
+        public async Task<Account> GetAsync(string emailAddress, string passwordHash)
         {
-            AccountModel accountModel = _accountDAL.Get(emailAddress, passwordHash);
+            AccountModel accountModel = await _accountDAL.GetAsync(emailAddress, passwordHash);
             return _accountMapper.MapDataModelToEntity(accountModel);
         }
 
-        public short GetAccountIdByEmailAddress(string emailAddress)
+        public Task<short> GetAccountIdByEmailAddress(string emailAddress)
         {
-            return _accountDAL.GetAccountIdByEmailAddress(emailAddress);
+            return _accountDAL.GetAccountIdByEmailAddressAsync(emailAddress);
         }
 
-        public short GetAccountIdByAccountType(AccountTypeEnum accountType)
+        public Task<short> GetAccountIdByAccountType(AccountTypeEnum accountType)
         {
-            return _accountDAL.GetAccountIdByAccountType(accountType);
+            return _accountDAL.GetAccountIdByAccountTypeAsync(accountType);
         }
     }
 }

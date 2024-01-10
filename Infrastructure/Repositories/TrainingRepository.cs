@@ -6,6 +6,7 @@ using Infrastructure.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
 {
@@ -24,70 +25,71 @@ namespace Infrastructure.Repositories
             _trainingMapper = trainingMapper;
         }
 
-        public int Add(Training training)
+        public Task<int> Add(Training training)
         {
             TrainingModel trainingEntity = _trainingMapper.MapEntityToDataModel(training);
-            return _trainingDAL.Add(trainingEntity);
+            return _trainingDAL.AddAsync(trainingEntity);
         }
 
-        public int AddWithPrerequisites(Training training)
+        public Task<int> AddWithPrerequisites(Training training)
         {
             TrainingModel trainingEntity = _trainingMapper.MapEntityToDataModel(training);
             IEnumerable<PrerequisiteModel> prerequisiteModels = _prerequisiteMapper.MapEntitiesToDataModels(training.Prerequisites);
-            return _trainingDAL.AddWithPrerequisites(trainingEntity, prerequisiteModels);
+            return _trainingDAL.AddWithPrerequisitesAsync(trainingEntity, prerequisiteModels);
         }
 
-        public int Delete(short trainingID)
+        public Task<int> Delete(short trainingID)
         {
-            return _trainingDAL.Delete(trainingID);
+            return _trainingDAL.DeleteAsync(trainingID);
         }
 
-        public bool ExistsByName(string name)
+        public Task<bool> ExistsByName(string name)
         {
-            return _trainingDAL.ExistsByName(name);
+            return _trainingDAL.ExistsByNameAsync(name);
         }
 
-        public Training Get(short trainingId)
+        public async Task<Training> GetAsync(short trainingId)
         {
-            TrainingModel trainingModel = _trainingDAL.Get(trainingId);
+            TrainingModel trainingModel = await _trainingDAL.GetAsync(trainingId);
             return _trainingMapper.MapDataModelToEntity(trainingModel);
         }
 
-        public Training GetWithPrerequisites(short trainingId)
+        public async Task<Training> GetWithPrerequisitesAsync(short trainingId)
         {
-            Training training = Get(trainingId);
-            training.SetPrerequisites(_prerequisiteMapper.MapDataModelsToEntities(_prerequisiteDAL.GetAllByTrainingId(trainingId)));
+            Training training = await GetAsync(trainingId);
+            training.SetPrerequisites(_prerequisiteMapper.MapDataModelsToEntities(await _prerequisiteDAL.GetAllByTrainingIdAsync(trainingId)));
             return training;
         }
 
-        public IEnumerable<Training> GetAll()
+        public async Task<IEnumerable<Training>> GetAllAsync()
         {
-            IEnumerable<TrainingModel> trainingModels = _trainingDAL.GetAll();
+            IEnumerable<TrainingModel> trainingModels = await _trainingDAL.GetAllAsync();
             return _trainingMapper.MapDataModelsToEntities(trainingModels);
         }
 
-        public IEnumerable<Training> GetAllByRegistrationDeadlineDue(DateTime registrationDeadline)
+        public async Task<IEnumerable<Training>> GetAllByRegistrationDeadlineDueAsync(DateTime registrationDeadline)
         {
-            IEnumerable<TrainingModel> trainingModels = _trainingDAL.GetAllByRegistrationDeadlineDue(registrationDeadline);
+            IEnumerable<TrainingModel> trainingModels = await _trainingDAL.GetAllByRegistrationDeadlineDueAsync(registrationDeadline);
             return _trainingMapper.MapDataModelsToEntities(trainingModels);
         }
 
-        public IEnumerable<Training> GetAllWithPrerequisites()
+        public async Task<IEnumerable<Training>> GetAllWithPrerequisitesAsync()
         {
-            List<Training> trainings = GetAll().ToList();
-            trainings.ForEach(t => t.SetPrerequisites(_prerequisiteMapper.MapDataModelsToEntities(_prerequisiteDAL.GetAllByTrainingId(t.TrainingId))));
+            IEnumerable<Training> trainings = await GetAllAsync();
+            trainings.ToList()
+                .ForEach(async t => t.SetPrerequisites(_prerequisiteMapper.MapDataModelsToEntities(await _prerequisiteDAL.GetAllByTrainingIdAsync(t.TrainingId))));
             return trainings;
         }
 
-        public bool HasEnrollments(short trainingId)
+        public Task<bool> HasEnrollments(short trainingId)
         {
-            return _trainingDAL.HasEnrollments(trainingId);
+            return _trainingDAL.HasEnrollmentsAsync(trainingId);
         }
 
-        public int Update(Training training)
+        public Task<int> Update(Training training)
         {
             TrainingModel trainingEntity = _trainingMapper.MapEntityToDataModel(training);
-            return _trainingDAL.Update(trainingEntity);
+            return _trainingDAL.UpdateAsync(trainingEntity);
         }
     }
 }

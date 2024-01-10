@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Infrastructure.DAL
 {
@@ -22,7 +23,7 @@ namespace Infrastructure.DAL
             _enrollmentMapper = enrollmentMapper;
         }
 
-        public int Add(EnrollmentModel enrollment)
+        public async Task<int> AddAsync(EnrollmentModel enrollment)
         {
             string insertQuery = @"
             DECLARE @ManagerId SMALLINT;
@@ -40,7 +41,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -54,7 +55,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public int AddWithEmployeeUploads(EnrollmentModel enrollment, IEnumerable<EmployeeUploadModel> employeeUploads)
+        public async Task<int> AddWithEmployeeUploadsAsync(EnrollmentModel enrollment, IEnumerable<EmployeeUploadModel> employeeUploads)
         {
             StringBuilder insertQuery = new StringBuilder(@"
             BEGIN TRY
@@ -96,7 +97,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
             }
             catch (Exception ex)
             {
@@ -110,7 +111,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public int Delete(int enrollmentId)
+        public async Task<int> DeleteAsync(int enrollmentId)
         {
             string deleteQuery = "DELETE FROM Enrollment WHERE EnrollmentId = @EnrollmentId";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -121,7 +122,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -135,7 +136,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public bool Exists(short employeeId, short trainingId)
+        public async Task<bool> ExistsAsync(short employeeId, short trainingId)
         {
             string selectQuery = @"SELECT COUNT(*) FROM Enrollment WHERE 
                                    EmployeeId = @EmployeeId AND 
@@ -151,7 +152,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                scalarObject = _dataAccess.ExecuteScalar(selectQuery, parameters);
+                scalarObject = await _dataAccess.ExecuteScalar(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -162,7 +163,7 @@ namespace Infrastructure.DAL
             return scalarValue > 0;
         }
 
-        public EnrollmentModel Get(int enrollmentId)
+        public async Task<EnrollmentModel> GetAsync(int enrollmentId)
         {
             string selectQuery = "SELECT * FROM Enrollment WHERE EnrollmentId = @EnrollmentId";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -173,7 +174,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -193,7 +194,7 @@ namespace Infrastructure.DAL
             return _enrollmentMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
         }
 
-        public IEnumerable<EnrollmentModel> GetAll()
+        public async Task<IEnumerable<EnrollmentModel>> GetAllAsync()
         {
             string selectQuery = "SELECT * FROM Enrollment";
             List<SqlParameter> parameters = new List<SqlParameter>();
@@ -201,7 +202,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -215,7 +216,7 @@ namespace Infrastructure.DAL
             return _enrollmentMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
-        public IEnumerable<EnrollmentModel> GetAllByTrainingIdAndApprovalStatus(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        public async Task<IEnumerable<EnrollmentModel>> GetAllByTrainingIdAndApprovalStatusAsync(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
         {
             string selectQuery = $@"SELECT enr.* 
                                     FROM Enrollment enr
@@ -231,7 +232,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -241,7 +242,7 @@ namespace Infrastructure.DAL
             return _enrollmentMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
-        public IEnumerable<EnrollmentModel> GetAllByEmployeeIdAndApprovalStatus(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        public async Task<IEnumerable<EnrollmentModel>> GetAllByEmployeeIdAndApprovalStatusAsync(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
         {
             string selectQuery = $@"SELECT enr.* 
                                     FROM Enrollment enr
@@ -257,7 +258,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -267,7 +268,7 @@ namespace Infrastructure.DAL
             return _enrollmentMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
-        public IEnumerable<EnrollmentModel> GetAllByManagerIdAndApprovalStatus(short managerId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
+        public async Task<IEnumerable<EnrollmentModel>> GetAllByManagerIdAndApprovalStatusAsync(short managerId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
         {
             string selectQuery = $@"SELECT enr.* 
                                     FROM Enrollment enr
@@ -283,7 +284,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -297,7 +298,7 @@ namespace Infrastructure.DAL
             return _enrollmentMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
-        public int Update(EnrollmentModel enrollment)
+        public async Task<int> UpdateAsync(EnrollmentModel enrollment)
         {
             string updateQuery = @"UPDATE Enrollment SET 
                                    ApprovalStatusId = @ApprovalStatusId, 
@@ -314,7 +315,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(updateQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(updateQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -328,7 +329,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public int UpdateBatch(IEnumerable<EnrollmentModel> enrollments)
+        public async Task<int> UpdateBatchAsync(IEnumerable<EnrollmentModel> enrollments)
         {
             StringBuilder updateQuery = new StringBuilder(@"
             BEGIN TRANSACTION
@@ -377,7 +378,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(updateQuery.ToString(), parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(updateQuery.ToString(), parameters);
             }
             catch (Exception ex)
             {

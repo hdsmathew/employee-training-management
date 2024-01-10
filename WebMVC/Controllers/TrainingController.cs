@@ -5,6 +5,7 @@ using Core.Domain;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 
 namespace WebMVC.Controllers
@@ -22,17 +23,17 @@ namespace WebMVC.Controllers
             _enrollmentService = enrollmentService;
         }
 
-        public ActionResult Index()
+        public async Task<ActionResult> Index()
         {
             // TODO: Get only valid trainings for user
-            IEnumerable<Training> trainings = _trainingRepository.GetAllWithPrerequisites();
+            IEnumerable<Training> trainings = await _trainingRepository.GetAllWithPrerequisitesAsync();
             return View(trainings);
         }
 
         [CustomAuthorize(AccountTypeEnum.Admin)]
-        public ActionResult Create()
+        public async Task<ActionResult> Create()
         {
-            ResponseModel<TrainingViewModel> response = _trainingService.GetTrainingDetails();
+            ResponseModel<TrainingViewModel> response = await _trainingService.GetTrainingDetailsAsync();
             if (response.Failure())
             {
                 RedirectToAction("Error", "ServerFault");
@@ -42,7 +43,7 @@ namespace WebMVC.Controllers
 
         [CustomAuthorize(AccountTypeEnum.Admin)]
         [HttpPost]
-        public JsonResult Create(TrainingViewModel model)
+        public async Task<JsonResult> Create(TrainingViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -73,7 +74,7 @@ namespace WebMVC.Controllers
             {
                 training.SetPrerequisites(model.SelectedPrerequisiteIds.Select(prerequisiteId => new Prerequisite() { PrerequisiteId = prerequisiteId }));
             }
-            ResponseModel<Training> response = _trainingService.Add(training);
+            ResponseModel<Training> response = await _trainingService.AddAsync(training);
 
             return Json(
                 new
@@ -88,9 +89,9 @@ namespace WebMVC.Controllers
         }
 
         [CustomAuthorize(AccountTypeEnum.Admin)]
-        public ActionResult Edit(short trainingId)
+        public async Task<ActionResult> Edit(short trainingId)
         {
-            ResponseModel<TrainingViewModel> response = _trainingService.GetTrainingDetails(trainingId);
+            ResponseModel<TrainingViewModel> response = await _trainingService.GetTrainingDetailsAsync(trainingId);
             if (response.Failure())
             {
                 RedirectToAction("Error", "ServerFault");
@@ -101,7 +102,7 @@ namespace WebMVC.Controllers
 
         [CustomAuthorize(AccountTypeEnum.Admin)]
         [HttpPost]
-        public JsonResult Edit(TrainingViewModel model)
+        public async Task<JsonResult> Edit(TrainingViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -129,7 +130,7 @@ namespace WebMVC.Controllers
                 TrainingDescription = model.TrainingDescription,
                 TrainingName = model.TrainingName,
             };
-            ResponseModel<Training> response = _trainingService.Update(training);
+            ResponseModel<Training> response = await _trainingService.UpdateAsync(training);
 
             return Json(
                 new
@@ -145,9 +146,9 @@ namespace WebMVC.Controllers
 
         [CustomAuthorize(AccountTypeEnum.Admin)]
         [HttpPost]
-        public JsonResult Delete(short trainingId)
+        public async Task<JsonResult> Delete(short trainingId)
         {
-            ResponseModel<Training> response = _trainingService.Delete(trainingId);
+            ResponseModel<Training> response = await _trainingService.DeleteAsync(trainingId);
             return Json(
                 new
                 {
@@ -162,7 +163,7 @@ namespace WebMVC.Controllers
 
         [CustomAuthorize(AccountTypeEnum.Admin)]
         [HttpPost]
-        public JsonResult GenerateEnrollmentsReport(short trainingId)
+        public async Task<JsonResult> GenerateEnrollmentsReport(short trainingId)
         {
             // TODO: Implmenent Excel report
             throw new NotImplementedException();
@@ -170,9 +171,9 @@ namespace WebMVC.Controllers
 
         [CustomAuthorize(AccountTypeEnum.Admin)]
         [HttpPost]
-        public JsonResult ValidateApprovedEnrollments(short trainingId)
+        public async Task<JsonResult> ValidateApprovedEnrollments(short trainingId)
         {
-            ResponseModel<Enrollment> response = _enrollmentService.ValidateApprovedEnrollmentsByTraining(AuthenticatedUser.AccountId, trainingId);
+            ResponseModel<Enrollment> response = await _enrollmentService.ValidateApprovedEnrollmentsByTrainingAsync(AuthenticatedUser.AccountId, trainingId);
             return Json(
                 new
                 {

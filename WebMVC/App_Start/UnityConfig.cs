@@ -54,11 +54,7 @@ namespace WebMVC
             // TODO: Register your type's mappings here.
             // container.RegisterType<IProductRepository, ProductRepository>();
 
-            container.RegisterType<DataAccess>
-            (
-                TypeLifetime.Singleton,
-                new InjectionConstructor(ConfigurationManager.AppSettings["DefaultConnectionString"])
-            );
+            container.RegisterType<DataAccess>(TypeLifetime.Singleton);
 
             container.RegisterType<ILogger, FileLogger>(TypeLifetime.Singleton);
 

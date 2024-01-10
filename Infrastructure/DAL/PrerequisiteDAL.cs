@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace Infrastructure.DAL
 {
@@ -22,7 +23,7 @@ namespace Infrastructure.DAL
             _prerequisiteMapper = prerequisiteMapper;
         }
 
-        public int Add(PrerequisiteModel prerequisite)
+        public async Task<int> AddAsync(PrerequisiteModel prerequisite)
         {
             string insertQuery = @"INSERT INTO Prerequisite (DocumentName)
                                    VALUES (@DocumentName);";
@@ -34,7 +35,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                rowsAffected = _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -48,7 +49,7 @@ namespace Infrastructure.DAL
             return rowsAffected;
         }
 
-        public IEnumerable<PrerequisiteModel> GetAll()
+        public async Task<IEnumerable<PrerequisiteModel>> GetAllAsync()
         {
             string selectQuery = "SELECT * FROM Prerequisite";
             List<SqlParameter> parameters = new List<SqlParameter>();
@@ -56,7 +57,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -70,7 +71,7 @@ namespace Infrastructure.DAL
             return _prerequisiteMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
-        public IEnumerable<PrerequisiteModel> GetAllByTrainingId(short trainingId)
+        public async Task<IEnumerable<PrerequisiteModel>> GetAllByTrainingIdAsync(short trainingId)
         {
             string selectQuery = @"WITH PrerequisiteIds (PrerequisiteId) AS (
                                         SELECT PrerequisiteId FROM TrainingPrerequisite WHERE TrainingId = @TrainingId
@@ -86,7 +87,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                entityValueTuplesArrays = _dataAccess.ExecuteReader(selectQuery, parameters);
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
