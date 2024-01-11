@@ -170,7 +170,7 @@ namespace Core.Application.Services
                 Employee employee = await _employeeRepository.GetAsync(employeeId);
                 await _enrollmentNotificationRepository.Add(new EnrollmentNotification(
                     $"{employee.GetFullName()} has submitted an enrollment application for training: {training.TrainingName}",
-                    employeeId)
+                    employee.ManagerId)
                 );
             }
             catch (DALException dalEx)
@@ -209,7 +209,7 @@ namespace Core.Application.Services
                 Employee employee = await _employeeRepository.GetAsync(employeeId);
                 await _enrollmentNotificationRepository.Add(new EnrollmentNotification(
                     $"{employee.GetFullName()} has submitted an enrollment application for training: {training.TrainingName}",
-                    employeeId)
+                    employee.ManagerId)
                 );
             }
             catch (DALException dalEx)
