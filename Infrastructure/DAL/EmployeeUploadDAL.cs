@@ -24,7 +24,7 @@ namespace Infrastructure.DAL
 
         public async Task<IEnumerable<EmployeeUploadModel>> GetAllByEmployeeIdAsync(short employeeId)
         {
-            string selectQuery = @"SELECT PrerequisiteId, UploadedAt, UploadedFileName FROM EmployeeUpload WHERE EmployeeId = @EmployeeId";
+            string selectQuery = "SELECT PrerequisiteId, UploadedAt, UploadedFileName FROM EmployeeUpload WHERE EmployeeId = @EmployeeId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@EmployeeId", employeeId)
@@ -40,10 +40,39 @@ namespace Infrastructure.DAL
                 throw new DALException("Error while executing query", ex);
             }
 
-            if (!entityValueTuplesArrays.Any())
+            return _employeeUploadMapper.MapTableToDataModels(entityValueTuplesArrays);
+        }
+
+        public async Task<IEnumerable<EmployeeUploadModel>> GetAllByEnrollmentIdAsync(int enrollmentId)
+        {
+            string selectQuery = @"WITH TrainingPrerequisiteIds (PrerequisiteId) AS (
+                                        SELECT traPre.PrerequisiteId 
+                                        FROM TrainingPrerequisite traPre
+                                        INNER JOIN Enrollment enr
+                                        ON traPre.TrainingId = enr.TrainingId
+                                        WHERE EnrollmentId = @EnrollmentId
+                                   )
+
+                                   SELECT empUp.PrerequisiteId, empUp.UploadedAt, empUp.UploadedFileName 
+                                   FROM EmployeeUpload empUp
+                                   INNER JOIN Enrollment enr ON enr.EmployeeId = empUp.EmployeeId
+                                   INNER JOIN TrainingPrerequisiteIds traPreIds ON empUp.PrerequisiteId = traPreIds.Prerequisiteid
+                                   WHERE EnrollmentId = @EnrollmentId";
+            List<SqlParameter> parameters = new List<SqlParameter>()
             {
-                return new List<EmployeeUploadModel>();
+                new SqlParameter("@EnrollmentId", enrollmentId)
+            };
+            IEnumerable<(string, object)[]> entityValueTuplesArrays;
+
+            try
+            {
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
             }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
             return _employeeUploadMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
     }

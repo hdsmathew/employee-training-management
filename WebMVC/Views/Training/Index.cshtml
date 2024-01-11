@@ -20,9 +20,10 @@
             <th>@Html.DisplayNameFor(m => m.TrainingDescription)</th>
             <th>@Html.DisplayNameFor(m => m.RegistrationDeadline)</th>
             <th class="d-flex justify-content-between">
-                Action
                 @if (authenticatedUser.IsInRole(AccountTypeEnum.Admin))
                 {
+                    @Html.ActionLink("All Reports", "GenerateEnrollmentsReport", "Enrollment", new { }, new { @class = "btn btn-primary" })
+                    @Html.ActionLink("Process All Enrollments", "ValidateApprovedEnrollments", "Enrollment", new { }, new { @class = "btn btn-primary" })
                     @Html.ActionLink("Create Training", "Create", "Training", new { }, new { @class = "btn btn-primary" })
                 }
             </th>

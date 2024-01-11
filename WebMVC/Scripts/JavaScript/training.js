@@ -182,7 +182,7 @@
         const trainingId = $(this).attr("data-trainingId");
 
         $.ajax({
-            url: "/Training/GenerateEnrollmentsReport",
+            url: "/Enrollment/GenerateEnrollmentsReportByTraining",
             type: "POST",
             data: { trainingId: trainingId },
             dataType: "json",
@@ -203,7 +203,7 @@
         const trainingId = $(this).attr("data-trainingId");
 
         $.ajax({
-            url: "/Training/ValidateApprovedEnrollments",
+            url: "/Enrollment/ValidateApprovedEnrollmentsByTraining",
             type: "POST",
             data: { trainingId: trainingId },
             dataType: "json",

@@ -64,6 +64,11 @@ namespace Infrastructure.Repositories
             return employee;
         }
 
+        public async Task<IEnumerable<EmployeeUpload>> GetEmployeeUploadsByEnrollmentIdAsync(int enrollmentId)
+        {
+            return _employeeUploadMapper.MapDataModelsToEntities(await _employeeUploadDAL.GetAllByEnrollmentIdAsync(enrollmentId));
+        }
+
         public async Task<Employee> GetWithEnrollmentsByApprovalStatusAsync(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
         {
             Employee employee = await GetAsync(employeeId);

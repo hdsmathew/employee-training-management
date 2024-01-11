@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace WebMVC.Controllers
 {
-    public class EmployeeController : Controller
+    public class EmployeeController : SessionController
     {
         private readonly IEmployeeService _employeeService;
 
@@ -24,7 +24,7 @@ namespace WebMVC.Controllers
                 {
                     Success = response.Success(),
                     Message = response.Success()
-                    ? "EmployeeUpload retrieved successfully"
+                    ? "EmployeeUploads retrieved successfully"
                     : response.GetErrors().FirstOrDefault()?.Message ?? "EmployeeUploads cannot be retrieved",
                     Result = response.Success() ? new { EmployeeId = employeeId, response.Entity.EmployeeUploads } : null
                 },
@@ -33,18 +33,17 @@ namespace WebMVC.Controllers
                 JsonRequestBehavior.AllowGet);
         }
 
-        public async Task<JsonResult> GetEmployeeUploadsByEnrollmentId(short employeeId, int enrollmentId)
+        public async Task<JsonResult> GetEmployeeUploadsByEnrollmentId(int enrollmentId)
         {
-            // TODO: Fetch uploads for an enrollment
-            ResponseModel<Employee> response = await _employeeService.GetEmployeeUploadsAsync(employeeId);
+            ResponseModel<EmployeeUpload> response = await _employeeService.GetEmployeeUploadsByEnrollmentIdAsync(enrollmentId);
             return Json(
                 new
                 {
                     Success = response.Success(),
                     Message = response.Success()
-                    ? "EmployeeUpload retrieved successfully"
+                    ? "EmployeeUploads retrieved successfully"
                     : response.GetErrors().FirstOrDefault()?.Message ?? "EmployeeUploads cannot be retrieved",
-                    Result = response.Success() ? new { EmployeeId = employeeId, response.Entity.EmployeeUploads } : null
+                    Result = response.Success() ? new { EmployeeUploads = response.Entities } : null
                 },
                 "application/json",
                 System.Text.Encoding.UTF8,

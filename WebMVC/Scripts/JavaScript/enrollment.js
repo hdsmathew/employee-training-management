@@ -57,13 +57,28 @@
         $(".modal-body").append(createDeclineForm(enrollmentId));
     }
 
-    $("[data-target='#templateModal']").on("click", function () {
+    $(".declineEnrollmentModal").on("click", function () {
         loadDeclineModalContent($(this).attr("data-enrollmentId"));
+        $("#templateModalLongTitle").text("Decline Reason");
+
+        const declineEnrollmentBtn = $("<button>", {
+            "form": "declineForm",
+            "type": "button",
+            "class": "btn btn-primary declineEnrollment",
+            "data-dismiss": "modal",
+            "text": "Decline"
+        });
+        $(".modal-footer").append(declineEnrollmentBtn);
+
         $("#templateModal").modal("show");
     });
 
     $("[data-dismiss='modal']").on("click", function () {
         $("#templateModal").modal("hide");
+    });
+
+    $("#templateModal").on("hidden.bs.modal", function () {
+        $(".declineEnrollment").remove();
     });
 
     function removeTableRow(row) {
@@ -94,7 +109,7 @@
     });
 
     $(".declineEnrollment").on("click", function () {
-        const enrollmentId = $("[data-target='#templateModal']").attr("data-enrollmentId");
+        const enrollmentId = $(".declineEnrollmentModal").attr("data-enrollmentId");
 
         $.ajax({
             url: "/Enrollment/Decline",
@@ -115,5 +130,68 @@
                 console.error("Error:", error);
             }
         });
+    });
+
+    function createDocumentUploadedList(documentUploads) {
+        let documentUploadsList = $("<ul>");
+        $.each(documentUploads, function (index, documentUpload) {
+            const listItem = $("<li>").text(` Prerequisite ${documentUpload.PrerequisiteId}: ${documentUpload.UploadedFileName} `);
+            const downloadLink = $("<a>")
+                .attr({
+                    href: `/Enrollment/GetDocumentUpload?uploadedFileName=${encodeURIComponent(documentUpload.UploadedFileName)}`,
+                    download: documentUpload.FileName
+                })
+                .text("Download");
+
+            listItem.append(downloadLink);
+            documentUploadsList.append(listItem);
+        });
+        return documentUploadsList;
+    }
+
+    function loadDocumentsModalContent(enrollmentId) {
+        return new Promise((resolve, reject) => {
+            $(".modal-body").empty();
+
+            $.ajax({
+                url: "/Employee/GetEmployeeUploadsByEnrollmentId",
+                type: "GET",
+                data: { enrollmentId: enrollmentId },
+                dataType: "json",
+                success: function (response) {
+                    if (response.Success) {
+                        $(".modal-body").append(createDocumentUploadedList(response.Result.EmployeeUploads));
+
+                        if (response.Result.EmployeeUploads.length < 1) {
+                            const uploadedDocumentStatus = $("<p>")
+                                .attr("id", "uploadedDocumentStatus")
+                                .text("No prerequisites needed.");
+                            $(".modal-body").append(uploadedDocumentStatus);
+                        }
+                    }
+                    resolve(response.Success);
+                },
+                error: function (error) {
+                    console.error("Error:", error);
+                    reject(false);
+                }
+            });
+        });
+    }
+
+    $(".viewDocumentsModal").on("click", function () {
+        loadDocumentsModalContent($(this).attr("data-enrollmentId"))
+            .then((documentsModalContentLoaded) => {
+                if (!documentsModalContentLoaded) {
+                    showToastrNotification("Cannot load documents at this moment. Please try again later.", "error");
+                    return;
+                }
+                $("#templateModalLongTitle").text("Documents Uploaded");
+                $("#templateModal").modal("show");
+            })
+            .catch((error) => {
+                showToastrNotification("Cannot load documents at this moment. Please try again later.", "error");
+                console.error("An error occurred:", error);
+            });
     });
 });

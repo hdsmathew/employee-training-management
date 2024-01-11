@@ -12,15 +12,13 @@ namespace WebMVC.Controllers
 {
     public class TrainingController : SessionController
     {
-        private readonly IEnrollmentService _enrollmentService;
         private readonly ITrainingRepository _trainingRepository;
         private readonly ITrainingService _trainingService;
 
-        public TrainingController(ITrainingRepository trainingRepository, ITrainingService trainingService, IEnrollmentService enrollmentService)
+        public TrainingController(ITrainingRepository trainingRepository, ITrainingService trainingService)
         {
             _trainingRepository = trainingRepository;
             _trainingService = trainingService;
-            _enrollmentService = enrollmentService;
         }
 
         public async Task<ActionResult> Index()
@@ -156,31 +154,6 @@ namespace WebMVC.Controllers
                     Message = response.Success()
                     ? "Training deleted successfully"
                     : response.GetErrors().FirstOrDefault()?.Message ?? "Training cannot be deleted"
-                },
-                "application/json",
-                System.Text.Encoding.UTF8);
-        }
-
-        [CustomAuthorize(AccountTypeEnum.Admin)]
-        [HttpPost]
-        public async Task<JsonResult> GenerateEnrollmentsReport(short trainingId)
-        {
-            // TODO: Implmenent Excel report
-            throw new NotImplementedException();
-        }
-
-        [CustomAuthorize(AccountTypeEnum.Admin)]
-        [HttpPost]
-        public async Task<JsonResult> ValidateApprovedEnrollments(short trainingId)
-        {
-            ResponseModel<Enrollment> response = await _enrollmentService.ValidateApprovedEnrollmentsByTrainingAsync(AuthenticatedUser.AccountId, trainingId);
-            return Json(
-                new
-                {
-                    Success = response.Success(),
-                    Message = response.Success()
-                    ? "Enrollments for training processed successfully"
-                    : response.GetErrors().FirstOrDefault()?.Message ?? "Enrollment for trainings cannot be processed"
                 },
                 "application/json",
                 System.Text.Encoding.UTF8);

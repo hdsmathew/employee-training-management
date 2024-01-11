@@ -39,6 +39,25 @@ namespace Core.Application.Services
             return response;
         }
 
+        public async Task<ResponseModel<EmployeeUpload>> GetEmployeeUploadsByEnrollmentIdAsync(int enrollmentId)
+        {
+            ResponseModel<EmployeeUpload> response = new ResponseModel<EmployeeUpload>();
+            try
+            {
+                response.Entities = await _employeeRepository.GetEmployeeUploadsByEnrollmentIdAsync(enrollmentId);
+            }
+            catch (DALException dalEx)
+            {
+                _logger.LogError(dalEx, $"Error in retrieving employee uploads with enrollment id: {enrollmentId}.");
+                response.AddError(new ErrorModel()
+                {
+                    Message = "Unable to retrieve employee uploads.",
+                    Exception = dalEx
+                });
+            }
+            return response;
+        }
+
         public async Task<ResponseModel<Employee>> GetManagersAsync()
         {
             ResponseModel<Employee> response = new ResponseModel<Employee>();

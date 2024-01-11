@@ -17,5 +17,6 @@ namespace Core.Application.Repositories
         Task<Employee> GetWithEmployeeUploadsAsync(short employeeId);
         Task<Employee> GetWithEnrollmentsByApprovalStatusAsync(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
         Task<int> Update(Employee employee);
+        Task<IEnumerable<EmployeeUpload>> GetEmployeeUploadsByEnrollmentIdAsync(int enrollmentId);
     }
 }

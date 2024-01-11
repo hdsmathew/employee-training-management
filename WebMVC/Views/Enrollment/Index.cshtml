@@ -37,14 +37,14 @@
                     <td>@Html.DisplayFor(enrollments => enrollment.RequestedAt)</td>
                     <td class="@GetColourClassByApprovalStatus(enrollment.ApprovalStatus)">@Html.DisplayFor(enrollments => enrollment.ApprovalStatus)</td>
                     <td>
-                        <button type="button" class="btn btn-primary w-100 viewDocuments" data-enrollmentId="@(enrollment.EnrollmentId)">Documents</button>
+                        <button type="button" class="btn btn-primary w-100 viewDocumentsModal" data-enrollmentId="@(enrollment.EnrollmentId)">Documents</button>
                     </td>
                     @if (authenticatedUser.IsInRole(AccountTypeEnum.Manager))
                     {
                         <td>
                             <div class="d-md-flex">
-                                <button type="button" class="btn btn-danger w-100 approveEnrollment" data-enrollmentId="@(enrollment.EnrollmentId)">Approve</button>
-                                <button type="button" class="btn btn-success w-100" data-toggle="modal" data-target="#templateModal" data-enrollmentId="@(enrollment.EnrollmentId)">Decline</button>
+                                <button type="button" class="btn btn-success w-100 approveEnrollment" data-enrollmentId="@(enrollment.EnrollmentId)">Approve</button>
+                                <button type="button" class="btn btn-danger w-100 declineEnrollmentModal" data-toggle="modal" data-target="#templateModal" data-enrollmentId="@(enrollment.EnrollmentId)">Decline</button>
                             </div>
                         </td>
                     }
@@ -58,13 +58,12 @@
     <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="templateModalLongTitle">Reason for declining</h5>
+                <h5 class="modal-title" id="templateModalLongTitle"></h5>
             </div>
             <div class="modal-body d-flex flex-column align-items-center">
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                <button form="declineForm" type="button" class="btn btn-primary declineEnrollment" data-dismiss="modal">Decline</button>
             </div>
         </div>
     </div>

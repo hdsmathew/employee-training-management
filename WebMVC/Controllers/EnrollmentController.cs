@@ -1,6 +1,7 @@
 ﻿using Core.Application.Models;
 using Core.Application.Services;
 using Core.Domain;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -66,10 +67,39 @@ namespace WebMVC.Controllers
                 System.Text.Encoding.UTF8);
         }
 
+        [CustomAuthorize(AccountTypeEnum.Admin)]
+        [HttpPost]
+        public async Task<JsonResult> GenerateEnrollmentsReport(short trainingId)
+        {
+            // TODO: Implmenent Excel report
+            throw new NotImplementedException();
+        }
+
+        [CustomAuthorize(AccountTypeEnum.Admin)]
+        [HttpPost]
+        public async Task<JsonResult> GenerateEnrollmentsReportByTraining(short trainingId)
+        {
+            // TODO: Implmenent Excel report
+            throw new NotImplementedException();
+        }
+
+        [CustomAuthorize(AccountTypeEnum.Manager, AccountTypeEnum.Employee)]
+        public FileContentResult GetDocumentUpload(string uploadedFileName)
+        {
+            // TODO: Add validation
+            string uploadsFolder = Server.MapPath("~/App_Data/Employee_Uploads");
+            string filePath = Path.Combine(uploadsFolder, uploadedFileName);
+            byte[] fileContents = System.IO.File.ReadAllBytes(filePath);
+            string mimeType = MimeMapping.GetMimeMapping(uploadedFileName);
+            return File(fileContents, mimeType, uploadedFileName);
+        }
+
         [CustomAuthorize(AccountTypeEnum.Manager, AccountTypeEnum.Employee)]
         [HttpPost]
         public async Task<JsonResult> SubmitEnrollment(EnrollmentSubmissionViewModel enrollmentSubmissionViewModel)
         {
+            // Refactor: Redo logic to remove additional method for submitting enrollments without uploads
+            // Refactor: Move upload functionality to service
             // TODO : Validate file input
             ResponseModel<Enrollment> response;
             if (enrollmentSubmissionViewModel.EmployeeUploads is null)
@@ -89,6 +119,40 @@ namespace WebMVC.Controllers
                     Message = response.Success()
                     ? "Enrollment submitted successfully"
                     : response.GetErrors().FirstOrDefault()?.Message ?? "Enrollment application cannot be submitted"
+                },
+                "application/json",
+                System.Text.Encoding.UTF8);
+        }
+
+        [CustomAuthorize(AccountTypeEnum.Admin)]
+        [HttpPost]
+        public async Task<JsonResult> ValidateApprovedEnrollments()
+        {
+            ResponseModel<ResponseModel<Enrollment>> response = await _enrollmentService.ValidateApprovedEnrollmentsAsync(AuthenticatedUser.AccountId);
+            return Json(
+                new
+                {
+                    Success = response.Success(),
+                    Message = response.Success()
+                    ? "All enrollments processed successfully"
+                    : response.GetErrors().FirstOrDefault()?.Message ?? "Enrollments cannot be processed"
+                },
+                "application/json",
+                System.Text.Encoding.UTF8);
+        }
+
+        [CustomAuthorize(AccountTypeEnum.Admin)]
+        [HttpPost]
+        public async Task<JsonResult> ValidateApprovedEnrollmentsByTraining(short trainingId)
+        {
+            ResponseModel<Enrollment> response = await _enrollmentService.ValidateApprovedEnrollmentsByTrainingAsync(AuthenticatedUser.AccountId, trainingId);
+            return Json(
+                new
+                {
+                    Success = response.Success(),
+                    Message = response.Success()
+                    ? "Enrollments for training processed successfully"
+                    : response.GetErrors().FirstOrDefault()?.Message ?? "Enrollment for trainings cannot be processed"
                 },
                 "application/json",
                 System.Text.Encoding.UTF8);

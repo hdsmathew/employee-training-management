@@ -7,5 +7,6 @@ namespace Infrastructure.DAL.Interfaces
     public interface IEmployeeUploadDAL
     {
         Task<IEnumerable<EmployeeUploadModel>> GetAllByEmployeeIdAsync(short employeeId);
+        Task<IEnumerable<EmployeeUploadModel>> GetAllByEnrollmentIdAsync(int enrollmentId);
     }
 }
