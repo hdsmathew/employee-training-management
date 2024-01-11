@@ -13,5 +13,6 @@ namespace Core.Application.Repositories
         Task<Account> GetAsync(string emailAddress, string passwordHash);
         Task<short> GetAccountIdByAccountType(AccountTypeEnum accountType);
         Task<short> GetAccountIdByEmailAddress(string emailAddress);
+        Task<Account> GetByEmailAddressAsync(string emailAddress);
     }
 }

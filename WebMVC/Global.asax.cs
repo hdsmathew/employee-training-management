@@ -29,8 +29,7 @@ namespace WebMVC
             _logger.LogError(exception, "Unhandled Exception");
 
             //Server.ClearError();
-
-            Response.RedirectToRoute("Default", new RouteValueDictionary(new { controller = "Error", action = "Index" }));
+            //Response.RedirectToRoute("Default", new RouteValueDictionary(new { controller = "Error", action = "Index" }));
         }
     }
 }

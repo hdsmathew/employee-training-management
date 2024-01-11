@@ -10,7 +10,7 @@
 
 <script type="text/javascript">
     sessionStorage.setItem("Trainings", '@Html.Raw(Json.Encode(Model))');
-    sessionStorage.setItem("EmployeeId", 3);
+    sessionStorage.setItem("EmployeeId", @authenticatedUser.EmployeeId);
 </script>
 
 <main>

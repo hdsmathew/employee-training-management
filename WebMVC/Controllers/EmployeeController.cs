@@ -7,7 +7,7 @@ using System.Web.Mvc;
 
 namespace WebMVC.Controllers
 {
-    public class EmployeeController : SessionController
+    public class EmployeeController : Controller
     {
         private readonly IEmployeeService _employeeService;
 

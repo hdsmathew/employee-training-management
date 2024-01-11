@@ -6,7 +6,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 
-[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
+[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = true)]
 public class CustomAuthorizeAttribute : AuthorizeAttribute
 {
     private readonly IEnumerable<AccountTypeEnum> _requiredRoles;

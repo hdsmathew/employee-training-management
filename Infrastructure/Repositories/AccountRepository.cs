@@ -59,5 +59,11 @@ namespace Infrastructure.Repositories
         {
             return _accountDAL.GetAccountIdByAccountTypeAsync(accountType);
         }
+
+        public async Task<Account> GetByEmailAddressAsync(string emailAddress)
+        {
+            AccountModel accountModel = await _accountDAL.GetByEmailAddressAsync(emailAddress);
+            return _accountMapper.MapDataModelToEntity(accountModel);
+        }
     }
 }

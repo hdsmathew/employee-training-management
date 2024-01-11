@@ -87,7 +87,6 @@ namespace Core.Application.Services
 
         public async Task<ResponseModel<Employee>> RegisterAsync(RegisterViewModel model)
         {
-            // TODO: Hash password
             ResponseModel<Employee> response = new ResponseModel<Employee>();
             try
             {
@@ -113,7 +112,7 @@ namespace Core.Application.Services
                     {
                         AccountType = AccountTypeEnum.Employee,
                         EmailAddress = model.EmailAddress,
-                        PasswordHash = model.Password
+                        PasswordHash = GetPasswordHash(model.Password)
                     },
                     new Employee()
                     {
@@ -154,6 +153,11 @@ namespace Core.Application.Services
                 });
             }
             return response;
+        }
+
+        private string GetPasswordHash(string password)
+        {
+            return BCrypt.Net.BCrypt.EnhancedHashPassword(password, 11);
         }
     }
 }

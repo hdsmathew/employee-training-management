@@ -15,5 +15,6 @@ namespace Infrastructure.DAL.Interfaces
         Task<AccountModel> GetAsync(string emailAddress, string passwordHash);
         Task<short> GetAccountIdByAccountTypeAsync(AccountTypeEnum accountType);
         Task<short> GetAccountIdByEmailAddressAsync(string emailAddress);
+        Task<AccountModel> GetByEmailAddressAsync(string emailAddress);
     }
 }

@@ -247,5 +247,30 @@ namespace Infrastructure.DAL
             short.TryParse(scalarObject?.ToString(), out short scalarValue);
             return scalarValue;
         }
+
+        public async Task<AccountModel> GetByEmailAddressAsync(string emailAddress)
+        {
+            string selectQuery = "SELECT AccountId, AccountTypeId, PasswordHash FROM Account WHERE EmailAddress = @EmailAddress";
+            List<SqlParameter> parameters = new List<SqlParameter>()
+            {
+                new SqlParameter("@EmailAddress", emailAddress)
+            };
+            IEnumerable<(string, object)[]> entityValueTuplesArrays;
+
+            try
+            {
+                entityValueTuplesArrays = await _dataAccess.ExecuteReaderAsync(selectQuery, parameters);
+            }
+            catch (Exception ex)
+            {
+                throw new DALException("Error while executing query", ex);
+            }
+
+            if (entityValueTuplesArrays.Count() < 1)
+            {
+                throw new DALException("No rows returned");
+            }
+            return _accountMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
+        }
     }
 }

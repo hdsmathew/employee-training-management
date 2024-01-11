@@ -1,4 +1,5 @@
-﻿using Core.Application.Models;
+﻿using BCrypt.Net;
+using Core.Application.Models;
 using Core.Application.Repositories;
 using Core.Domain;
 using System.Threading.Tasks;
@@ -20,12 +21,11 @@ namespace Core.Application.Services
 
         public async Task<ResponseModel<AuthenticatedUser>> AuthenticateAsync(LoginViewModel model)
         {
-            // TODO: Hash password
             ResponseModel<AuthenticatedUser> response = new ResponseModel<AuthenticatedUser>();
             try
             {
-                Account account = await _accountRepository.GetAsync(model.EmailAddress, model.Password);
-                if (account == null)
+                Account account = await _accountRepository.GetByEmailAddressAsync(model.EmailAddress);
+                if (account is null || !IsPasswordValid(model.Password, account.PasswordHash))
                 {
                     response.AddError(new ErrorModel()
                     {
@@ -33,6 +33,7 @@ namespace Core.Application.Services
                     });
                     return response;
                 }
+
                 Employee employee = await _employeeRepository.GetByAccountIdAsync(account.AccountId);
                 response.Entity = new AuthenticatedUser(account, employee);
             }
@@ -74,6 +75,11 @@ namespace Core.Application.Services
                 });
             }
             return response;
+        }
+
+        private bool IsPasswordValid(string providedPassword, string savedPasswordHash)
+        {
+            return BCrypt.Net.BCrypt.EnhancedVerify(providedPassword, savedPasswordHash);
         }
     }
 }
