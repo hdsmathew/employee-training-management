@@ -45,7 +45,7 @@ namespace Infrastructure.DAL
                 {
                     sqlCommand.Parameters.AddRange(queryParameters.ToArray());
                     SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         (string, object)[] row = new (string, object)[reader.FieldCount];
                         for (int i = 0; i < reader.FieldCount; i++)
@@ -83,7 +83,7 @@ namespace Infrastructure.DAL
 
         private async Task SafelyOpenConnectionAsync()
         {
-            if (_connection == null || _connection.State != ConnectionState.Open)
+            if (_connection != null && _connection.State == ConnectionState.Closed)
             {
                 await _connection.OpenAsync();
             }
