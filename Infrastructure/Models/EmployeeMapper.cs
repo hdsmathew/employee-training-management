@@ -7,6 +7,8 @@ namespace Infrastructure.Models
     {
         public override EmployeeModel MapEntityToDataModel(Employee entity)
         {
+            if (entity is null) return null;
+
             return new EmployeeModel
             {
                 EmployeeId = entity.EmployeeId,
@@ -22,6 +24,8 @@ namespace Infrastructure.Models
 
         public override Employee MapDataModelToEntity(EmployeeModel model)
         {
+            if (model is null) return null;
+
             return new Employee
             {
                 EmployeeId = model.EmployeeId,
@@ -37,6 +41,8 @@ namespace Infrastructure.Models
 
         public override EmployeeModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
+            if (entityValueTuples is null || entityValueTuples.Length == 0) return null;
+
             return new EmployeeModel
             {
                 EmployeeId = GetValueFromTuple<short>("EmployeeId", entityValueTuples),

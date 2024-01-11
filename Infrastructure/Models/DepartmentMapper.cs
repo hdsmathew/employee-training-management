@@ -7,6 +7,8 @@ namespace Infrastructure.Models
     {
         public override Department MapDataModelToEntity(DepartmentModel model)
         {
+            if (model is null) return null;
+
             return new Department
             {
                 DepartmentId = model.DepartmentId,
@@ -16,6 +18,8 @@ namespace Infrastructure.Models
 
         public override DepartmentModel MapEntityToDataModel(Department entity)
         {
+            if (entity is null) return null;
+
             return new DepartmentModel
             {
                 DepartmentId = entity.DepartmentId,
@@ -25,6 +29,8 @@ namespace Infrastructure.Models
 
         public override DepartmentModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
+            if (entityValueTuples is null || entityValueTuples.Length == 0) return null;
+
             return new DepartmentModel
             {
                 DepartmentId = GetValueFromTuple<byte>("DepartmentId", entityValueTuples),
