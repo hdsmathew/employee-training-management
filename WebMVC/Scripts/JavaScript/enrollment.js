@@ -1,5 +1,5 @@
 ﻿$(function () {
-    checkIfTableEmpty("No pending enrollments.");
+    checkIfTableEmpty("No enrollments.");
 
     function checkIfTableEmpty(message) {
         const tableRows = $(".table tr");

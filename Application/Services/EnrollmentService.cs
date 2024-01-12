@@ -258,6 +258,14 @@ namespace Core.Application.Services
             try
             {
                 Training training = await _trainingRepository.GetAsync(trainingId);
+                if (training.RegistrationDeadline >= DateTime.Now)
+                {
+                    response.AddError(new ErrorModel()
+                    {
+                        Message = "Registration deadline for training is not due yet.",
+                    });
+                    return response;
+                }
                 response = await ValidateApprovedEnrollmentsByTrainingAsync(approverAccountId, training);
             }
             catch (DALException dalEx)
@@ -284,7 +292,7 @@ namespace Core.Application.Services
                     new List<ApprovalStatusEnum>() { ApprovalStatusEnum.Approved });
                 if (!approvedEnrollments.Any())
                 {
-                    response.AddError(new ErrorModel() { Message = $"No enrollments for {training.TrainingName} yet." });
+                    response.AddError(new ErrorModel() { Message = $"No approved enrollments for {training.TrainingName}." });
                     return response;
                 }
 
