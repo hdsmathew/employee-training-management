@@ -22,6 +22,7 @@
         $("#notificationList").append(notificationItem);
     }
 
+    showOverlay(0);
     $.ajax({
         url: "/Notification/GetNotifications",
         method: "GET",
@@ -42,4 +43,5 @@
             console.error(error);
         }
     });
+    hideOverlay(500);
 });

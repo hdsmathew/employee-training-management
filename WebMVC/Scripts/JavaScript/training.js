@@ -101,7 +101,8 @@
         });
     }
 
-    $("[data-target='#templateModal']").on("click", function () {
+    $(".loadEnrollModal").on("click", function () {
+        showOverlay(0);
         loadEnrollModalContent($(this).attr("data-trainingId"))
             .then((enrollModalContentLoaded) => {
                 if (!enrollModalContentLoaded) {
@@ -114,6 +115,7 @@
                 showToastrNotification("Cannot enroll at this moment. Please try again later.", "error");
                 console.error("An error occurred:", error);
             });
+        hideOverlay(500);
     });
 
 
@@ -135,6 +137,7 @@
             formData.append("PrerequisiteIds", prerequisiteId);
         });
 
+        showOverlay(0);
         $.ajax({
             url: "/Enrollment/SubmitEnrollment",
             type: "POST",
@@ -154,11 +157,13 @@
                 console.error("Error:", error);
             }
         });
+        hideOverlay(500);
     });
 
     $(".deleteTraining").on("click", function () {
         const trainingId = $(this).attr("data-trainingId");
 
+        showOverlay(0);
         $.ajax({
             url: "/Training/Delete",
             type: "POST",
@@ -176,11 +181,13 @@
                 console.error("Error:", error);
             }
         });
+        hideOverlay(500);
     });
 
     $(".generateEnrollmentsReport").on("click", function () {
         const trainingId = $(this).attr("data-trainingId");
 
+        showOverlay(0);
         $.ajax({
             url: "/Enrollment/GenerateEnrollmentsReportByTraining",
             type: "POST",
@@ -197,11 +204,13 @@
                 console.error("Error:", error);
             }
         });
+        hideOverlay(500);
     });
 
     $(".processEnrollments").on("click", function () {
         const trainingId = $(this).attr("data-trainingId");
 
+        showOverlay(0);
         $.ajax({
             url: "/Enrollment/ValidateApprovedEnrollmentsByTraining",
             type: "POST",
@@ -218,5 +227,6 @@
                 console.error("Error:", error);
             }
         });
+        hideOverlay(500);
     });
 });

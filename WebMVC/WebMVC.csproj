@@ -177,6 +177,7 @@
     <Content Include="Content\bootstrap.rtl.min.css" />
     <Content Include="Content\customcss\enrollment.css" />
     <Content Include="Content\customcss\form.css" />
+    <Content Include="Content\customcss\overlay.css" />
     <Content Include="Content\customcss\toastrNotification.css" />
     <Content Include="Content\customcss\training.css" />
     <Content Include="favicon.ico" />
@@ -12104,6 +12105,7 @@
     <Content Include="Scripts\JavaScript\editTraining.js" />
     <Content Include="Scripts\JavaScript\enrollment.js" />
     <Content Include="Scripts\JavaScript\notification.js" />
+    <Content Include="Scripts\JavaScript\overlay.js" />
     <Content Include="Scripts\JavaScript\register.js" />
     <Content Include="Scripts\JavaScript\toastrNotification.js" />
     <Content Include="Scripts\JavaScript\training.js" />

@@ -13,6 +13,7 @@
     managers && populateManagersDropDownList(managers);
 
     if (!managers) {
+        showOverlay(0);
         $.ajax({
             url: "/Employee/GetManagers",
             type: "GET",
@@ -29,6 +30,7 @@
                 console.error(error);
             }
         });
+        hideOverlay(500);
     }
 
     $("#ManagerId").change(function () {

@@ -89,6 +89,7 @@
     $(".approveEnrollment").on("click", function () {
         const enrollmentId = $(this).attr("data-enrollmentId");
 
+        showOverlay(0);
         $.ajax({
             url: "/Enrollment/Approve",
             type: "POST",
@@ -106,11 +107,13 @@
                 console.error("Error:", error);
             }
         });
+        hideOverlay(500);
     });
 
     $(".declineEnrollment").on("click", function () {
         const enrollmentId = $(".declineEnrollmentModal").attr("data-enrollmentId");
 
+        showOverlay(0);
         $.ajax({
             url: "/Enrollment/Decline",
             type: "POST",
@@ -130,6 +133,7 @@
                 console.error("Error:", error);
             }
         });
+        hideOverlay(500);
     });
 
     function createDocumentUploadedList(documentUploads) {
@@ -180,6 +184,7 @@
     }
 
     $(".viewDocumentsModal").on("click", function () {
+        showOverlay(0);
         loadDocumentsModalContent($(this).attr("data-enrollmentId"))
             .then((documentsModalContentLoaded) => {
                 if (!documentsModalContentLoaded) {
@@ -193,5 +198,6 @@
                 showToastrNotification("Cannot load documents at this moment. Please try again later.", "error");
                 console.error("An error occurred:", error);
             });
+        hideOverlay(500);
     });
 });

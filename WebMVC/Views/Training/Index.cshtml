@@ -46,7 +46,7 @@
                         }
                         else
                         {
-                            <button @if (training.RegistrationDeadline <= DateTime.Now) { <text>disabled</text> } type="button" class="btn btn-primary" data-toggle="modal" data-target="#templateModal" data-trainingId="@(training.TrainingId)">Enroll</button>
+                            <button @if (training.RegistrationDeadline <= DateTime.Now) { <text>disabled</text> } type="button" class="btn btn-primary loadEnrollModal" data-toggle="modal" data-target="#templateModal" data-trainingId="@(training.TrainingId)">Enroll</button>
                         }
                     }
                 </td>

@@ -38,6 +38,7 @@
 
         let form = $("#createTrainingForm");
         if (form.valid()) {
+            showOverlay(0);
             $.ajax({
                 url: "/Training/Create",
                 type: "POST",
@@ -47,7 +48,8 @@
                 processData: false,
                 success: function (response) {
                     $("span[data-valmsg]").empty();
-                    if (response.Success) {
+
+                    if (!response.Success) {
                         $.each(response.Errors, function (key, value) {
                             $(`[data-valmsg-for="${key}"]`).text(value.join(' '));
                         });
@@ -59,6 +61,7 @@
                     console.error("Error:", error);
                 }
             });
+            hideOverlay(500);
         }
     });
 });

@@ -4,6 +4,7 @@
 
         let form = $("#editTrainingForm");
         if (form.valid()) {
+            showOverlay(0);
             $.ajax({
                 url: "/Training/Edit",
                 type: "POST",
@@ -25,6 +26,7 @@
                     console.error("Error:", error);
                 }
             });
+            hideOverlay(500);
         }
     });
 });
