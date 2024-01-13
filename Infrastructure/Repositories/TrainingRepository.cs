@@ -5,7 +5,6 @@ using Infrastructure.DAL.Interfaces;
 using Infrastructure.Models;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace Infrastructure.Repositories
@@ -57,6 +56,8 @@ namespace Infrastructure.Repositories
         public async Task<Training> GetWithPrerequisitesAsync(short trainingId)
         {
             Training training = await GetAsync(trainingId);
+            if (training is null) return null;
+
             training.SetPrerequisites(_prerequisiteMapper.MapDataModelsToEntities(await _prerequisiteDAL.GetAllByTrainingIdAsync(trainingId)));
             return training;
         }
@@ -76,6 +77,8 @@ namespace Infrastructure.Repositories
         public async Task<IEnumerable<Training>> GetAllWithPrerequisitesAsync()
         {
             IEnumerable<Training> trainings = await GetAllAsync();
+            if (trainings is null) return null;
+
             foreach (Training training in trainings)
             {
                 training.SetPrerequisites(_prerequisiteMapper.MapDataModelsToEntities(await _prerequisiteDAL.GetAllByTrainingIdAsync(training.TrainingId)));

@@ -7,6 +7,8 @@ namespace Infrastructure.Models
     {
         public override AccountModel MapEntityToDataModel(Account entity)
         {
+            if (entity is null) return null;
+
             return new AccountModel
             {
                 AccountId = entity.AccountId,
@@ -18,6 +20,8 @@ namespace Infrastructure.Models
 
         public override Account MapDataModelToEntity(AccountModel model)
         {
+            if (model is null) return null;
+
             return new Account
             {
                 AccountId = model.AccountId,
@@ -29,6 +33,8 @@ namespace Infrastructure.Models
 
         public override AccountModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
+            if (entityValueTuples is null || entityValueTuples.Length == 0) return null;
+
             return new AccountModel
             {
                 AccountId = GetValueFromTuple<short>("AccountId", entityValueTuples),

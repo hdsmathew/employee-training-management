@@ -51,7 +51,7 @@ namespace Infrastructure.DAL
 
         public async Task<IEnumerable<PrerequisiteModel>> GetAllAsync()
         {
-            string selectQuery = "SELECT * FROM Prerequisite";
+            string selectQuery = "SELECT PrerequisiteId, DocumentName FROM Prerequisite";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<(string, object)[]> entityValueTuplesArrays;
 
@@ -62,11 +62,6 @@ namespace Infrastructure.DAL
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
-            }
-
-            if (!entityValueTuplesArrays.Any())
-            {
-                throw new DALException("No rows returned");
             }
             return _prerequisiteMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
@@ -92,11 +87,6 @@ namespace Infrastructure.DAL
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
-            }
-
-            if (!entityValueTuplesArrays.Any())
-            {
-                return new List<PrerequisiteModel>();
             }
             return _prerequisiteMapper.MapTableToDataModels(entityValueTuplesArrays);
         }

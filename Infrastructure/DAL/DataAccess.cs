@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
@@ -19,6 +20,8 @@ namespace Infrastructure.DAL
 
         public async Task<int> ExecuteNonQuery(string sqlQuery, List<SqlParameter> queryParameters)
         {
+            if (sqlQuery is null || queryParameters is null) throw new ArgumentNullException("Arguments cannot be null.");
+
             try
             {
                 await SafelyOpenConnectionAsync();
@@ -36,6 +39,8 @@ namespace Infrastructure.DAL
 
         public async Task<IEnumerable<(string, object)[]>> ExecuteReaderAsync(string sqlQuery, List<SqlParameter> queryParameters)
         {
+            if (sqlQuery is null || queryParameters is null) throw new ArgumentNullException("Arguments cannot be null.");
+
             List<(string, object)[]> entityValueTuplesArrays = new List<(string, object)[]>();
 
             try
@@ -44,15 +49,17 @@ namespace Infrastructure.DAL
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, _connection))
                 {
                     sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                    SqlDataReader reader = await sqlCommand.ExecuteReaderAsync();
-                    while (await reader.ReadAsync())
+                    using (SqlDataReader reader = await sqlCommand.ExecuteReaderAsync())
                     {
-                        (string, object)[] row = new (string, object)[reader.FieldCount];
-                        for (int i = 0; i < reader.FieldCount; i++)
+                        while (await reader.ReadAsync())
                         {
-                            row[i] = (reader.GetName(i), reader.GetValue(i));
+                            (string, object)[] row = new (string, object)[reader.FieldCount];
+                            for (int i = 0; i < reader.FieldCount; i++)
+                            {
+                                row[i] = (reader.GetName(i), reader.GetValue(i));
+                            }
+                            entityValueTuplesArrays.Add(row);
                         }
-                        entityValueTuplesArrays.Add(row);
                     }
                 }
             }
@@ -66,6 +73,8 @@ namespace Infrastructure.DAL
 
         public async Task<object> ExecuteScalar(string sqlQuery, List<SqlParameter> queryParameters)
         {
+            if (sqlQuery is null || queryParameters is null) throw new ArgumentNullException("Arguments cannot be null.");
+
             try
             {
                 await SafelyOpenConnectionAsync();

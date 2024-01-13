@@ -28,6 +28,8 @@ namespace Infrastructure.Repositories
 
         public Task<int> AddWithEmployeeDetails(Account account, Employee employee)
         {
+            if (account is null || employee is null) return null;
+
             AccountModel accountModel = _accountMapper.MapEntityToDataModel(account);
             EmployeeModel employeeModel = _employeeMapper.MapEntityToDataModel(employee);
             return _accountDAL.AddWithEmployeeDetailsAsync(accountModel, employeeModel);

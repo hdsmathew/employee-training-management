@@ -8,6 +8,8 @@ namespace Infrastructure.Models
     {
         public override TrainingModel MapEntityToDataModel(Training entity)
         {
+            if (entity is null) return null;
+
             return new TrainingModel
             {
                 TrainingId = entity.TrainingId,
@@ -21,6 +23,8 @@ namespace Infrastructure.Models
 
         public override Training MapDataModelToEntity(TrainingModel model)
         {
+            if (model is null) return null;
+
             return new Training
             {
                 TrainingId = model.TrainingId,
@@ -34,6 +38,8 @@ namespace Infrastructure.Models
 
         public override TrainingModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
+            if (entityValueTuples is null ||  entityValueTuples.Length == 0) return null;
+
             return new TrainingModel
             {
                 TrainingId = GetValueFromTuple<short>("TrainingId", entityValueTuples),

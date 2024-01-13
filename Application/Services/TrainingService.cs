@@ -64,7 +64,7 @@ namespace Core.Application.Services
                 {
                     response.AddError(new ErrorModel()
                     {
-                        Message = $"Training already has approved enrollments."
+                        Message = $"Training already has pending or approved enrollments."
                     });
                     return response;
                 }

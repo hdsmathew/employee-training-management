@@ -24,7 +24,7 @@ namespace Infrastructure.DAL
 
         public async Task<IEnumerable<DepartmentModel>> GetAllAsync()
         {
-            string selectQuery = "SELECT * FROM Department";
+            string selectQuery = "SELECT DepartmentId, DepartmentName FROM Department";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<(string, object)[]> entityValueTuplesArrays;
 
@@ -35,11 +35,6 @@ namespace Infrastructure.DAL
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
-            }
-
-            if (!entityValueTuplesArrays.Any())
-            {
-                throw new DALException("No rows returned");
             }
             return _departmentMapper.MapTableToDataModels(entityValueTuplesArrays);
         }

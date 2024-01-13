@@ -1,6 +1,7 @@
 ﻿using Core.Domain;
 using Infrastructure.Common;
 using System;
+using System.Reflection;
 
 namespace Infrastructure.Models
 {
@@ -8,6 +9,8 @@ namespace Infrastructure.Models
     {
         public override EnrollmentModel MapEntityToDataModel(Enrollment entity)
         {
+            if (entity is null) return null;
+
             return new EnrollmentModel
             {
                 EnrollmentId = entity.EnrollmentId,
@@ -22,6 +25,8 @@ namespace Infrastructure.Models
 
         public override Enrollment MapDataModelToEntity(EnrollmentModel model)
         {
+            if (model is null) return null;
+
             return new Enrollment
             {
                 EnrollmentId = model.EnrollmentId,
@@ -36,6 +41,8 @@ namespace Infrastructure.Models
 
         public override EnrollmentModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
+            if (entityValueTuples is null || entityValueTuples.Length == 0) return null;
+
             return new EnrollmentModel
             {
                 EnrollmentId = GetValueFromTuple<int>("EnrollmentId", entityValueTuples),

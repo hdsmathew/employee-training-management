@@ -60,6 +60,8 @@ namespace Infrastructure.Repositories
         public async Task<Employee> GetWithEmployeeUploadsAsync(short employeeId)
         {
             Employee employee = await GetAsync(employeeId);
+            if (employee is null) return null;
+
             employee.SetEmployeeUploads(_employeeUploadMapper.MapDataModelsToEntities(await _employeeUploadDAL.GetAllByEmployeeIdAsync(employeeId)));
             return employee;
         }
@@ -72,6 +74,8 @@ namespace Infrastructure.Repositories
         public async Task<Employee> GetWithEnrollmentsByApprovalStatusAsync(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
         {
             Employee employee = await GetAsync(employeeId);
+            if (employee is null) return null;
+
             employee.SetEnrollments(_enrollmentMapper.MapDataModelsToEntities(await _enrollmentDAL.GetAllByEmployeeIdAndApprovalStatusAsync(employeeId, approvalStatusEnums)));
             return employee;
         }

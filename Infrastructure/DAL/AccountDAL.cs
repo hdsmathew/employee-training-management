@@ -126,7 +126,7 @@ namespace Infrastructure.DAL
 
         public async Task<bool> ExistsByEmailAddressAsync(string emailAddress)
         {
-            string selectQuery = @"SELECT COUNT(*) FROM Account WHERE 
+            string selectQuery = @"SELECT TOP 1 1 FROM Account WHERE 
                                    EmailAddress = @EmailAddress";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
@@ -142,9 +142,8 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
             int.TryParse(scalarObject?.ToString(), out int scalarValue);
-            return scalarValue > 0;
+            return scalarValue == 1;
         }
 
         public async Task<AccountModel> GetAsync(int accountId)
@@ -164,12 +163,7 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (entityValueTuplesArrays.Count() < 1)
-            {
-                throw new DALException("No rows returned");
-            }
-            return _accountMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
+            return _accountMapper.MapRowToDataModel(entityValueTuplesArrays.FirstOrDefault());
         }
 
         public async Task<AccountModel> GetAsync(string emailAddress, string passwordHash)
@@ -192,12 +186,7 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (entityValueTuplesArrays.Count() > 1)
-            {
-                throw new DALException("More than 1 rows returned");
-            }
-            return _accountMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
+            return _accountMapper.MapRowToDataModel(entityValueTuplesArrays.FirstOrDefault());
         }
 
         public async Task<short> GetAccountIdByEmailAddressAsync(string emailAddress)
@@ -265,12 +254,7 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (entityValueTuplesArrays.Count() < 1)
-            {
-                throw new DALException("No rows returned");
-            }
-            return _accountMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
+            return _accountMapper.MapRowToDataModel(entityValueTuplesArrays.FirstOrDefault());
         }
     }
 }

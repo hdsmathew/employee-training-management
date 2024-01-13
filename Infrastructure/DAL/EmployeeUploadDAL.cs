@@ -39,7 +39,6 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
             return _employeeUploadMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
@@ -72,7 +71,6 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
             return _employeeUploadMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
     }
