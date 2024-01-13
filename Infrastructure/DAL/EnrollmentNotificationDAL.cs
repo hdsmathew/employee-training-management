@@ -82,7 +82,6 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("No rows added");
             }
-
             return rowsAffected;
         }
 
@@ -106,7 +105,6 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
             return _enrollmentNotificationMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 

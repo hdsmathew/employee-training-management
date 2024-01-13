@@ -138,7 +138,7 @@ namespace Infrastructure.DAL
 
         public async Task<bool> ExistsByNameAsync(string trainingName)
         {
-            string selectQuery = @"SELECT COUNT(*) FROM Training WHERE 
+            string selectQuery = @"SELECT TOP 1 1 FROM Training WHERE 
                                    TrainingName = @TrainingName";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
@@ -156,12 +156,14 @@ namespace Infrastructure.DAL
             }
 
             int.TryParse(scalarObject?.ToString(), out int scalarValue);
-            return scalarValue > 0;
+            return scalarValue == 1;
         }
 
         public async Task<TrainingModel> GetAsync(short trainingId)
         {
-            string selectQuery = "SELECT * FROM Training WHERE TrainingId = @TrainingId";
+            string selectQuery = @"SELECT TrainingId, PreferredDepartmentId, RegistrationDeadline, SeatsAvailable, TrainingDescription, TrainingName
+                                   FROM Training 
+                                   WHERE TrainingId = @TrainingId";
             List<SqlParameter> parameters = new List<SqlParameter>
             {
                 new SqlParameter("@TrainingId", trainingId)
@@ -176,12 +178,7 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (entityValueTuplesArrays.Count() > 1)
-            {
-                throw new DALException("More than 1 rows returned");
-            }
-            return _trainingMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
+            return _trainingMapper.MapRowToDataModel(entityValueTuplesArrays.FirstOrDefault());
         }
 
         public async Task<IEnumerable<TrainingModel>> GetAllAsync()
@@ -198,7 +195,6 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
             return _trainingMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
@@ -216,13 +212,12 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
             return _trainingMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
         public async Task<bool> HasEnrollmentsAsync(short trainingId)
         {
-            string selectQuery = @"SELECT COUNT(trainingId) 
+            string selectQuery = @"SELECT TOP 1 1
                                    FROM Training t
                                    INNER JOIN Enrollment e ON t.TrainingId = e.TrainingId
                                    INNER JOIN ApprovalStatus a ON e.ApprovalStatusId = a.ApprovalStatusId
@@ -242,9 +237,8 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
             int.TryParse(scalarObject?.ToString(), out int scalarValue);
-            return scalarValue > 0;
+            return scalarValue == 1;
         }
 
         public async Task<int> UpdateAsync(TrainingModel training)

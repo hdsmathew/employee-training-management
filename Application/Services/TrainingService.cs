@@ -49,7 +49,7 @@ namespace Core.Application.Services
             {
                 if (await _trainingRepository.HasEnrollments(trainingId))
                 {
-                    return Result.Failure(new Error("Training already has approved enrollments."));
+                    return Result.Failure(new Error("Training already has pending or approved enrollments."));
                 }
 
                 await _trainingRepository.Delete(trainingId);

@@ -138,7 +138,7 @@ namespace Infrastructure.DAL
 
         public async Task<bool> ExistsAsync(short employeeId, short trainingId)
         {
-            string selectQuery = @"SELECT COUNT(*) FROM Enrollment WHERE 
+            string selectQuery = @"SELECT TOP 1 1 FROM Enrollment WHERE 
                                    EmployeeId = @EmployeeId AND 
                                    TrainingId = @TrainingId AND 
                                    ApprovalStatusId = @ApprovalStatusId";
@@ -160,12 +160,13 @@ namespace Infrastructure.DAL
             }
 
             int.TryParse(scalarObject?.ToString(), out int scalarValue);
-            return scalarValue > 0;
+            return scalarValue == 1;
         }
 
         public async Task<EnrollmentModel> GetAsync(int enrollmentId)
         {
-            string selectQuery = "SELECT * FROM Enrollment WHERE EnrollmentId = @EnrollmentId";
+            string selectQuery = @"SELECT EnrollmentId, ApprovalStatusId, ApproverAccountId, EmployeeId, RequestedAt, TrainingId
+                                   FROM Enrollment WHERE EnrollmentId = @EnrollmentId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@EnrollmentId", enrollmentId)
@@ -180,23 +181,13 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (entityValueTuplesArrays.Count() > 1)
-            {
-                throw new DALException("More than 1 rows returned");
-            }
-
-            if (!entityValueTuplesArrays.Any())
-            {
-                return new EnrollmentModel();
-            }
-
-            return _enrollmentMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
+            return _enrollmentMapper.MapRowToDataModel(entityValueTuplesArrays.FirstOrDefault());
         }
 
         public async Task<IEnumerable<EnrollmentModel>> GetAllAsync()
         {
-            string selectQuery = "SELECT * FROM Enrollment";
+            string selectQuery = @"SELECT EnrollmentId, ApprovalStatusId, ApproverAccountId, EmployeeId, RequestedAt, TrainingId
+                                   FROM Enrollment";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<(string, object)[]> entityValueTuplesArrays;
 
@@ -208,17 +199,12 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (!entityValueTuplesArrays.Any())
-            {
-                return new List<EnrollmentModel>();
-            }
             return _enrollmentMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
         public async Task<IEnumerable<EnrollmentModel>> GetAllByTrainingIdAndApprovalStatusAsync(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
         {
-            string selectQuery = $@"SELECT enr.* 
+            string selectQuery = $@"SELECT enr.EnrollmentId, enr.ApprovalStatusId, enr.ApproverAccountId, enr.EmployeeId, enr.RequestedAt, enr.TrainingId
                                     FROM Enrollment enr
                                     INNER JOIN Training tra ON enr.TrainingId = tra.TrainingId
                                     INNER JOIN ApprovalStatus appr ON enr.ApprovalStatusId = appr.ApprovalStatusId
@@ -238,13 +224,12 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
             return _enrollmentMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
         public async Task<IEnumerable<EnrollmentModel>> GetAllByEmployeeIdAndApprovalStatusAsync(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
         {
-            string selectQuery = $@"SELECT enr.* 
+            string selectQuery = $@"SELECT enr.EnrollmentId, enr.ApprovalStatusId, enr.ApproverAccountId, enr.EmployeeId, enr.RequestedAt, enr.TrainingId
                                     FROM Enrollment enr
                                     INNER JOIN Employee emp ON enr.EmployeeId = emp.EmployeeId
                                     INNER JOIN ApprovalStatus appr ON enr.ApprovalStatusId = appr.ApprovalStatusId
@@ -264,13 +249,12 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
             return _enrollmentMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
         public async Task<IEnumerable<EnrollmentModel>> GetAllByManagerIdAndApprovalStatusAsync(short managerId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums)
         {
-            string selectQuery = $@"SELECT enr.* 
+            string selectQuery = $@"SELECT enr.EnrollmentId, enr.ApprovalStatusId, enr.ApproverAccountId, enr.EmployeeId, enr.RequestedAt, enr.TrainingId
                                     FROM Enrollment enr
                                     INNER JOIN Employee emp ON enr.EmployeeId = emp.EmployeeId
                                     INNER JOIN ApprovalStatus appr ON enr.ApprovalStatusId = appr.ApprovalStatusId
@@ -289,11 +273,6 @@ namespace Infrastructure.DAL
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
-            }
-
-            if (!entityValueTuplesArrays.Any())
-            {
-                return new List<EnrollmentModel>();
             }
             return _enrollmentMapper.MapTableToDataModels(entityValueTuplesArrays);
         }

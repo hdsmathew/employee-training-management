@@ -81,7 +81,7 @@ namespace Infrastructure.DAL
 
         public async Task<bool> ExistsByNationalIdOrMobileNumberAsync(string mobileNumber, string nationalId)
         {
-            string selectQuery = @"SELECT COUNT(EmployeeId) FROM Employee WHERE 
+            string selectQuery = @"SELECT TOP 1 1 FROM Employee WHERE 
                                    MobileNumber = @MobileNumber OR 
                                    NationalId = @NationalId";
             List<SqlParameter> parameters = new List<SqlParameter>()
@@ -101,12 +101,13 @@ namespace Infrastructure.DAL
             }
 
             int.TryParse(scalarObject?.ToString(), out int scalarValue);
-            return scalarValue > 0;
+            return scalarValue == 1;
         }
 
         public async Task<EmployeeModel> GetAsync(int employeeId)
         {
-            string selectQuery = "SELECT * FROM Employee WHERE EmployeeId = @EmployeeId";
+            string selectQuery = @"SELECT EmployeeId, AccountId, DepartmentId, FirstName, LastName, ManagerId, MobileNumber, NationalId
+                                   FROM Employee WHERE EmployeeId = @EmployeeId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@EmployeeId", employeeId)
@@ -121,17 +122,13 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (entityValueTuplesArrays.Count() > 1)
-            {
-                throw new DALException("More than 1 rows returned");
-            }
-            return _employeeMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
+            return _employeeMapper.MapRowToDataModel(entityValueTuplesArrays.FirstOrDefault());
         }
 
         public async Task<EmployeeModel> GetByAccountIdAsync(short accountId)
         {
-            string selectQuery = "SELECT * FROM Employee WHERE AccountId = @AccountId";
+            string selectQuery = @"SELECT EmployeeId, AccountId, DepartmentId, FirstName, LastName, ManagerId, MobileNumber, NationalId
+                                   FROM Employee WHERE AccountId = @AccountId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@AccountId", accountId)
@@ -146,17 +143,13 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (entityValueTuplesArrays.Count() > 1)
-            {
-                throw new DALException("More than 1 rows returned");
-            }
-            return _employeeMapper.MapRowToDataModel(entityValueTuplesArrays.Single());
+            return _employeeMapper.MapRowToDataModel(entityValueTuplesArrays.FirstOrDefault());
         }
 
         public async Task<IEnumerable<EmployeeModel>> GetAllAsync()
         {
-            string selectQuery = "SELECT * FROM Employee";
+            string selectQuery = @"SELECT EmployeeId, AccountId, DepartmentId, FirstName, LastName, ManagerId, MobileNumber, NationalId
+                                   FROM Employee";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<(string, object)[]> entityValueTuplesArrays;
 
@@ -168,7 +161,6 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
             return _employeeMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
@@ -186,7 +178,6 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
             return _employeeMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
@@ -212,7 +203,6 @@ namespace Infrastructure.DAL
             {
                 throw new DALException("Error while executing query", ex);
             }
-
             return _employeeMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
