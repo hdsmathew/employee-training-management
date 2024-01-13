@@ -27,59 +27,57 @@ namespace Core.Application.Services
             _enrollmentNotificationRepository = enrollmentNotificationRepository;
         }
 
-        public async Task<ResponseModel<EnrollmentViewModel>> ApproveAsync(int enrollmentId, short approverAccountId)
+        public async Task<Result> ApproveAsync(int enrollmentId, short approverAccountId)
         {
-            ResponseModel<EnrollmentViewModel> response = new ResponseModel<EnrollmentViewModel>();
             try
             {
                 Enrollment enrollment = await _enrollmentRepository.GetAsync(enrollmentId);
                 Employee approver = new Employee() { AccountId = approverAccountId };
                 approver.ApproveEnrollment(enrollment);
-                response.UpdatedRows = await _enrollmentRepository.Update(enrollment);
+
+                await _enrollmentRepository.Update(enrollment);
+
+                return Result.Success();
             }
             catch (DALException dalEx)
             {
-                _logger.LogError(dalEx, "Error in processing enrollment");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Unable to process enrollment. Try again later.",
-                    Exception = dalEx
-                });
+                _logger.LogError(dalEx, "Error in approving enrollment");
+                return Result.Failure(new Error("Unable to process enrollment. Try again later."));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<EnrollmentViewModel>> DeclineAsync(DeclineEnrollmentViewModel declineEnrollmentViewModel, short approverAccountId)
+        public async Task<Result> DeclineAsync(DeclineEnrollmentViewModel declineEnrollmentViewModel, short approverAccountId)
         {
-            ResponseModel<EnrollmentViewModel> response = new ResponseModel<EnrollmentViewModel>();
             try
             {
                 Enrollment enrollment = await _enrollmentRepository.GetAsync(declineEnrollmentViewModel.EnrollmentId);
                 Employee approver = new Employee() { AccountId = approverAccountId };
                 approver.DeclineEnrollment(enrollment);
-                response.UpdatedRows = await _enrollmentRepository.Update(enrollment);
+
+                await _enrollmentRepository.Update(enrollment);
+
                 // Assume both enrollment and notification inserted
                 Training training = await _trainingRepository.GetAsync(enrollment.TrainingId);
+                if (training is null)
+                {
+                    return Result.Failure(new Error("Could not send notification."));
+                }
+
                 await _enrollmentNotificationRepository.Add(new EnrollmentNotification(
                     $"Your enrollment application for training: {training.TrainingName} has been declined. Reason: {declineEnrollmentViewModel.ReasonMessage}",
-                    enrollment.EmployeeId)
-                );
+                    enrollment.EmployeeId));
+
+                return Result.Success();
             }
             catch (DALException dalEx)
             {
-                _logger.LogError(dalEx, "Error in processing enrollment");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Unable to process enrollment. Try again later.",
-                    Exception = dalEx
-                });
+                _logger.LogError(dalEx, "Error in declining enrollment");
+                return Result.Failure(new Error("Unable to process enrollment. Try again later."));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<EnrollmentViewModel>> GetEnrollmentSubmissionsForApprovalAsync(short managerId)
+        public async Task<ResultT<IEnumerable<EnrollmentViewModel>>> GetEnrollmentSubmissionsForApprovalAsync(short managerId)
         {
-            ResponseModel<EnrollmentViewModel> response = new ResponseModel<EnrollmentViewModel>();
             try
             {
                 IEnumerable<Enrollment> enrollments = await _enrollmentRepository.GetAllByManagerIdAndApprovalStatusAsync(
@@ -87,6 +85,11 @@ namespace Core.Application.Services
                     new List<ApprovalStatusEnum>() {
                         ApprovalStatusEnum.Pending
                     });
+
+                if (enrollments is null)
+                {
+                    return ResultT<IEnumerable<EnrollmentViewModel>>.Failure(new Error("Could not retrieve enrollments."));
+                }
 
                 List<EnrollmentViewModel> enrollmentViewModels = new List<EnrollmentViewModel>();
                 foreach (Enrollment enrollment in enrollments)
@@ -99,29 +102,29 @@ namespace Core.Application.Services
                         TrainingName = training?.TrainingName
                     });
                 }
-                response.Entities = enrollmentViewModels;
+
+                return ResultT<IEnumerable<EnrollmentViewModel>>.Success(enrollmentViewModels);
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving enrollments");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Unable to retrieve enrollments.",
-                    Exception = dalEx
-                });
+                return ResultT<IEnumerable<EnrollmentViewModel>>.Failure(new Error("Unable to retrieve enrollments."));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<EnrollmentViewModel>> GetEnrollmentsAsync(short employeeId)
+        public async Task<ResultT<IEnumerable<EnrollmentViewModel>>> GetEnrollmentsAsync(short employeeId)
         {
-            ResponseModel<EnrollmentViewModel> response = new ResponseModel<EnrollmentViewModel>();
             try
             {
                 IEnumerable<Enrollment> enrollments = await _enrollmentRepository.GetAllByEmployeeIdAndApprovalStatusAsync(
                     employeeId,
                     new List<ApprovalStatusEnum>() {
                         ApprovalStatusEnum.Pending, ApprovalStatusEnum.Approved, ApprovalStatusEnum.Declined, ApprovalStatusEnum.Confirmed});
+
+                if (enrollments is null)
+                {
+                    return ResultT<IEnumerable<EnrollmentViewModel>>.Failure(new Error("Could not retrieve enrollments."));
+                }
 
                 List<EnrollmentViewModel> enrollmentViewModels = new List<EnrollmentViewModel>();
                 foreach (Enrollment enrollment in enrollments)
@@ -132,149 +135,155 @@ namespace Core.Application.Services
                         TrainingName = training?.TrainingName
                     });
                 }
-                response.Entities = enrollmentViewModels;
+
+                return ResultT<IEnumerable<EnrollmentViewModel>>.Success(enrollmentViewModels);
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving enrollments");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Unable to retrieve enrollments.",
-                    Exception = dalEx
-                });
+                return ResultT<IEnumerable<EnrollmentViewModel>>.Failure(new Error("Unable to retrieve enrollments."));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<Enrollment>> SubmitAsync(short employeeId, short trainingId)
+        public async Task<Result> SubmitAsync(short employeeId, short trainingId)
         {
-            ResponseModel<Enrollment> response = new ResponseModel<Enrollment>();
             try
             {
                 if (await _enrollmentRepository.Exists(employeeId, trainingId))
                 {
-                    response.AddError(new ErrorModel()
-                    {
-                        Message = $"User already has a pending enrollment submission."
-                    });
-                    return response;
+                    return Result.Failure(new Error($"User already has a pending enrollment submission."));
                 }
-                response.AddedRows = await _enrollmentRepository.Add(new Enrollment()
+
+                await _enrollmentRepository.Add(new Enrollment()
                 {
                     ApprovalStatus = ApprovalStatusEnum.Pending,
                     EmployeeId = employeeId,
                     TrainingId = trainingId
                 });
+
                 // Assume both enrollment and notification inserted
                 Training training = await _trainingRepository.GetAsync(trainingId);
+                if (training is null)
+                {
+                    return Result.Failure(new Error("Could not send notification."));
+                }
+
                 Employee employee = await _employeeRepository.GetAsync(employeeId);
+                if (employee is null)
+                {
+                    return Result.Failure(new Error("Could not send notification."));
+                }
+
                 await _enrollmentNotificationRepository.Add(new EnrollmentNotification(
                     $"{employee.GetFullName()} has submitted an enrollment application for training: {training.TrainingName}",
                     employee.ManagerId)
                 );
+
+                return Result.Success();
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in submitting enrollment application");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Training registration failed. Try again later.",
-                    Exception = dalEx
-                });
+                return Result.Failure(new Error("Training registration failed. Try again later."));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<Enrollment>> SubmitAsync(short employeeId, short trainingId, IEnumerable<EmployeeUpload> employeeUploads)
+        public async Task<Result> SubmitAsync(short employeeId, short trainingId, IEnumerable<EmployeeUpload> employeeUploads)
         {
-            ResponseModel<Enrollment> response = new ResponseModel<Enrollment>();
             try
             {
                 if (await _enrollmentRepository.Exists(employeeId, trainingId))
                 {
-                    response.AddError(new ErrorModel()
-                    {
-                        Message = $"User already has a pending enrollment submission."
-                    });
-                    return response;
+                    return Result.Failure(new Error($"User already has a pending enrollment submission."));
                 }
-                response.AddedRows = await _enrollmentRepository.AddWithEmployeeUploads(new Enrollment()
+
+                await _enrollmentRepository.AddWithEmployeeUploads(new Enrollment()
                 {
                     ApprovalStatus = ApprovalStatusEnum.Pending,
                     EmployeeId = employeeId,
                     TrainingId = trainingId
                 }, employeeUploads);
+
                 // Assume both enrollment and notification inserted
                 Training training = await _trainingRepository.GetAsync(trainingId);
+                if (training is null)
+                {
+                    return Result.Failure(new Error("Could not send notification."));
+                }
+
                 Employee employee = await _employeeRepository.GetAsync(employeeId);
+                if (employee is null)
+                {
+                    return Result.Failure(new Error("Could not send notification."));
+                }
+
                 await _enrollmentNotificationRepository.Add(new EnrollmentNotification(
                     $"{employee.GetFullName()} has submitted an enrollment application for training: {training.TrainingName}",
                     employee.ManagerId)
                 );
+
+                return Result.Success();
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in submitting enrollment application");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Training registration failed. Try again later.",
-                    Exception = dalEx
-                });
+                return ResultT<Result>.Failure(new Error("Training registration failed. Try again later."));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<ResponseModel<Enrollment>>> ValidateApprovedEnrollmentsAsync(short? approverAccountId)
+        public async Task<ResultT<IEnumerable<Result>>> ValidateApprovedEnrollmentsAsync(short? approverAccountId)
         {
-            ResponseModel<ResponseModel<Enrollment>> response = new ResponseModel<ResponseModel<Enrollment>>();
             try
             {
                 short accountId = approverAccountId ?? await _accountRepository.GetAccountIdByAccountType(AccountTypeEnum.SysAdmin);
 
                 IEnumerable<Training> trainings = await _trainingRepository.GetAllByRegistrationDeadlineDueAsync(DateTime.Now);
-                List<ResponseModel<Enrollment>> trainingEnrollmentsResponses = new List<ResponseModel<Enrollment>>();
+                if (trainings is null)
+                {
+                    return ResultT<IEnumerable<Result>>.Failure(new Error("Could retrieve trainings with registration deadline due."));
+                }
+
+                List<Result> trainingEnrollmentsResults = new List<Result>();
                 foreach (Training training in trainings)
                 {
-                    ResponseModel<Enrollment> responseModel = await ValidateApprovedEnrollmentsByTrainingAsync(accountId, training);
-                    trainingEnrollmentsResponses.Add(responseModel);
+                    trainingEnrollmentsResults.Add(await ValidateApprovedEnrollmentsByTrainingAsync(accountId, training));
                 }
-                response.Entities = trainingEnrollmentsResponses;
+
+                return ResultT<IEnumerable<Result>>.Success(trainingEnrollmentsResults);
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving trainings with due registration deadline");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Unable to validate approved enrollment applications. Try again later.",
-                    Exception = dalEx
-                });
+                return ResultT<IEnumerable<Result>>.Failure(new Error("Unable to validate approved enrollment applications. Try again later."));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<Enrollment>> ValidateApprovedEnrollmentsByTrainingAsync(short approverAccountId, short trainingId)
+        public async Task<Result> ValidateApprovedEnrollmentsByTrainingAsync(short approverAccountId, short trainingId)
         {
-            ResponseModel<Enrollment> response = new ResponseModel<Enrollment>();
             try
             {
                 Training training = await _trainingRepository.GetAsync(trainingId);
-                response = await ValidateApprovedEnrollmentsByTrainingAsync(approverAccountId, training);
+                if (training is null)
+                {
+                    return Result.Failure(new Error("Could not retrieve training."));
+                }
+
+                if (training.RegistrationDeadline >= DateTime.Now)
+                {
+                    return Result.Failure(new Error("Registration deadline for training is not due yet."));
+                }
+
+                return await ValidateApprovedEnrollmentsByTrainingAsync(approverAccountId, training);
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, $"Error in retrieving training with id {trainingId}");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Unable to validate approved enrollment applications for training. Try again later.",
-                    Exception = dalEx
-                });
+                return Result.Failure(new Error("UUnable to validate approved enrollment applications for training. Try again later."));
             }
-            return response;
         }
 
-        private async Task<ResponseModel<Enrollment>> ValidateApprovedEnrollmentsByTrainingAsync(short? approverAccountId, Training training)
+        private async Task<Result> ValidateApprovedEnrollmentsByTrainingAsync(short? approverAccountId, Training training)
         {
-            ResponseModel<Enrollment> response = new ResponseModel<Enrollment>();
             try
             {
                 short accountId = approverAccountId ?? await _accountRepository.GetAccountIdByAccountType(AccountTypeEnum.SysAdmin);
@@ -282,10 +291,9 @@ namespace Core.Application.Services
                 IEnumerable<Enrollment> approvedEnrollments = await _enrollmentRepository.GetAllByTrainingIdAndApprovalStatusAsync(
                     training.TrainingId,
                     new List<ApprovalStatusEnum>() { ApprovalStatusEnum.Approved });
-                if (!approvedEnrollments.Any())
+                if (approvedEnrollments is null)
                 {
-                    response.AddError(new ErrorModel() { Message = $"No enrollments for {training.TrainingName} yet." });
-                    return response;
+                    return Result.Failure(new Error($"No approved enrollments for {training.TrainingName}."));
                 }
 
                 Employee approver = new Employee() { AccountId = accountId };
@@ -313,6 +321,7 @@ namespace Core.Application.Services
                     approver.ConfirmEnrollments(enrollmentsToConfirm);
                     approver.DeclineEnrollment(approvedEnrollments.Except(enrollmentsToConfirm));
                 }
+
                 // Assume both enrollment and notification inserted
                 await _enrollmentRepository.UpdateBatch(approvedEnrollments);
                 await _enrollmentNotificationRepository.AddBatch(approvedEnrollments.Select(enrollment =>
@@ -320,17 +329,14 @@ namespace Core.Application.Services
                         $"You have been {enrollment.ApprovalStatus} for training: {training.TrainingName}",
                         enrollment.EmployeeId)
                     ));
+
+                return Result.Success();
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, $"Error in validating approved enrollment applications for training with id {training.TrainingId}");
-                response.AddError(new ErrorModel()
-                {
-                    Message = $"Unable to validate approved enrollment applications for training: {training.TrainingName}.",
-                    Exception = dalEx
-                });
+                return Result.Failure(new Error($"Unable to validate approved enrollment applications for training: {training.TrainingName}."));
             }
-            return response;
         }
     }
 }

@@ -200,7 +200,7 @@ namespace Infrastructure.DAL
 
         public async Task<IEnumerable<TrainingModel>> GetAllByRegistrationDeadlineDueAsync(DateTime registrationDeadline)
         {
-            string selectQuery = "SELECT * FROM Training WHERE IsActive = 1 AND RegistrationDeadline <= GETDATE()";
+            string selectQuery = "SELECT * FROM Training WHERE IsActive = 1 AND RegistrationDeadline < GETDATE()";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<(string, object)[]> entityValueTuplesArrays;
 

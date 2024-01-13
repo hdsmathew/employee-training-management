@@ -6,7 +6,7 @@ namespace Core.Application.Services
 {
     public interface IAccountService
     {
-        Task<ResponseModel<AuthenticatedUser>> AuthenticateAsync(LoginViewModel model);
-        Task<ResponseModel<Account>> CreateAsync(Account account);
+        Task<ResultT<AuthenticatedUser>> AuthenticateAsync(LoginViewModel model);
+        Task<Result> CreateAsync(Account account);
     }
 }
