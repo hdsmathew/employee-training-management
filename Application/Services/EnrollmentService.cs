@@ -13,18 +13,18 @@ namespace Core.Application.Services
         private readonly IAccountRepository _accountRepository;
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IEnrollmentRepository _enrollmentRepository;
-        private readonly IEnrollmentNotificationRepository _enrollmentNotificationRepository;
+        private readonly IUserNotificationRepository _userNotificationRepository;
         private readonly ILogger _logger;
         private readonly ITrainingRepository _trainingRepository;
 
-        public EnrollmentService(IEnrollmentRepository enrollmentRepository, IEmployeeRepository employeeRepository, ILogger logger, ITrainingRepository trainingRepository, IAccountRepository accountRepository, IEnrollmentNotificationRepository enrollmentNotificationRepository)
+        public EnrollmentService(IEnrollmentRepository enrollmentRepository, IEmployeeRepository employeeRepository, ILogger logger, ITrainingRepository trainingRepository, IAccountRepository accountRepository, IUserNotificationRepository userNotificationRepository)
         {
             _enrollmentRepository = enrollmentRepository;
             _employeeRepository = employeeRepository;
             _logger = logger;
             _trainingRepository = trainingRepository;
             _accountRepository = accountRepository;
-            _enrollmentNotificationRepository = enrollmentNotificationRepository;
+            _userNotificationRepository = userNotificationRepository;
         }
 
         public async Task<Result> ApproveAsync(int enrollmentId, short approverAccountId)
@@ -63,7 +63,8 @@ namespace Core.Application.Services
                     return Result.Failure(new Error("Could not send notification."));
                 }
 
-                await _enrollmentNotificationRepository.Add(new EnrollmentNotification(
+                await _userNotificationRepository.Add(new UserNotification(
+                    "ENROLLMENT REQUEST DECLINED",
                     $"Your enrollment application for training: {training.TrainingName} has been declined. Reason: {declineEnrollmentViewModel.ReasonMessage}",
                     enrollment.EmployeeId));
 
@@ -174,7 +175,8 @@ namespace Core.Application.Services
                     return Result.Failure(new Error("Could not send notification."));
                 }
 
-                await _enrollmentNotificationRepository.Add(new EnrollmentNotification(
+                await _userNotificationRepository.Add(new UserNotification(
+                    "ENROLLMENT REQUEST",
                     $"{employee.GetFullName()} has submitted an enrollment application for training: {training.TrainingName}",
                     employee.ManagerId)
                 );
@@ -217,7 +219,8 @@ namespace Core.Application.Services
                     return Result.Failure(new Error("Could not send notification."));
                 }
 
-                await _enrollmentNotificationRepository.Add(new EnrollmentNotification(
+                await _userNotificationRepository.Add(new UserNotification(
+                    $"ENROLLMENT REQUEST",
                     $"{employee.GetFullName()} has submitted an enrollment application for training: {training.TrainingName}",
                     employee.ManagerId)
                 );
@@ -324,8 +327,9 @@ namespace Core.Application.Services
 
                 // Assume both enrollment and notification inserted
                 await _enrollmentRepository.UpdateBatch(approvedEnrollments);
-                await _enrollmentNotificationRepository.AddBatch(approvedEnrollments.Select(enrollment =>
-                    new EnrollmentNotification(
+                await _userNotificationRepository.AddBatch(approvedEnrollments.Select(enrollment =>
+                    new UserNotification(
+                        $"ENROLLMENT REQUEST {enrollment.ApprovalStatus}",
                         $"You have been {enrollment.ApprovalStatus} for training: {training.TrainingName}",
                         enrollment.EmployeeId)
                     ));

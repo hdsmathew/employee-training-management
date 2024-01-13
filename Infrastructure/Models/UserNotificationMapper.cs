@@ -1,54 +1,56 @@
 ﻿using Core.Domain;
 using Infrastructure.Common;
 using System;
-using System.Reflection;
 
 namespace Infrastructure.Models
 {
-    public class EnrollmentNotificationMapper : MapperBase<EnrollmentNotification, EnrollmentNotificationModel>
+    public class UserNotificationMapper : MapperBase<UserNotification, UserNotificationModel>
     {
-        public override EnrollmentNotification MapDataModelToEntity(EnrollmentNotificationModel model)
+        public override UserNotification MapDataModelToEntity(UserNotificationModel model)
         {
             if (model is null) return null;
 
-            return new EnrollmentNotification
+            return new UserNotification
             {
-                EnrollmentNotificationId = model.EnrollmentNotificationId,
+                UserNotificationId = model.UserNotificationId,
                 HasSeen = model.HasSeen,
                 NotificationMessage = model.NotificationMessage,
                 RecipientId = model.RecipientId,
                 SeenAt = model.SeenAt,
-                SentAt = model.SentAt
+                SentAt = model.SentAt,
+                Title = model.Title
             };
         }
 
-        public override EnrollmentNotificationModel MapEntityToDataModel(EnrollmentNotification entity)
+        public override UserNotificationModel MapEntityToDataModel(UserNotification entity)
         {
             if (entity is null) return null;
 
-            return new EnrollmentNotificationModel
+            return new UserNotificationModel
             {
-                EnrollmentNotificationId = entity.EnrollmentNotificationId,
+                UserNotificationId = entity.UserNotificationId,
                 HasSeen = entity.HasSeen,
                 NotificationMessage = entity.NotificationMessage,
                 RecipientId = entity.RecipientId,
                 SeenAt = entity.SeenAt,
-                SentAt = entity.SentAt
+                SentAt = entity.SentAt,
+                Title = entity.Title
             };
         }
 
-        public override EnrollmentNotificationModel MapRowToDataModel((string, object)[] entityValueTuples)
+        public override UserNotificationModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
             if (entityValueTuples is null || entityValueTuples.Length == 0) return null;
 
-            return new EnrollmentNotificationModel
+            return new UserNotificationModel
             {
-                EnrollmentNotificationId = GetValueFromTuple<int>("EnrollmentNotificationId", entityValueTuples),
+                UserNotificationId = GetValueFromTuple<int>("EnrollmentNotificationId", entityValueTuples),
                 HasSeen = GetValueFromTuple<bool>("HasSeen", entityValueTuples),
                 NotificationMessage = GetValueFromTuple<string>("NotificationMessage", entityValueTuples),
                 RecipientId = GetValueFromTuple<short>("RecipientId", entityValueTuples),
                 SeenAt = GetValueFromTuple<DateTime>("SeenAt", entityValueTuples),
-                SentAt = GetValueFromTuple<DateTime>("SentAt", entityValueTuples)
+                SentAt = GetValueFromTuple<DateTime>("SentAt", entityValueTuples),
+                Title = GetValueFromTuple<string>("Title", entityValueTuples)
             };
         }
     }

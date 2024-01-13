@@ -7,7 +7,7 @@ namespace Core.Application.Services
 {
     public interface INotificationService
     {
-        Task<ResultT<IEnumerable<EnrollmentNotification>>> GetUnSeenEnrollmentNotificationsAsync(short recipientId);
+        Task<ResultT<IEnumerable<UserNotification>>> GetUnSeenEnrollmentNotificationsAsync(short recipientId);
         Task<Result> SendEnrollmentNotificationAsync(string notificationMessage, short recipientId);
     }
 }

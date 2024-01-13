@@ -59,9 +59,9 @@ namespace WebMVC
             container.RegisterType<EmployeeMapper>(TypeLifetime.Singleton);
             container.RegisterType<EmployeeUploadMapper>(TypeLifetime.Singleton);
             container.RegisterType<EnrollmentMapper>(TypeLifetime.Singleton);
-            container.RegisterType<EnrollmentNotificationMapper>(TypeLifetime.Singleton);
+            container.RegisterType<UserNotificationMapper>(TypeLifetime.Singleton);
             container.RegisterType<PrerequisiteMapper>(TypeLifetime.Singleton);
-            container.RegisterType<EnrollmentNotificationMapper>(TypeLifetime.Singleton);
+            container.RegisterType<UserNotificationMapper>(TypeLifetime.Singleton);
             container.RegisterType<TrainingMapper>(TypeLifetime.Singleton);
 
             container.RegisterType<IAccountDAL, AccountDAL>(TypeLifetime.Singleton);
@@ -69,18 +69,18 @@ namespace WebMVC
             container.RegisterType<IEmployeeDAL, EmployeeDAL>(TypeLifetime.Singleton);
             container.RegisterType<IEmployeeUploadDAL, EmployeeUploadDAL>(TypeLifetime.Singleton);
             container.RegisterType<IEnrollmentDAL, EnrollmentDAL>(TypeLifetime.Singleton);
-            container.RegisterType<IEnrollmentNotificationDAL, EnrollmentNotificationDAL>(TypeLifetime.Singleton);
+            container.RegisterType<IUserNotificationDAL, EnrollmentNotificationDAL>(TypeLifetime.Singleton);
             container.RegisterType<IPrerequisiteDAL, PrerequisiteDAL>(TypeLifetime.Singleton);
-            container.RegisterType<IEnrollmentNotificationDAL, EnrollmentNotificationDAL>(TypeLifetime.Singleton);
+            container.RegisterType<IUserNotificationDAL, EnrollmentNotificationDAL>(TypeLifetime.Singleton);
             container.RegisterType<ITrainingDAL, TrainingDAL>(TypeLifetime.Singleton);
 
             container.RegisterType<IAccountRepository, AccountRepository>(TypeLifetime.Singleton);
             container.RegisterType<IDepartmentRepository, DepartmentRepository>(TypeLifetime.Singleton);
             container.RegisterType<IEmployeeRepository, EmployeeRepository>(TypeLifetime.Singleton);
             container.RegisterType<IEnrollmentRepository, EnrollmentRepository>(TypeLifetime.Singleton);
-            container.RegisterType<IEnrollmentNotificationRepository, EnrollmentNotificationRepository>(TypeLifetime.Singleton);
+            container.RegisterType<IUserNotificationRepository, UserNotificationRepository>(TypeLifetime.Singleton);
             container.RegisterType<IPrerequisiteRepository, PrerequisiteRepository>(TypeLifetime.Singleton);
-            container.RegisterType<IEnrollmentNotificationRepository, EnrollmentNotificationRepository>(TypeLifetime.Singleton);
+            container.RegisterType<IUserNotificationRepository, UserNotificationRepository>(TypeLifetime.Singleton);
             container.RegisterType<ITrainingRepository, TrainingRepository>(TypeLifetime.Singleton);
 
             container.RegisterType<IAccountService, AccountService>(TypeLifetime.Singleton);

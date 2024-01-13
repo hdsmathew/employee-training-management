@@ -48,7 +48,7 @@
     <Compile Include="Enrollment\Enrollment.cs" />
     <Compile Include="Enrollment\ApprovalStatusEnum.cs" />
     <Compile Include="Common\IEntity.cs" />
-    <Compile Include="Notification\EnrollmentNotification.cs" />
+    <Compile Include="Notification\UserNotification.cs" />
     <Compile Include="Common\Prerequisite.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Training\Training.cs" />

@@ -22,7 +22,7 @@ namespace WebMVC.Controllers
 
         public async Task<JsonResult> GetNotifications()
         {
-            ResultT<IEnumerable<EnrollmentNotification>> result = await _notificationService.GetUnSeenEnrollmentNotificationsAsync(AuthenticatedUser.EmployeeId);
+            ResultT<IEnumerable<UserNotification>> result = await _notificationService.GetUnSeenEnrollmentNotificationsAsync(AuthenticatedUser.EmployeeId);
             return Json(
                 new
                 {
