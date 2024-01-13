@@ -2,7 +2,6 @@
 using Core.Application.Repositories;
 using Core.Application.Services;
 using Core.Domain;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,12 +30,12 @@ namespace WebMVC.Controllers
         [CustomAuthorize(AccountTypeEnum.Admin)]
         public async Task<ActionResult> Create()
         {
-            ResponseModel<TrainingViewModel> response = await _trainingService.GetTrainingDetailsAsync();
-            if (response.Failure())
+            ResultT<TrainingViewModel> result = await _trainingService.GetTrainingDetailsAsync();
+            if (result.IsFailure)
             {
                 RedirectToAction("Error", "ServerFault");
             }
-            return View(response.Entity);
+            return View(result.Value);
         }
 
         [CustomAuthorize(AccountTypeEnum.Admin)]
@@ -72,15 +71,15 @@ namespace WebMVC.Controllers
             {
                 training.SetPrerequisites(model.SelectedPrerequisiteIds.Select(prerequisiteId => new Prerequisite() { PrerequisiteId = prerequisiteId }));
             }
-            ResponseModel<Training> response = await _trainingService.AddAsync(training);
+            Result result = await _trainingService.AddAsync(training);
 
             return Json(
                 new
                 {
-                    Success = response.Success(),
-                    Message = response.Success()
+                    Success = result.IsSuccess,
+                    Message = result.IsSuccess
                     ? "Training created successfully"
-                    : response.GetErrors().FirstOrDefault()?.Message ?? "Training cannot be created"
+                    : result.Error.Message ?? "Training cannot be created"
                 },
                 "application/json",
                 System.Text.Encoding.UTF8);
@@ -89,13 +88,13 @@ namespace WebMVC.Controllers
         [CustomAuthorize(AccountTypeEnum.Admin)]
         public async Task<ActionResult> Edit(short trainingId)
         {
-            ResponseModel<TrainingViewModel> response = await _trainingService.GetTrainingDetailsAsync(trainingId);
-            if (response.Failure())
+            ResultT<TrainingViewModel> result = await _trainingService.GetTrainingDetailsAsync(trainingId);
+            if (result.IsFailure)
             {
                 RedirectToAction("Error", "ServerFault");
             }
-            response.Entity.TrainingId = trainingId;
-            return View(response.Entity);
+            result.Value.TrainingId = trainingId;
+            return View(result.Value);
         }
 
         [CustomAuthorize(AccountTypeEnum.Admin)]
@@ -128,15 +127,15 @@ namespace WebMVC.Controllers
                 TrainingDescription = model.TrainingDescription,
                 TrainingName = model.TrainingName,
             };
-            ResponseModel<Training> response = await _trainingService.UpdateAsync(training);
+            Result result = await _trainingService.UpdateAsync(training);
 
             return Json(
                 new
                 {
-                    Success = response.Success(),
-                    Message = response.Success()
+                    Success = result.IsSuccess,
+                    Message = result.IsSuccess
                     ? "Training updated successfully"
-                    : response.GetErrors().FirstOrDefault()?.Message ?? "Training cannot be updated"
+                    : result.Error.Message ?? "Training cannot be updated"
                 },
                 "application/json",
                 System.Text.Encoding.UTF8);
@@ -146,14 +145,14 @@ namespace WebMVC.Controllers
         [HttpPost]
         public async Task<JsonResult> Delete(short trainingId)
         {
-            ResponseModel<Training> response = await _trainingService.DeleteAsync(trainingId);
+            Result result = await _trainingService.DeleteAsync(trainingId);
             return Json(
                 new
                 {
-                    Success = response.Success(),
-                    Message = response.Success()
+                    Success = result.IsSuccess,
+                    Message = result.IsSuccess
                     ? "Training deleted successfully"
-                    : response.GetErrors().FirstOrDefault()?.Message ?? "Training cannot be deleted"
+                    : result.Error.Message ?? "Training cannot be deleted"
                 },
                 "application/json",
                 System.Text.Encoding.UTF8);

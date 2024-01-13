@@ -19,49 +19,43 @@ namespace Core.Application.Services
             _logger = logger;
         }
 
-        public async Task<ResponseModel<EnrollmentNotification>> GetUnSeenEnrollmentNotificationsAsync(short recipientId)
+        public async Task<ResultT<IEnumerable<EnrollmentNotification>>> GetUnSeenEnrollmentNotificationsAsync(short recipientId)
         {
-            ResponseModel<EnrollmentNotification> response = new ResponseModel<EnrollmentNotification>();
             try
             {
                 IEnumerable<EnrollmentNotification> notifications = await _enrollmentNotificationRepository.GetAllByRecipientIdAndSeenStatusAsync(recipientId, false);
-                response.Entities = notifications.OrderByDescending(notification => notification.SentAt);
+
+                return (notifications == null)
+                    ? ResultT<IEnumerable<EnrollmentNotification>>.Failure(new Error("Could not retrieve notifications."))
+                    : ResultT<IEnumerable<EnrollmentNotification>>.Success(notifications.OrderByDescending(notification => notification.SentAt));
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving enrollment notifications.");
-                response.AddError(new ErrorModel()
-                {
-                    Message = $"Unable to retrieve enrollment notifications for recipient with id: {recipientId}.",
-                    Exception = dalEx
-                });
+                return ResultT<IEnumerable<EnrollmentNotification>>.Failure(new Error($"Unable to retrieve enrollment notifications for recipient with id: {recipientId}."));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<EnrollmentNotification>> SendEnrollmentNotificationAsync(string notificationMessage, short recipientId)
+        public async Task<Result> SendEnrollmentNotificationAsync(string notificationMessage, short recipientId)
         {
-            ResponseModel<EnrollmentNotification> response = new ResponseModel<EnrollmentNotification>();
             try
             {
-                response.AddedRows = await _enrollmentNotificationRepository.Add(new EnrollmentNotification()
+                await _enrollmentNotificationRepository.Add(new EnrollmentNotification()
                 {
                     HasSeen = false,
                     NotificationMessage = notificationMessage,
                     RecipientId = recipientId,
                     SentAt = DateTime.UtcNow
                 });
+
+                return Result.Success();
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in sending enrollment notification.");
-                response.AddError(new ErrorModel()
-                {
-                    Message = $"Unable to send enrollment notification to recipient with id: {recipientId}.",
-                    Exception = dalEx
-                });
+                return Result.Failure(new Error($"Unable to send enrollment notification to recipient with id: {recipientId}."));
+
             }
-            return response;
         }
     }
 }

@@ -1,8 +1,7 @@
 ﻿using Core.Application.Models;
 using Core.Application.Repositories;
 using Core.Domain;
-using System;
-using System.Linq;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Core.Application.Services
@@ -20,94 +19,72 @@ namespace Core.Application.Services
             _accountRepository = accountRepository;
         }
 
-        public async Task<ResponseModel<Employee>> GetEmployeeUploadsAsync(short employeeId)
+        public async Task<ResultT<Employee>> GetEmployeeWithUploadsAsync(short employeeId)
         {
-            ResponseModel<Employee> response = new ResponseModel<Employee>();
             try
             {
-                response.Entity = await _employeeRepository.GetWithEmployeeUploadsAsync(employeeId);
+                Employee employee = await _employeeRepository.GetWithEmployeeUploadsAsync(employeeId);
+
+                return (employee == null)
+                    ? ResultT<Employee>.Failure(new Error("Could not retrieve employee with uploads."))
+                    : ResultT<Employee>.Success(employee);
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving employee with uploads.");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Unable to retrieve employee with uploads.",
-                    Exception = dalEx
-                });
+                return ResultT<Employee>.Failure(new Error("Unable to retrieve employee with uploads."));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<EmployeeUpload>> GetEmployeeUploadsByEnrollmentIdAsync(int enrollmentId)
+        public async Task<ResultT<IEnumerable<EmployeeUpload>>> GetEmployeeUploadsByEnrollmentIdAsync(int enrollmentId)
         {
-            ResponseModel<EmployeeUpload> response = new ResponseModel<EmployeeUpload>();
             try
             {
-                response.Entities = await _employeeRepository.GetEmployeeUploadsByEnrollmentIdAsync(enrollmentId);
+                IEnumerable<EmployeeUpload> employeeUploads = await _employeeRepository.GetEmployeeUploadsByEnrollmentIdAsync(enrollmentId);
+
+                return (employeeUploads is null)
+                    ? ResultT<IEnumerable<EmployeeUpload>>.Failure(new Error("Could not retrieve employee uploads."))
+                    : ResultT<IEnumerable<EmployeeUpload>>.Success(employeeUploads);
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, $"Error in retrieving employee uploads with enrollment id: {enrollmentId}.");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Unable to retrieve employee uploads.",
-                    Exception = dalEx
-                });
+                return ResultT<IEnumerable<EmployeeUpload>>.Failure(new Error("Unable to retrieve employee uploads."));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<Employee>> GetManagersAsync()
+        public async Task<ResultT<IEnumerable<Employee>>> GetManagersAsync()
         {
-            ResponseModel<Employee> response = new ResponseModel<Employee>();
             try
             {
-                response.Entities = await _employeeRepository.GetAllByAccountTypeAsync(AccountTypeEnum.Manager);
-                if (!response.Entities.Any())
-                {
-                    response.AddError(new ErrorModel()
-                    {
-                        Message = "No managers found."
-                    });
-                    return response;
-                }
+                IEnumerable<Employee> employees = await _employeeRepository.GetAllByAccountTypeAsync(AccountTypeEnum.Manager);
+
+                return (employees is null)
+                    ? ResultT<IEnumerable<Employee>>.Failure(new Error("No managers found."))
+                    : ResultT<IEnumerable<Employee>>.Success(employees);
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving managers.");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Unable to retrieve managers.",
-                    Exception = dalEx
-                });
+                return ResultT<IEnumerable<Employee>>.Failure(new Error("Unable to retrieve managers."));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<Employee>> RegisterAsync(RegisterViewModel model)
+        public async Task<Result> RegisterAsync(RegisterViewModel model)
         {
-            ResponseModel<Employee> response = new ResponseModel<Employee>();
             try
             {
                 if (await _accountRepository.ExistsByEmailAddress(model.EmailAddress))
                 {
-                    response.AddError(new ErrorModel()
-                    {
-                        Message = $"Account with EmailAddress: {model.EmailAddress} already exists."
-                    });
-                    return response;
+                    return Result.Failure(new Error($"Account with EmailAddress: {model.EmailAddress} already exists."));
                 }
 
                 if (await _employeeRepository.ExistsByNationalIdOrMobileNumber(model.MobileNumber, model.NationalId))
                 {
-                    response.AddError(new ErrorModel()
-                    {
-                        Message = $"Employee with NationalId: {model.NationalId} or MobileNumber: {model.MobileNumber} already exists."
-                    });
-                    return response;
+                    return Result.Failure(new Error($"Employee with NationalId: {model.NationalId} or MobileNumber: {model.MobileNumber} already exists."));
                 }
-                response.AddedRows = await _accountRepository.AddWithEmployeeDetails(
+
+                await _accountRepository.AddWithEmployeeDetails(
                     new Account()
                     {
                         AccountType = AccountTypeEnum.Employee,
@@ -123,36 +100,29 @@ namespace Core.Application.Services
                         MobileNumber = model.MobileNumber,
                         NationalId = model.NationalId,
                     });
+
+                return Result.Success();
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in registering employee");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Employee registration failed. Try again later.",
-                    Exception = dalEx
-                });
+                return ResultT<Employee>.Failure(new Error("Employee registration failed. Try again later."));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<Employee>> UpdateAsync(Employee employee)
+        public async Task<Result> UpdateAsync(Employee employee)
         {
-            ResponseModel<Employee> response = new ResponseModel<Employee>();
             try
             {
-                response.UpdatedRows = await _employeeRepository.Update(employee);
+                await _employeeRepository.Update(employee);
+
+                return Result.Success();
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, $"Error in updating employee");
-                response.AddError(new ErrorModel()
-                {
-                    Message = $"Unable to update employee with Id: {employee.EmployeeId}",
-                    Exception = dalEx
-                });
+                return ResultT<Employee>.Failure(new Error($"Unable to update employee with Id: {employee.EmployeeId}"));
             }
-            return response;
         }
 
         private string GetPasswordHash(string password)

@@ -24,26 +24,26 @@ namespace WebMVC.Controllers
         [CustomAuthorize(AccountTypeEnum.Manager, AccountTypeEnum.Employee)]
         public async Task<ActionResult> Index()
         {
-            ResponseModel<EnrollmentViewModel> response = await GetEnrollmentViewModelsByRoleAsync(AuthenticatedUser.AccountType);
-            if (response is null || response.Failure())
+            ResultT<IEnumerable<EnrollmentViewModel>> result = await GetEnrollmentViewModelsByRoleAsync(AuthenticatedUser.AccountType);
+            if (result.IsFailure)
             {
                 RedirectToAction("Error", "ServerFault");
             }
-            return View(response.Entities);
+            return View(result.Value);
         }
 
         [CustomAuthorize(AccountTypeEnum.Manager)]
         [HttpPost]
         public async Task<JsonResult> Approve(int enrollmentId)
         {
-            ResponseModel<EnrollmentViewModel> response = await _enrollmentService.ApproveAsync(enrollmentId, AuthenticatedUser.AccountId);
+            Result result = await _enrollmentService.ApproveAsync(enrollmentId, AuthenticatedUser.AccountId);
             return Json(
                 new
                 {
-                    Success = response.Success(),
-                    Message = response.Success()
+                    Success = result.IsSuccess,
+                    Message = result.IsSuccess
                     ? "Enrollment approved successfully"
-                    : response.GetErrors().FirstOrDefault()?.Message ?? "Enrollment application cannot be approved"
+                    : result.Error.Message ?? "Enrollment application cannot be approved"
                 },
                 "application/json",
                 System.Text.Encoding.UTF8);
@@ -54,14 +54,14 @@ namespace WebMVC.Controllers
         public async Task<JsonResult> Decline(DeclineEnrollmentViewModel declineEnrollmentViewModel)
         {
             // TODO: Validate decline reason message
-            ResponseModel<EnrollmentViewModel> response = await _enrollmentService.DeclineAsync(declineEnrollmentViewModel, AuthenticatedUser.AccountId);
+            Result result = await _enrollmentService.DeclineAsync(declineEnrollmentViewModel, AuthenticatedUser.AccountId);
             return Json(
                 new
                 {
-                    Success = response.Success(),
-                    Message = response.Success()
+                    Success = result.IsSuccess,
+                    Message = result.IsSuccess
                     ? "Enrollment declined successfully"
-                    : response.GetErrors().FirstOrDefault()?.Message ?? "Enrollment application cannot be declined"
+                    : result.Error.Message ?? "Enrollment application cannot be declined"
                 },
                 "application/json",
                 System.Text.Encoding.UTF8);
@@ -101,24 +101,24 @@ namespace WebMVC.Controllers
             // Refactor: Redo logic to remove additional method for submitting enrollments without uploads
             // Refactor: Move upload functionality to service
             // TODO : Validate file input
-            ResponseModel<Enrollment> response;
+            Result result;
             if (enrollmentSubmissionViewModel.EmployeeUploads is null)
             {
-                response = await _enrollmentService.SubmitAsync(AuthenticatedUser.EmployeeId, enrollmentSubmissionViewModel.TrainingId);
+                result = await _enrollmentService.SubmitAsync(AuthenticatedUser.EmployeeId, enrollmentSubmissionViewModel.TrainingId);
             }
             else
             {
                 IEnumerable<EmployeeUpload> employeeUploads = SaveUploadedFiles(enrollmentSubmissionViewModel.EmployeeUploads, enrollmentSubmissionViewModel.PrerequisiteIds);
-                response = await _enrollmentService.SubmitAsync(AuthenticatedUser.EmployeeId, enrollmentSubmissionViewModel.TrainingId, employeeUploads);
+                result = await _enrollmentService.SubmitAsync(AuthenticatedUser.EmployeeId, enrollmentSubmissionViewModel.TrainingId, employeeUploads);
             }
 
             return Json(
                 new
                 {
-                    Success = response.Success(),
-                    Message = response.Success()
+                    Success = result.IsSuccess,
+                    Message = result.IsSuccess
                     ? "Enrollment submitted successfully"
-                    : response.GetErrors().FirstOrDefault()?.Message ?? "Enrollment application cannot be submitted"
+                    : result.Error.Message ?? "Enrollment application cannot be submitted"
                 },
                 "application/json",
                 System.Text.Encoding.UTF8);
@@ -128,14 +128,15 @@ namespace WebMVC.Controllers
         [HttpPost]
         public async Task<JsonResult> ValidateApprovedEnrollments()
         {
-            ResponseModel<ResponseModel<Enrollment>> response = await _enrollmentService.ValidateApprovedEnrollmentsAsync(AuthenticatedUser.AccountId);
+            ResultT<IEnumerable<Result>> result = await _enrollmentService.ValidateApprovedEnrollmentsAsync(AuthenticatedUser.AccountId);
             return Json(
                 new
                 {
-                    Success = response.Success(),
-                    Message = response.Success()
+                    Success = result.IsSuccess,
+                    Message = result.IsSuccess
                     ? "All enrollments processed successfully"
-                    : response.GetErrors().FirstOrDefault()?.Message ?? "Enrollments cannot be processed"
+                    : result.Error.Message ?? "Enrollments cannot be processed",
+                    Result = result.IsSuccess ? result.Value : null
                 },
                 "application/json",
                 System.Text.Encoding.UTF8);
@@ -145,20 +146,20 @@ namespace WebMVC.Controllers
         [HttpPost]
         public async Task<JsonResult> ValidateApprovedEnrollmentsByTraining(short trainingId)
         {
-            ResponseModel<Enrollment> response = await _enrollmentService.ValidateApprovedEnrollmentsByTrainingAsync(AuthenticatedUser.AccountId, trainingId);
+            Result result = await _enrollmentService.ValidateApprovedEnrollmentsByTrainingAsync(AuthenticatedUser.AccountId, trainingId);
             return Json(
                 new
                 {
-                    Success = response.Success(),
-                    Message = response.Success()
+                    Success = result.IsSuccess,
+                    Message = result.IsSuccess
                     ? "Enrollments for training processed successfully"
-                    : response.GetErrors().FirstOrDefault()?.Message ?? "Enrollment for trainings cannot be processed"
+                    : result.Error.Message ?? "Enrollment for trainings cannot be processed"
                 },
                 "application/json",
                 System.Text.Encoding.UTF8);
         }
 
-        private async Task<ResponseModel<EnrollmentViewModel>> GetEnrollmentViewModelsByRoleAsync(AccountTypeEnum accountType)
+        private async Task<ResultT<IEnumerable<EnrollmentViewModel>>> GetEnrollmentViewModelsByRoleAsync(AccountTypeEnum accountType)
         {
             switch (accountType)
             {

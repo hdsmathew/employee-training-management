@@ -2,7 +2,6 @@
 using Core.Application.Repositories;
 using Core.Application.Services;
 using Core.Domain;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 
@@ -32,13 +31,13 @@ namespace WebMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                ResponseModel<AuthenticatedUser> response = await _accountService.AuthenticateAsync(model);
-                if (response.Success())
+                ResultT<AuthenticatedUser> result = await _accountService.AuthenticateAsync(model);
+                if (result.IsSuccess)
                 {
-                    Session["AuthenticatedUser"] = response.Entity;
-                    return RedirectToHomeByRole(response.Entity.AccountType);
+                    Session["AuthenticatedUser"] = result.Value;
+                    return RedirectToHomeByRole(result.Value.AccountType);
                 }
-                ViewBag.LoginErrorMessage = response.GetErrors()?.FirstOrDefault()?.Message ?? "An error occurred.";
+                ViewBag.LoginErrorMessage = result.Error.Message ?? "An error occurred.";
             }
             return View(model);
         }
@@ -61,12 +60,12 @@ namespace WebMVC.Controllers
         {
             if (ModelState.IsValid)
             {
-                ResponseModel<Employee> response = await _employeeService.RegisterAsync(model);
-                if (response.Success())
+                Result result = await _employeeService.RegisterAsync(model);
+                if (result.IsSuccess)
                 {
                     return RedirectToAction("Login");
                 }
-                ViewBag.RegistrationErrorMessage = response.GetErrors()?.FirstOrDefault()?.Message ?? "An error occurred.";
+                ViewBag.RegistrationErrorMessage = result.Error.Message ?? "An error occurred.";
 
             }
             return View(model);

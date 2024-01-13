@@ -21,131 +21,108 @@ namespace Core.Application.Services
             _departmentRepository = departmentRepository;
         }
 
-        public async Task<ResponseModel<Training>> AddAsync(Training training)
+        public async Task<Result> AddAsync(Training training)
         {
-            ResponseModel<Training> response = new ResponseModel<Training>();
             try
             {
                 if (await _trainingRepository.ExistsByName(training.TrainingName))
                 {
-                    response.AddError(new ErrorModel()
-                    {
-                        Message = $"Training with name: {training.TrainingName} already exists."
-                    });
-                    return response;
+                    return Result.Failure(new Error($"Training with name: {training.TrainingName} already exists."));
                 }
-                if (training.Prerequisites.Any())
-                {
-                    response.AddedRows = await _trainingRepository.AddWithPrerequisites(training);
-                }
-                else
-                {
-                    response.AddedRows = await _trainingRepository.Add(training);
-                }
+
+                _ = training.Prerequisites.Any()
+                    ? await _trainingRepository.AddWithPrerequisites(training)
+                    : await _trainingRepository.Add(training);
+
+                return Result.Success();
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in adding training");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Unable to add new training. Try again later.",
-                    Exception = dalEx
-                });
+                return Result.Failure(new Error("Unable to add new training. Try again later."));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<Training>> DeleteAsync(short trainingId)
+        public async Task<Result> DeleteAsync(short trainingId)
         {
-            ResponseModel<Training> response = new ResponseModel<Training>();
             try
             {
                 if (await _trainingRepository.HasEnrollments(trainingId))
                 {
-                    response.AddError(new ErrorModel()
-                    {
-                        Message = $"Training already has approved enrollments."
-                    });
-                    return response;
+                    return Result.Failure(new Error("Training already has approved enrollments."));
                 }
-                response.DeletedRows = await _trainingRepository.Delete(trainingId);
+
+                await _trainingRepository.Delete(trainingId);
+
+                return Result.Success();
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in deleting training");
-                response.AddError(new ErrorModel()
-                {
-                    Message = $"Unable to delete training with Id: {trainingId}",
-                    Exception = dalEx
-                });
+                return Result.Failure(new Error($"Unable to delete training with Id: {trainingId}"));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<TrainingViewModel>> GetTrainingDetailsAsync()
+        public async Task<ResultT<TrainingViewModel>> GetTrainingDetailsAsync()
         {
-            ResponseModel<TrainingViewModel> response = new ResponseModel<TrainingViewModel>();
             try
             {
-                response.Entity = new TrainingViewModel
+                TrainingViewModel trainingViewModel = new TrainingViewModel
                 {
                     Departments = await _departmentRepository.GetAllAsync(),
                     Prerequisites = await _prerequisiteRepository.GetAllAsync()
                 };
+
+                return ResultT<TrainingViewModel>.Success(trainingViewModel);
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving training details");
-                response.AddError(new ErrorModel()
-                {
-                    Message = "Unable to retrieve training details",
-                    Exception = dalEx
-                });
+                return ResultT<TrainingViewModel>.Failure(new Error("Error in retrieving training details"));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<TrainingViewModel>> GetTrainingDetailsAsync(short trainingId)
+        public async Task<ResultT<TrainingViewModel>> GetTrainingDetailsAsync(short trainingId)
         {
-            ResponseModel<TrainingViewModel> response = await GetTrainingDetailsAsync();
+            ResultT<TrainingViewModel> result = await GetTrainingDetailsAsync();
+            if (result.IsFailure) return result;
+
             try
             {
                 Training training = await _trainingRepository.GetAsync(trainingId);
-                response.Entity.PreferredDepartmentId = training.PreferredDepartmentId;
-                response.Entity.TrainingDescription = training.TrainingDescription;
-                response.Entity.TrainingName = training.TrainingName;
-                response.Entity.SeatsAvailable = training.SeatsAvailable;
-                response.Entity.RegistrationDeadline = training.RegistrationDeadline;
+
+                if (training is null) return ResultT<TrainingViewModel>.Failure(new Error("Could not get details for training."));
+
+                TrainingViewModel trainingViewModel = result.Value;
+                trainingViewModel.PreferredDepartmentId = training.PreferredDepartmentId;
+                trainingViewModel.TrainingDescription = training.TrainingDescription;
+                trainingViewModel.TrainingName = training.TrainingName;
+                trainingViewModel.SeatsAvailable = training.SeatsAvailable;
+                trainingViewModel.RegistrationDeadline = training.RegistrationDeadline;
+
+                return ResultT<TrainingViewModel>.Success(trainingViewModel);
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving training details");
-                response.AddError(new ErrorModel()
-                {
-                    Message = $"Unable to retrieve training with Id: {trainingId}",
-                    Exception = dalEx
-                });
+                return ResultT<TrainingViewModel>.Failure(new Error($"Unable to retrieve training with Id: {trainingId}"));
             }
-            return response;
         }
 
-        public async Task<ResponseModel<Training>> UpdateAsync(Training training)
+        public async Task<Result> UpdateAsync(Training training)
         {
-            ResponseModel<Training> response = new ResponseModel<Training>();
             try
             {
-                response.UpdatedRows = await _trainingRepository.Update(training);
+                await _trainingRepository.Update(training);
+
+                return Result.Success();
             }
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in updating training");
-                response.AddError(new ErrorModel()
-                {
-                    Message = $"Unable to update training with Id: {training.TrainingId}",
-                    Exception = dalEx
-                });
+                return ResultT<TrainingViewModel>.Failure(new Error($"Unable to update training with Id: {training.TrainingId}"));
+
             }
-            return response;
         }
     }
 }

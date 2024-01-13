@@ -6,10 +6,10 @@ namespace Core.Application.Services
 {
     public interface ITrainingService
     {
-        Task<ResponseModel<Training>> AddAsync(Training training);
-        Task<ResponseModel<Training>> UpdateAsync(Training training);
-        Task<ResponseModel<Training>> DeleteAsync(short trainingID);
-        Task<ResponseModel<TrainingViewModel>> GetTrainingDetailsAsync();
-        Task<ResponseModel<TrainingViewModel>> GetTrainingDetailsAsync(short trainingId);
+        Task<Result> AddAsync(Training training);
+        Task<Result> UpdateAsync(Training training);
+        Task<Result> DeleteAsync(short trainingID);
+        Task<ResultT<TrainingViewModel>> GetTrainingDetailsAsync();
+        Task<ResultT<TrainingViewModel>> GetTrainingDetailsAsync(short trainingId);
     }
 }
