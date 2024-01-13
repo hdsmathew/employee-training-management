@@ -12,5 +12,6 @@ function hideOverlay(delay) {
     }, delay);
 }
 
-showOverlay(0);
-hideOverlay(1000);
+window.onload = (event) => {
+    hideOverlay(500);
+};

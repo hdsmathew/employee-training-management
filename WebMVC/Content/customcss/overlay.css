@@ -1,7 +1,6 @@
 ﻿
 #overlay {
     position: fixed;
-    display: none;
     width: 100%;
     height: 100%;
     top: 0;
@@ -14,7 +13,6 @@
 
 .spinner-btn {
     position: absolute;
-    display: none;
     top: 50%;
     left: 50%;
     width: 10rem;
