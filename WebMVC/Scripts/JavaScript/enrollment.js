@@ -68,6 +68,34 @@
             "data-dismiss": "modal",
             "text": "Decline"
         });
+
+        declineEnrollmentBtn.on("click", function () {
+            const enrollmentId = $(".declineEnrollmentModal").attr("data-enrollmentId");
+
+            showOverlay(0);
+            $.ajax({
+                url: "/Enrollment/Decline",
+                type: "POST",
+                data: new FormData($("#declineForm")[0]),
+                processData: false,
+                contentType: false,
+                dataType: "json",
+                success: function (response) {
+                    if (response.Success) {
+                        removeTableRow($(`#tr_${enrollmentId}`));
+                        checkIfTableEmpty("No pending enrollments");
+                    }
+                    showToastrNotification(response.Message, response.Success ? "success" : "error");
+                },
+                error: function (error) {
+                    showToastrNotification("Cannot decline enrollment. Please try again later.", "error");
+                    console.error("Error:", error);
+                }
+            });
+            hideOverlay(500);
+            $("#templateModal").modal("hide");
+        });
+
         $(".modal-footer").append(declineEnrollmentBtn);
 
         $("#templateModal").modal("show");
@@ -104,32 +132,6 @@
             },
             error: function (error) {
                 showToastrNotification("Cannot approve enrollment. Please try again later.", "error");
-                console.error("Error:", error);
-            }
-        });
-        hideOverlay(500);
-    });
-
-    $(".declineEnrollment").on("click", function () {
-        const enrollmentId = $(".declineEnrollmentModal").attr("data-enrollmentId");
-
-        showOverlay(0);
-        $.ajax({
-            url: "/Enrollment/Decline",
-            type: "POST",
-            data: new FormData($("#declineForm")[0]),
-            processData: false,
-            contentType: false,
-            dataType: "json",
-            success: function (response) {
-                if (response.Success) {
-                    removeTableRow($(`#tr_${enrollmentId}`));
-                    checkIfTableEmpty("No pending enrollments");
-                }
-                showToastrNotification(response.Message, response.Success ? "success" : "error");
-            },
-            error: function (error) {
-                showToastrNotification("Cannot decline enrollment. Please try again later.", "error");
                 console.error("Error:", error);
             }
         });

@@ -158,6 +158,7 @@
             }
         });
         hideOverlay(500);
+        $("#templateModal").modal("hide");
     });
 
     $(".deleteTraining").on("click", function () {
