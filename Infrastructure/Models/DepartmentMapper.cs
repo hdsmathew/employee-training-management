@@ -29,8 +29,6 @@ namespace Infrastructure.Models
 
         public override DepartmentModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
-            if (entityValueTuples is null || entityValueTuples.Length == 0) return null;
-
             return new DepartmentModel
             {
                 DepartmentId = GetValueFromTuple<byte>("DepartmentId", entityValueTuples),

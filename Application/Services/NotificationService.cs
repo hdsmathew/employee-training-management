@@ -25,9 +25,7 @@ namespace Core.Application.Services
             {
                 IEnumerable<UserNotification> notifications = await _userNotificationRepository.GetAllByRecipientIdAndSeenStatusAsync(recipientId, false);
 
-                return (notifications == null)
-                    ? ResultT<IEnumerable<UserNotification>>.Failure(new Error("Could not retrieve notifications."))
-                    : ResultT<IEnumerable<UserNotification>>.Success(notifications.OrderByDescending(notification => notification.SentAt));
+                return ResultT<IEnumerable<UserNotification>>.Success(notifications.OrderByDescending(notification => notification.SentAt));
             }
             catch (DALException dalEx)
             {

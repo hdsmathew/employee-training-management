@@ -1,4 +1,5 @@
-﻿using Core.Domain;
+﻿using Core.Application;
+using Core.Domain;
 using Infrastructure.Models;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace Infrastructure.Common
 
         public IEnumerable<TModel> MapEntitiesToDataModels(IEnumerable<TEntity> entities)
         {
-            if (entities is null || !entities.Any()) return null;
+            if (entities is null) return null;
 
             List<TModel> models = new List<TModel>();
             foreach (TEntity entity in entities)
@@ -28,7 +29,7 @@ namespace Infrastructure.Common
 
         public IEnumerable<TEntity> MapDataModelsToEntities(IEnumerable<TModel> models)
         {
-            if (models is null || !models.Any()) return null;
+            if (models is null) return null;
 
             List<TEntity> entities = new List<TEntity>();
             foreach (TModel model in models)
@@ -40,7 +41,7 @@ namespace Infrastructure.Common
 
         public IEnumerable<TModel> MapTableToDataModels(IEnumerable<(string, object)[]> entityValueTuplesArrays)
         {
-            if (entityValueTuplesArrays is null || !entityValueTuplesArrays.Any()) return null;
+            if (entityValueTuplesArrays is null) return null;
 
             List<TModel> entities = new List<TModel>();
             foreach ((string, object)[] entityValueTuples in entityValueTuplesArrays)

@@ -30,9 +30,15 @@ namespace Core.Application.Services
                     return Result.Failure(new Error($"Training with name: {training.TrainingName} already exists."));
                 }
 
-                _ = training.Prerequisites.Any()
-                    ? await _trainingRepository.AddWithPrerequisites(training)
-                    : await _trainingRepository.Add(training);
+                if (training.Prerequisites.Any())
+                {
+
+                    await _trainingRepository.AddWithPrerequisites(training);
+                }
+                else
+                {
+                    await _trainingRepository.Add(training);
+                }
 
                 return Result.Success();
             }
@@ -91,7 +97,7 @@ namespace Core.Application.Services
             {
                 Training training = await _trainingRepository.GetAsync(trainingId);
 
-                if (training is null) return ResultT<TrainingViewModel>.Failure(new Error("Could not get details for training."));
+                if (training is null) return ResultT<TrainingViewModel>.Failure(new Error("Details for training not found."));
 
                 TrainingViewModel trainingViewModel = result.Value;
                 trainingViewModel.PreferredDepartmentId = training.PreferredDepartmentId;

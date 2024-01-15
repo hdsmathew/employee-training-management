@@ -6,8 +6,6 @@ using Infrastructure.Models;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Infrastructure.DAL
@@ -23,7 +21,7 @@ namespace Infrastructure.DAL
             _prerequisiteMapper = prerequisiteMapper;
         }
 
-        public async Task<int> AddAsync(PrerequisiteModel prerequisite)
+        public async Task AddAsync(PrerequisiteModel prerequisite)
         {
             string insertQuery = @"INSERT INTO Prerequisite (DocumentName)
                                    VALUES (@DocumentName);";
@@ -31,22 +29,15 @@ namespace Infrastructure.DAL
             {
                 new SqlParameter("@DocumentName", prerequisite.DocumentName)
             };
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows added");
-            }
-            return rowsAffected;
         }
 
         public async Task<IEnumerable<PrerequisiteModel>> GetAllAsync()

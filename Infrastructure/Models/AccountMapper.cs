@@ -33,8 +33,6 @@ namespace Infrastructure.Models
 
         public override AccountModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
-            if (entityValueTuples is null || entityValueTuples.Length == 0) return null;
-
             return new AccountModel
             {
                 AccountId = GetValueFromTuple<short>("AccountId", entityValueTuples),

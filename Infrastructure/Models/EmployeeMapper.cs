@@ -41,8 +41,6 @@ namespace Infrastructure.Models
 
         public override EmployeeModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
-            if (entityValueTuples is null || entityValueTuples.Length == 0) return null;
-
             return new EmployeeModel
             {
                 EmployeeId = GetValueFromTuple<short>("EmployeeId", entityValueTuples),

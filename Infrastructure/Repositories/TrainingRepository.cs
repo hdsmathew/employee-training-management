@@ -24,20 +24,20 @@ namespace Infrastructure.Repositories
             _trainingMapper = trainingMapper;
         }
 
-        public Task<int> Add(Training training)
+        public Task Add(Training training)
         {
             TrainingModel trainingEntity = _trainingMapper.MapEntityToDataModel(training);
             return _trainingDAL.AddAsync(trainingEntity);
         }
 
-        public Task<int> AddWithPrerequisites(Training training)
+        public Task AddWithPrerequisites(Training training)
         {
             TrainingModel trainingEntity = _trainingMapper.MapEntityToDataModel(training);
             IEnumerable<PrerequisiteModel> prerequisiteModels = _prerequisiteMapper.MapEntitiesToDataModels(training.Prerequisites);
             return _trainingDAL.AddWithPrerequisitesAsync(trainingEntity, prerequisiteModels);
         }
 
-        public Task<int> Delete(short trainingID)
+        public Task Delete(short trainingID)
         {
             return _trainingDAL.DeleteAsync(trainingID);
         }
@@ -91,7 +91,7 @@ namespace Infrastructure.Repositories
             return _trainingDAL.HasEnrollmentsAsync(trainingId);
         }
 
-        public Task<int> Update(Training training)
+        public Task Update(Training training)
         {
             TrainingModel trainingEntity = _trainingMapper.MapEntityToDataModel(training);
             return _trainingDAL.UpdateAsync(trainingEntity);

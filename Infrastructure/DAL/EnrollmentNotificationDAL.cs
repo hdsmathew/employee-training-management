@@ -22,7 +22,7 @@ namespace Infrastructure.DAL
             _userNotificationMapper = userNotificationMapper;
         }
 
-        public async Task<int> AddAsync(UserNotificationModel notification)
+        public async Task AddAsync(UserNotificationModel notification)
         {
             string insertQuery = @"INSERT INTO UserNotification (NotificationMessage, RecipientId, SentAt, Title)
                                    VALUES (@NotificationMessage, @RecipientId, GETDATE(), @Title);";
@@ -32,25 +32,18 @@ namespace Infrastructure.DAL
                 new SqlParameter("@RecipientId", notification.RecipientId),
                 new SqlParameter("@Title", notification.Title),
             };
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows added");
-            }
-            return rowsAffected;
         }
 
-        public async Task<int> AddBatchAsync(IEnumerable<UserNotificationModel> notifications)
+        public async Task AddBatchAsync(IEnumerable<UserNotificationModel> notifications)
         {
             StringBuilder insertQuery = new StringBuilder(@"INSERT INTO UserNotification (NotificationMessage, RecipientId, SentAt, Title) VALUES");
             List<SqlParameter> parameters = new List<SqlParameter>();
@@ -69,22 +62,15 @@ namespace Infrastructure.DAL
             }
             insertQuery.Length -= 2;
             insertQuery.Append(";");
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
+                await _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows added");
-            }
-            return rowsAffected;
         }
 
         public async Task<IEnumerable<UserNotificationModel>> GetAllByRecipientIdAndSeenStatusAsync(short recipientId, bool hasSeen)
@@ -110,7 +96,7 @@ namespace Infrastructure.DAL
             return _userNotificationMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
-        public async Task<int> UpdateAsync(UserNotificationModel model)
+        public async Task UpdateAsync(UserNotificationModel model)
         {
             string updateQuery = @"UPDATE UserNotificationId SET 
                                    HasSeen =  @HasSeen, 
@@ -121,22 +107,15 @@ namespace Infrastructure.DAL
                 new SqlParameter("@UserNotificationId", model.UserNotificationId),
                 new SqlParameter("@HasSeen", model.HasSeen)
             };
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(updateQuery, parameters);
+                await _dataAccess.ExecuteNonQuery(updateQuery, parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows updated");
-            }
-            return rowsAffected;
         }
     }
 }

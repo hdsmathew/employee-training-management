@@ -6,9 +6,9 @@ namespace Core.Application.Repositories
 {
     public interface IUserNotificationRepository
     {
-        Task<int> Add(UserNotification userNotification);
-        Task<int> AddBatch(IEnumerable<UserNotification> userNotifications);
+        Task Add(UserNotification userNotification);
+        Task AddBatch(IEnumerable<UserNotification> userNotifications);
         Task<IEnumerable<UserNotification>> GetAllByRecipientIdAndSeenStatusAsync(short recipientId, bool hasSeen);
-        Task<int> Update(UserNotification userNotification);
+        Task Update(UserNotification userNotification);
     }
 }

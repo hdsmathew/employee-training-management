@@ -19,13 +19,13 @@ namespace Infrastructure.Repositories
             _userNotificationMapper = userNotificationMapper;
         }
 
-        public Task<int> Add(UserNotification userNotification)
+        public Task Add(UserNotification userNotification)
         {
             UserNotificationModel userNotificationModel = _userNotificationMapper.MapEntityToDataModel(userNotification);
             return _userNotificationDAL.AddAsync(userNotificationModel);
         }
 
-        public Task<int> AddBatch(IEnumerable<UserNotification> userNotifications)
+        public Task AddBatch(IEnumerable<UserNotification> userNotifications)
         {
             IEnumerable<UserNotificationModel> userNotificationModels = _userNotificationMapper.MapEntitiesToDataModels(userNotifications);
             return _userNotificationDAL.AddBatchAsync(userNotificationModels);
@@ -37,7 +37,7 @@ namespace Infrastructure.Repositories
             return _userNotificationMapper.MapDataModelsToEntities(userNotificationModels);
         }
 
-        public Task<int> Update(UserNotification userNotification)
+        public Task Update(UserNotification userNotification)
         {
             UserNotificationModel userNotificationModel = _userNotificationMapper.MapEntityToDataModel(userNotification);
             return _userNotificationDAL.UpdateAsync(userNotificationModel);

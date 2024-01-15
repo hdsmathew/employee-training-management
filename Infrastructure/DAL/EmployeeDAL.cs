@@ -22,7 +22,7 @@ namespace Infrastructure.DAL
             _employeeMapper = employeeMapper;
         }
 
-        public async Task<int> AddAsync(EmployeeModel employee)
+        public async Task AddAsync(EmployeeModel employee)
         {
             string insertQuery = @"INSERT INTO Employee (AccountId, DepartmentId, FirstName, LastName, ManagerId, MobileNumber, NationalId)
                                    VALUES (@AccountId, @DepartmentId, @FirstName, @LastName, @ManagerId, @MobileNumber, @NationalId);";
@@ -36,47 +36,33 @@ namespace Infrastructure.DAL
                 new SqlParameter("@MobileNumber", employee.MobileNumber),
                 new SqlParameter("@NationalId", employee.NationalId)
             };
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows added");
-            }
-            return rowsAffected;
         }
 
-        public async Task<int> DeleteAsync(int employeeId)
+        public async Task DeleteAsync(int employeeId)
         {
             string deleteQuery = "DELETE FROM Employee WHERE EmployeeId = @EmployeeId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@EmployeeId", employeeId)
             };
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
+                await _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows deleted");
-            }
-            return rowsAffected;
         }
 
         public async Task<bool> ExistsByNationalIdOrMobileNumberAsync(string mobileNumber, string nationalId)
@@ -206,7 +192,7 @@ namespace Infrastructure.DAL
             return _employeeMapper.MapTableToDataModels(entityValueTuplesArrays);
         }
 
-        public async Task<int> UpdateAsync(EmployeeModel employee)
+        public async Task UpdateAsync(EmployeeModel employee)
         {
             string updateQuery = @"UPDATE Employee SET 
                                    AccountId =  @AccountId, 
@@ -228,22 +214,15 @@ namespace Infrastructure.DAL
                 new SqlParameter("@MobileNumber", employee.MobileNumber),
                 new SqlParameter("@NationalId", employee.NationalId)
             };
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(updateQuery, parameters);
+                await _dataAccess.ExecuteNonQuery(updateQuery, parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows updated");
-            }
-            return rowsAffected;
         }
     }
 }

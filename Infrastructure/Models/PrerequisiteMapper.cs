@@ -29,8 +29,6 @@ namespace Infrastructure.Models
 
         public override PrerequisiteModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
-            if (entityValueTuples is null || entityValueTuples.Length == 0) return null;
-
             return new PrerequisiteModel
             {
                 PrerequisiteId = GetValueFromTuple<byte>("PrerequisiteId", entityValueTuples),

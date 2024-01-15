@@ -21,20 +21,20 @@ namespace Infrastructure.Repositories
             _enrollmentMapper = enrollmentMapper;
         }
 
-        public Task<int> Add(Enrollment enrollment)
+        public Task Add(Enrollment enrollment)
         {
             EnrollmentModel enrollmentEntity = _enrollmentMapper.MapEntityToDataModel(enrollment);
             return _enrollmentDAL.AddAsync(enrollmentEntity);
         }
 
-        public Task<int> AddWithEmployeeUploads(Enrollment enrollment, IEnumerable<EmployeeUpload> employeeUploads)
+        public Task AddWithEmployeeUploads(Enrollment enrollment, IEnumerable<EmployeeUpload> employeeUploads)
         {
             EnrollmentModel enrollmentEntity = _enrollmentMapper.MapEntityToDataModel(enrollment);
             IEnumerable<EmployeeUploadModel> employeeUploadEntities = _employeeUploadMapper.MapEntitiesToDataModels(employeeUploads);
             return _enrollmentDAL.AddWithEmployeeUploadsAsync(enrollmentEntity, employeeUploadEntities);
         }
 
-        public Task<int> Delete(int enrollmentID)
+        public Task Delete(int enrollmentID)
         {
             return _enrollmentDAL.DeleteAsync(enrollmentID);
         }
@@ -74,13 +74,13 @@ namespace Infrastructure.Repositories
             return _enrollmentMapper.MapDataModelsToEntities(enrollmentEntities);
         }
 
-        public Task<int> Update(Enrollment enrollment)
+        public Task Update(Enrollment enrollment)
         {
             EnrollmentModel enrollmentEntity = _enrollmentMapper.MapEntityToDataModel(enrollment);
             return _enrollmentDAL.UpdateAsync(enrollmentEntity);
         }
 
-        public Task<int> UpdateBatch(IEnumerable<Enrollment> enrollments)
+        public Task UpdateBatch(IEnumerable<Enrollment> enrollments)
         {
             IEnumerable<EnrollmentModel> enrollmentEntities = _enrollmentMapper.MapEntitiesToDataModels(enrollments);
             return _enrollmentDAL.UpdateBatchAsync(enrollmentEntities);

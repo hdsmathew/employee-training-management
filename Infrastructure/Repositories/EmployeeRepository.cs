@@ -29,13 +29,13 @@ namespace Infrastructure.Repositories
             _enrollmentDAL = enrollmentDAL;
         }
 
-        public Task<int> Add(Employee employee)
+        public Task Add(Employee employee)
         {
             EmployeeModel employeeEntity = _employeeMapper.MapEntityToDataModel(employee);
             return _employeeDAL.AddAsync(employeeEntity);
         }
 
-        public Task<int> Delete(short employeeId)
+        public Task Delete(short employeeId)
         {
             return _employeeDAL.DeleteAsync(employeeId);
         }
@@ -98,7 +98,7 @@ namespace Infrastructure.Repositories
             return _employeeMapper.MapDataModelsToEntities(employeeModels);
         }
 
-        public Task<int> Update(Employee employee)
+        public Task Update(Employee employee)
         {
             EmployeeModel employeeModel = _employeeMapper.MapEntityToDataModel(employee);
             return _employeeDAL.UpdateAsync(employeeModel);

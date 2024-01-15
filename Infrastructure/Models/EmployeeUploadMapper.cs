@@ -32,8 +32,6 @@ namespace Infrastructure.Models
 
         public override EmployeeUploadModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
-            if (entityValueTuples is null || entityValueTuples.Length == 0) return null;
-
             return new EmployeeUploadModel()
             {
                 PrerequisiteId = GetValueFromTuple<byte>("PrerequisiteId", entityValueTuples),

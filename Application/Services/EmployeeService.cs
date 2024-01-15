@@ -42,9 +42,7 @@ namespace Core.Application.Services
             {
                 IEnumerable<EmployeeUpload> employeeUploads = await _employeeRepository.GetEmployeeUploadsByEnrollmentIdAsync(enrollmentId);
 
-                return (employeeUploads is null)
-                    ? ResultT<IEnumerable<EmployeeUpload>>.Failure(new Error("Could not retrieve employee uploads."))
-                    : ResultT<IEnumerable<EmployeeUpload>>.Success(employeeUploads);
+                return ResultT<IEnumerable<EmployeeUpload>>.Success(employeeUploads);
             }
             catch (DALException dalEx)
             {
@@ -59,9 +57,7 @@ namespace Core.Application.Services
             {
                 IEnumerable<Employee> employees = await _employeeRepository.GetAllByAccountTypeAsync(AccountTypeEnum.Manager);
 
-                return (employees is null)
-                    ? ResultT<IEnumerable<Employee>>.Failure(new Error("No managers found."))
-                    : ResultT<IEnumerable<Employee>>.Success(employees);
+                return ResultT<IEnumerable<Employee>>.Success(employees);
             }
             catch (DALException dalEx)
             {

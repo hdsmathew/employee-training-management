@@ -38,8 +38,6 @@ namespace Infrastructure.Models
 
         public override TrainingModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
-            if (entityValueTuples is null ||  entityValueTuples.Length == 0) return null;
-
             return new TrainingModel
             {
                 TrainingId = GetValueFromTuple<short>("TrainingId", entityValueTuples),

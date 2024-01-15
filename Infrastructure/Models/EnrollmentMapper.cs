@@ -1,7 +1,6 @@
 ﻿using Core.Domain;
 using Infrastructure.Common;
 using System;
-using System.Reflection;
 
 namespace Infrastructure.Models
 {
@@ -41,8 +40,6 @@ namespace Infrastructure.Models
 
         public override EnrollmentModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
-            if (entityValueTuples is null || entityValueTuples.Length == 0) return null;
-
             return new EnrollmentModel
             {
                 EnrollmentId = GetValueFromTuple<int>("EnrollmentId", entityValueTuples),

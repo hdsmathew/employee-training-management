@@ -22,7 +22,7 @@ namespace Infrastructure.DAL
             _accountMapper = accountMapper;
         }
 
-        public async Task<int> AddAsync(AccountModel account)
+        public async Task AddAsync(AccountModel account)
         {
             string insertQuery = @"INSERT INTO Account (AccountTypeId, CreatedAt, EmailAddress, PasswordHash)
                                    VALUES (@AccountTypeId, GETDATE(), @EmailAddress, @PasswordHash);";
@@ -32,25 +32,18 @@ namespace Infrastructure.DAL
                 new SqlParameter("@EmailAddress", account.EmailAddress),
                 new SqlParameter("@PasswordHash", account.PasswordHash)
             };
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows added");
-            }
-            return rowsAffected;
         }
 
-        public async Task<int> AddWithEmployeeDetailsAsync(AccountModel account, EmployeeModel employee)
+        public async Task AddWithEmployeeDetailsAsync(AccountModel account, EmployeeModel employee)
         {
             string insertQuery = @"
             BEGIN TRY
@@ -81,47 +74,33 @@ namespace Infrastructure.DAL
                 new SqlParameter("@MobileNumber", employee.MobileNumber),
                 new SqlParameter("@NationalId", employee.NationalId)
             };
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows added");
-            }
-            return rowsAffected;
         }
 
-        public async Task<int> DeleteAsync(int accountId)
+        public async Task DeleteAsync(int accountId)
         {
             string deleteQuery = "UPDATE Account SET IsActive = 0 WHERE AccountId = @AccountId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@AccountId", accountId)
             };
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
+                await _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows deleted");
-            }
-            return rowsAffected;
         }
 
         public async Task<bool> ExistsByEmailAddressAsync(string emailAddress)

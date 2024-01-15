@@ -62,13 +62,12 @@ namespace Infrastructure.DAL
                         }
                     }
                 }
+                return entityValueTuplesArrays;
             }
             finally
             {
                 SafelyCloseConnection();
             }
-
-            return entityValueTuplesArrays;
         }
 
         public async Task<object> ExecuteScalar(string sqlQuery, List<SqlParameter> queryParameters)

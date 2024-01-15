@@ -34,9 +34,10 @@
                 response.Result.Notifications.forEach(function (notification) {
                     addNotification(notification.Title, notification.NotificationMessage, notification.SentAt);
                 });
+                checkIfNotificationListEmpty("You're up-to-date.");
+            } else {
+                checkIfNotificationListEmpty(response.Message);
             }
-            checkIfNotificationListEmpty("You're up-to-date.");
-            showToastrNotification(response.Message, response.Success ? "success" : "error");
         },
         error: function (error) {
             showToastrNotification("Error fetching notifications", "error")

@@ -7,15 +7,15 @@ namespace Core.Application.Repositories
 {
     public interface ITrainingRepository
     {
-        Task<int> Add(Training training);
-        Task<int> AddWithPrerequisites(Training training);
-        Task<int> Delete(short trainingID);
+        Task Add(Training training);
+        Task AddWithPrerequisites(Training training);
+        Task Delete(short trainingID);
         Task<bool> ExistsByName(string name);
         Task<Training> GetAsync(short trainingID);
         Task<IEnumerable<Training>> GetAllAsync();
         Task<IEnumerable<Training>> GetAllByRegistrationDeadlineDueAsync(DateTime registrationDeadline);
         Task<IEnumerable<Training>> GetAllWithPrerequisitesAsync();
         Task<bool> HasEnrollments(short trainingId);
-        Task<int> Update(Training training);
+        Task Update(Training training);
     }
 }

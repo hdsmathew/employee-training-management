@@ -7,14 +7,14 @@ namespace Infrastructure.DAL.Interfaces
 {
     public interface ITrainingDAL
     {
-        Task<int> AddAsync(TrainingModel training);
-        Task<int> AddWithPrerequisitesAsync(TrainingModel training, IEnumerable<PrerequisiteModel> prerequisites);
-        Task<int> DeleteAsync(short trainingID);
-        Task<TrainingModel> GetAsync(short trainingID);
+        Task AddAsync(TrainingModel training);
+        Task AddWithPrerequisitesAsync(TrainingModel training, IEnumerable<PrerequisiteModel> prerequisites);
+        Task DeleteAsync(short trainingId);
+        Task<TrainingModel> GetAsync(short trainingId);
         Task<bool> ExistsByNameAsync(string name);
         Task<IEnumerable<TrainingModel>> GetAllAsync();
         Task<IEnumerable<TrainingModel>> GetAllByRegistrationDeadlineDueAsync(DateTime registrationDeadline);
-        Task<int> UpdateAsync(TrainingModel training);
+        Task UpdateAsync(TrainingModel training);
         Task<bool> HasEnrollmentsAsync(short trainingId);
     }
 }

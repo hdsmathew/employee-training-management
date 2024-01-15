@@ -40,8 +40,6 @@ namespace Infrastructure.Models
 
         public override UserNotificationModel MapRowToDataModel((string, object)[] entityValueTuples)
         {
-            if (entityValueTuples is null || entityValueTuples.Length == 0) return null;
-
             return new UserNotificationModel
             {
                 UserNotificationId = GetValueFromTuple<int>("EnrollmentNotificationId", entityValueTuples),

@@ -6,7 +6,7 @@ namespace Infrastructure.DAL.Interfaces
 {
     public interface IPrerequisiteDAL
     {
-        Task<int> AddAsync(PrerequisiteModel prerequisite);
+        Task AddAsync(PrerequisiteModel prerequisite);
         Task<IEnumerable<PrerequisiteModel>> GetAllAsync();
         Task<IEnumerable<PrerequisiteModel>> GetAllByTrainingIdAsync(short trainingId);
     }

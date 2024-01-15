@@ -176,7 +176,7 @@ namespace Application.Tests.Services
 
             _stubEnrollmentRepository
                 .Setup(iEnrollmentRepository => iEnrollmentRepository.UpdateBatch(It.IsAny<IEnumerable<Enrollment>>()))
-                .ReturnsAsync((IEnumerable<Enrollment> updatedEnrollments) => default);
+                .Callback((IEnumerable<Enrollment> updatedEnrollments) => { });
 
             _stubLogger
                 .Setup(iLogger => iLogger.LogError(It.IsAny<Exception>(), It.IsAny<string>()))
@@ -188,7 +188,7 @@ namespace Application.Tests.Services
 
             _stubUserNotificationRepository
                 .Setup(iUserNotificationRepository => iUserNotificationRepository.AddBatch(It.IsAny<IEnumerable<UserNotification>>()))
-                .ReturnsAsync((IEnumerable<UserNotification> notifications) => default);
+                .Callback((IEnumerable<UserNotification> notifications) => { });
 
             _enrollmentService = new EnrollmentService(
                 _stubEnrollmentRepository.Object,

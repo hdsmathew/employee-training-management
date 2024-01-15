@@ -23,7 +23,7 @@ namespace Infrastructure.DAL
             _trainingMapper = trainingMapper;
         }
 
-        public async Task<int> AddAsync(TrainingModel training)
+        public async Task AddAsync(TrainingModel training)
         {
             string insertQuery = @"INSERT INTO Training (CreatedAt, PreferredDepartmentId, RegistrationDeadline, SeatsAvailable, TrainingDescription, TrainingName) 
                                    VALUES (GETDATE(), @PreferredDepartmentId, @RegistrationDeadline, @SeatsAvailable, @TrainingDescription, @TrainingName)";
@@ -35,25 +35,18 @@ namespace Infrastructure.DAL
                 new SqlParameter("@TrainingDescription", training.TrainingDescription),
                 new SqlParameter("@TrainingName", training.TrainingName)
             };
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows added");
-            }
-            return rowsAffected;
         }
 
-        public async Task<int> AddWithPrerequisitesAsync(TrainingModel training, IEnumerable<PrerequisiteModel> prerequisites)
+        public async Task AddWithPrerequisitesAsync(TrainingModel training, IEnumerable<PrerequisiteModel> prerequisites)
         {
             StringBuilder insertQuery = new StringBuilder();
             insertQuery.Append(@"
@@ -93,47 +86,33 @@ namespace Infrastructure.DAL
                 ROLLBACK;
                 THROW;
             END CATCH");
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
+                await _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows added");
-            }
-            return rowsAffected;
         }
 
-        public async Task<int> DeleteAsync(short trainingId)
+        public async Task DeleteAsync(short trainingId)
         {
             string deleteQuery = "UPDATE Training SET IsActive = 0, UpdatedAt = GETDATE() WHERE TrainingId = @TrainingId";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@TrainingId", trainingId)
             };
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
+                await _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows deleted");
-            }
-            return rowsAffected;
         }
 
         public async Task<bool> ExistsByNameAsync(string trainingName)
@@ -241,7 +220,7 @@ namespace Infrastructure.DAL
             return scalarValue == 1;
         }
 
-        public async Task<int> UpdateAsync(TrainingModel training)
+        public async Task UpdateAsync(TrainingModel training)
         {
             string updateQuery = @"UPDATE Training SET 
                                    PreferredDepartmentId = @PreferredDepartmentId, 
@@ -260,22 +239,15 @@ namespace Infrastructure.DAL
                 new SqlParameter("@TrainingDescription", training.TrainingDescription),
                 new SqlParameter("@TrainingName", training.TrainingName)
             };
-            int rowsAffected;
 
             try
             {
-                rowsAffected = await _dataAccess.ExecuteNonQuery(updateQuery, parameters);
+                await _dataAccess.ExecuteNonQuery(updateQuery, parameters);
             }
             catch (Exception ex)
             {
                 throw new DALException("Error while executing query", ex);
             }
-
-            if (rowsAffected == 0)
-            {
-                throw new DALException("No rows updated");
-            }
-            return rowsAffected;
         }
     }
 }

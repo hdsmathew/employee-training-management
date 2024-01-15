@@ -20,13 +20,13 @@ namespace Infrastructure.Repositories
             _employeeMapper = employeeMapper;
         }
 
-        public Task<int> Add(Account account)
+        public Task Add(Account account)
         {
             AccountModel accountModel = _accountMapper.MapEntityToDataModel(account);
             return _accountDAL.AddAsync(accountModel);
         }
 
-        public Task<int> AddWithEmployeeDetails(Account account, Employee employee)
+        public Task AddWithEmployeeDetails(Account account, Employee employee)
         {
             if (account is null || employee is null) return null;
 

@@ -87,11 +87,6 @@ namespace Core.Application.Services
                         ApprovalStatusEnum.Pending
                     });
 
-                if (enrollments is null)
-                {
-                    return ResultT<IEnumerable<EnrollmentViewModel>>.Failure(new Error("Could not retrieve enrollments."));
-                }
-
                 List<EnrollmentViewModel> enrollmentViewModels = new List<EnrollmentViewModel>();
                 foreach (Enrollment enrollment in enrollments)
                 {
@@ -121,11 +116,6 @@ namespace Core.Application.Services
                     employeeId,
                     new List<ApprovalStatusEnum>() {
                         ApprovalStatusEnum.Pending, ApprovalStatusEnum.Approved, ApprovalStatusEnum.Declined, ApprovalStatusEnum.Confirmed});
-
-                if (enrollments is null)
-                {
-                    return ResultT<IEnumerable<EnrollmentViewModel>>.Failure(new Error("Could not retrieve enrollments."));
-                }
 
                 List<EnrollmentViewModel> enrollmentViewModels = new List<EnrollmentViewModel>();
                 foreach (Enrollment enrollment in enrollments)
@@ -241,9 +231,9 @@ namespace Core.Application.Services
                 short accountId = approverAccountId ?? await _accountRepository.GetAccountIdByAccountType(AccountTypeEnum.SysAdmin);
 
                 IEnumerable<Training> trainings = await _trainingRepository.GetAllByRegistrationDeadlineDueAsync(DateTime.Now);
-                if (trainings is null)
+                if (trainings.Count() == 0)
                 {
-                    return ResultT<IEnumerable<Result>>.Failure(new Error("Could retrieve trainings with registration deadline due."));
+                    return ResultT<IEnumerable<Result>>.Failure(new Error("No trainings with registration deadline due found."));
                 }
 
                 List<Result> trainingEnrollmentsResults = new List<Result>();
@@ -294,7 +284,7 @@ namespace Core.Application.Services
                 IEnumerable<Enrollment> approvedEnrollments = await _enrollmentRepository.GetAllByTrainingIdAndApprovalStatusAsync(
                     training.TrainingId,
                     new List<ApprovalStatusEnum>() { ApprovalStatusEnum.Approved });
-                if (approvedEnrollments is null)
+                if (approvedEnrollments.Count() == 0)
                 {
                     return Result.Failure(new Error($"No approved enrollments for {training.TrainingName}."));
                 }
