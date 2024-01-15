@@ -42,8 +42,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in approving enrollment");
-                return Result.Failure(new Error("Unable to process enrollment. Try again later."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return Result.Failure(new Error("Unable to process enrollment. Try again later."));
         }
 
         public async Task<Result> DeclineAsync(DeclineEnrollmentViewModel declineEnrollmentViewModel, short approverAccountId)
@@ -73,8 +78,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in declining enrollment");
-                return Result.Failure(new Error("Unable to process enrollment. Try again later."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return Result.Failure(new Error("Unable to process enrollment. Try again later."));
         }
 
         public async Task<ResultT<IEnumerable<EnrollmentViewModel>>> GetEnrollmentSubmissionsForApprovalAsync(short managerId)
@@ -104,8 +114,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving enrollments");
-                return ResultT<IEnumerable<EnrollmentViewModel>>.Failure(new Error("Unable to retrieve enrollments."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return ResultT<IEnumerable<EnrollmentViewModel>>.Failure(new Error("Unable to retrieve enrollments."));
         }
 
         public async Task<ResultT<IEnumerable<EnrollmentViewModel>>> GetEnrollmentsAsync(short employeeId)
@@ -132,8 +147,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving enrollments");
-                return ResultT<IEnumerable<EnrollmentViewModel>>.Failure(new Error("Unable to retrieve enrollments."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return ResultT<IEnumerable<EnrollmentViewModel>>.Failure(new Error("Unable to retrieve enrollments."));
         }
 
         public async Task<Result> SubmitAsync(short employeeId, short trainingId)
@@ -176,8 +196,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in submitting enrollment application");
-                return Result.Failure(new Error("Training registration failed. Try again later."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return Result.Failure(new Error("Training registration failed. Try again later."));
         }
 
         public async Task<Result> SubmitAsync(short employeeId, short trainingId, IEnumerable<EmployeeUpload> employeeUploads)
@@ -220,8 +245,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in submitting enrollment application");
-                return ResultT<Result>.Failure(new Error("Training registration failed. Try again later."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return ResultT<Result>.Failure(new Error("Training registration failed. Try again later."));
         }
 
         public async Task<ResultT<IEnumerable<Result>>> ValidateApprovedEnrollmentsAsync(short? approverAccountId)
@@ -247,8 +277,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving trainings with due registration deadline");
-                return ResultT<IEnumerable<Result>>.Failure(new Error("Unable to validate approved enrollment applications. Try again later."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return ResultT<IEnumerable<Result>>.Failure(new Error("Unable to validate approved enrollment applications. Try again later."));
         }
 
         public async Task<Result> ValidateApprovedEnrollmentsByTrainingAsync(short approverAccountId, short trainingId)
@@ -271,8 +306,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, $"Error in retrieving training with id {trainingId}");
-                return Result.Failure(new Error("UUnable to validate approved enrollment applications for training. Try again later."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return Result.Failure(new Error("UUnable to validate approved enrollment applications for training. Try again later."));
         }
 
         private async Task<Result> ValidateApprovedEnrollmentsByTrainingAsync(short? approverAccountId, Training training)
@@ -329,8 +369,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, $"Error in validating approved enrollment applications for training with id {training.TrainingId}");
-                return Result.Failure(new Error($"Unable to validate approved enrollment applications for training: {training.TrainingName}."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return Result.Failure(new Error($"Unable to validate approved enrollment applications for training: {training.TrainingName}."));
         }
     }
 }

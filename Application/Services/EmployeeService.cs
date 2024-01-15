@@ -32,8 +32,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving employee with uploads.");
-                return ResultT<Employee>.Failure(new Error("Unable to retrieve employee with uploads."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return ResultT<Employee>.Failure(new Error("Unable to retrieve employee with uploads."));
         }
 
         public async Task<ResultT<IEnumerable<EmployeeUpload>>> GetEmployeeUploadsByEnrollmentIdAsync(int enrollmentId)
@@ -47,8 +52,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, $"Error in retrieving employee uploads with enrollment id: {enrollmentId}.");
-                return ResultT<IEnumerable<EmployeeUpload>>.Failure(new Error("Unable to retrieve employee uploads."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return ResultT<IEnumerable<EmployeeUpload>>.Failure(new Error("Unable to retrieve employee uploads."));
         }
 
         public async Task<ResultT<IEnumerable<Employee>>> GetManagersAsync()
@@ -62,8 +72,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving managers.");
-                return ResultT<IEnumerable<Employee>>.Failure(new Error("Unable to retrieve managers."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+             
+            return ResultT<IEnumerable<Employee>>.Failure(new Error("Unable to retrieve managers."));
         }
 
         public async Task<Result> RegisterAsync(RegisterViewModel model)
@@ -102,8 +117,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in registering employee");
-                return ResultT<Employee>.Failure(new Error("Employee registration failed. Try again later."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+             
+            return ResultT<Employee>.Failure(new Error("Employee registration failed. Try again later."));
         }
 
         public async Task<Result> UpdateAsync(Employee employee)
@@ -117,8 +137,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, $"Error in updating employee");
-                return ResultT<Employee>.Failure(new Error($"Unable to update employee with Id: {employee.EmployeeId}"));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+             
+            return ResultT<Employee>.Failure(new Error($"Unable to update employee with Id: {employee.EmployeeId}"));
         }
 
         private string GetPasswordHash(string password)

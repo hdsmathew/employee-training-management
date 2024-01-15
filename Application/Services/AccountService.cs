@@ -39,8 +39,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in authenticating user");
-                return ResultT<AuthenticatedUser>.Failure(new Error("Unable to authenticate. Try again later."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+             
+            return ResultT<AuthenticatedUser>.Failure(new Error("Unable to authenticate. Try again later."));
         }
 
         public async Task<Result> CreateAsync(Account account)
@@ -60,8 +65,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in creating account");
-                return Result.Failure(new Error("Account registration failed. Try again later."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+             
+            return Result.Failure(new Error("Account registration failed. Try again later."));
         }
 
         private bool IsPasswordValid(string providedPassword, string savedPasswordHash)

@@ -65,7 +65,7 @@ namespace Infrastructure.Common
             }
             catch (InvalidCastException ex)
             {
-                throw new InvalidOperationException($"Error converting value for fieldName {fieldName} to type {typeof(TValue)}", ex);
+                throw new MapperException($"Error converting value for fieldName {fieldName} to type {typeof(TValue)}", ex);
             }
         }
     }

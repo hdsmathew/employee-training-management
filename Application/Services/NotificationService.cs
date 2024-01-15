@@ -30,8 +30,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving enrollment notifications.");
-                return ResultT<IEnumerable<UserNotification>>.Failure(new Error($"Unable to retrieve enrollment notifications for recipient with id: {recipientId}."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return ResultT<IEnumerable<UserNotification>>.Failure(new Error($"Unable to retrieve enrollment notifications for recipient with id: {recipientId}."));
         }
 
         public async Task<Result> SendEnrollmentNotificationAsync(string notificationMessage, short recipientId)
@@ -51,9 +56,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in sending enrollment notification.");
-                return Result.Failure(new Error($"Unable to send enrollment notification to recipient with id: {recipientId}."));
-
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return Result.Failure(new Error($"Unable to send enrollment notification to recipient with id: {recipientId}."));
         }
     }
 }

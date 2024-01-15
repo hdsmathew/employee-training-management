@@ -45,8 +45,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in adding training");
-                return Result.Failure(new Error("Unable to add new training. Try again later."));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return Result.Failure(new Error("Unable to add new training. Try again later."));
         }
 
         public async Task<Result> DeleteAsync(short trainingId)
@@ -65,8 +70,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in deleting training");
-                return Result.Failure(new Error($"Unable to delete training with Id: {trainingId}"));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return Result.Failure(new Error($"Unable to delete training with Id: {trainingId}"));
         }
 
         public async Task<ResultT<TrainingViewModel>> GetTrainingDetailsAsync()
@@ -84,8 +94,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving training details");
-                return ResultT<TrainingViewModel>.Failure(new Error("Error in retrieving training details"));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return ResultT<TrainingViewModel>.Failure(new Error("Error in retrieving training details"));
         }
 
         public async Task<ResultT<TrainingViewModel>> GetTrainingDetailsAsync(short trainingId)
@@ -111,8 +126,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in retrieving training details");
-                return ResultT<TrainingViewModel>.Failure(new Error($"Unable to retrieve training with Id: {trainingId}"));
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return ResultT<TrainingViewModel>.Failure(new Error($"Unable to retrieve training with Id: {trainingId}"));
         }
 
         public async Task<Result> UpdateAsync(Training training)
@@ -126,9 +146,13 @@ namespace Core.Application.Services
             catch (DALException dalEx)
             {
                 _logger.LogError(dalEx, "Error in updating training");
-                return ResultT<TrainingViewModel>.Failure(new Error($"Unable to update training with Id: {training.TrainingId}"));
-
             }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return ResultT<TrainingViewModel>.Failure(new Error($"Unable to update training with Id: {training.TrainingId}"));
         }
     }
 }
