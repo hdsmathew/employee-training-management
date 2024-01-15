@@ -207,8 +207,19 @@ namespace Application.Tests.Services
             Assert.IsTrue(actualResult.IsSuccess);
         }
 
-        [TestCaseSource(nameof(SeatsAvailableAndNumberOfApprovedEnrollmentsTestCases))]
-        public async Task ValidateApprovedEnrollmentsByTraining_SeatsAvailableAndNumberOfApprovedEnrollments_ApprovedEnrollmentsSortedAndConfirmedByTrainingPriorityAsync((short ApproverAccountId, short TrainingId, IEnumerable<Enrollment> ExpectedUpdatedEnrollments) testData)
+        [TestCaseSource(nameof(SeatsAvailableGreaterThanOrEqualToNumberOfApprovedEnrollmentsTestCase))]
+        public async Task ValidateApprovedEnrollmentsByTraining_SeatsAvailableGreaterThanOrEqualToNumberOfApprovedEnrollments_AllApprovedEnrollmentsConfirmedAsync((short, short, IEnumerable<Enrollment>) testData)
+        {
+            await ValidateApprovedEnrollmentsByTraining_SeatsAvailableAndNumberOfApprovedEnrollments_ApprovedEnrollmentsSortedAndConfirmedByTrainingPriorityAsync(testData);
+        }
+
+        [TestCaseSource(nameof(SeatsAvailableLessThanNumberOfApprovedEnrollmentsTestCases))]
+        public async Task ValidateApprovedEnrollmentsByTraining_SeatsAvailableLessThanNumberOfApprovedEnrollments_ApprovedEnrollmentsSortedAndConfirmedByTrainingPriorityAsync((short, short, IEnumerable<Enrollment>) testData)
+        {
+            await ValidateApprovedEnrollmentsByTraining_SeatsAvailableAndNumberOfApprovedEnrollments_ApprovedEnrollmentsSortedAndConfirmedByTrainingPriorityAsync(testData);
+        }
+
+        private async Task ValidateApprovedEnrollmentsByTraining_SeatsAvailableAndNumberOfApprovedEnrollments_ApprovedEnrollmentsSortedAndConfirmedByTrainingPriorityAsync((short ApproverAccountId, short TrainingId, IEnumerable<Enrollment> ExpectedUpdatedEnrollments) testData)
         {
             await _enrollmentService.ValidateApprovedEnrollmentsByTrainingAsync(testData.ApproverAccountId, testData.TrainingId);
 
@@ -225,7 +236,7 @@ namespace Application.Tests.Services
                 actualUpdatedEnrollments.Where(enrollment => enrollment.ApprovalStatus == ApprovalStatusEnum.Declined));
         }
 
-        private static IEnumerable<(short, short, IEnumerable<Enrollment>)> SeatsAvailableAndNumberOfApprovedEnrollmentsTestCases()
+        private static IEnumerable<(short, short, IEnumerable<Enrollment>)> SeatsAvailableGreaterThanOrEqualToNumberOfApprovedEnrollmentsTestCase()
         {
             yield return (1, 1, new List<Enrollment>()
             {
@@ -238,7 +249,11 @@ namespace Application.Tests.Services
                     TrainingId = 1
                 }
             });
+            // Add test data for SeatsAvailable == NumberOfApprovedEnrollments
+        }
 
+        private static IEnumerable<(short, short, IEnumerable<Enrollment>)> SeatsAvailableLessThanNumberOfApprovedEnrollmentsTestCases()
+        {
             yield return (1, 2, new List<Enrollment>()
             {
                 new Enrollment()
@@ -294,6 +309,7 @@ namespace Application.Tests.Services
                     TrainingId = 3
                 }
             });
+
         }
     }
 }
