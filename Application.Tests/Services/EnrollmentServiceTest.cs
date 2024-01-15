@@ -199,12 +199,12 @@ namespace Application.Tests.Services
                 _stubUserNotificationRepository.Object);
         }
 
-        [TestCase(1, 1, ExpectedResult = true)]
-        public async Task<bool> ValidateApprovedEnrollmentsByTraining_ApproverAccountIdAndTrainingId_ReturnsSuccessAsync(short approverAccountId, short trainingId)
+        [TestCase(1, 1)]
+        public async Task ValidateApprovedEnrollmentsByTraining_ApproverAccountIdAndTrainingId_ReturnsSuccessAsync(short approverAccountId, short trainingId)
         {
             Result actualResult = await _enrollmentService.ValidateApprovedEnrollmentsByTrainingAsync(approverAccountId, trainingId);
 
-            return actualResult.IsSuccess;
+            Assert.IsTrue(actualResult.IsSuccess);
         }
 
         [TestCaseSource(nameof(SeatsAvailableAndNumberOfApprovedEnrollmentsTestCases))]
@@ -216,14 +216,13 @@ namespace Application.Tests.Services
                 testData.TrainingId,
                 new List<ApprovalStatusEnum>() { ApprovalStatusEnum.Confirmed, ApprovalStatusEnum.Declined });
 
-            Assert.AreEqual(testData.ExpectedUpdatedEnrollments.Count(), actualUpdatedEnrollments.Count());
-
-            foreach (Enrollment expectedUpdatedEnrollment in testData.ExpectedUpdatedEnrollments)
-            {
-                Enrollment actualUpdatedEnrollment = actualUpdatedEnrollments.Where(enrollment => enrollment.EnrollmentId == expectedUpdatedEnrollment.EnrollmentId).FirstOrDefault();
-                Assert.IsNotNull(actualUpdatedEnrollment, $"Expected updated enrollment with EnrollmentId: {expectedUpdatedEnrollment.EnrollmentId} not found in actual updated enrollments.");
-                Assert.AreEqual(expectedUpdatedEnrollment.ApprovalStatus, actualUpdatedEnrollment.ApprovalStatus, $"Enrollment Id: {expectedUpdatedEnrollment.EnrollmentId}");
-            }
+            CollectionAssert.AreEquivalent(testData.ExpectedUpdatedEnrollments, actualUpdatedEnrollments);
+            CollectionAssert.AreEquivalent(
+                testData.ExpectedUpdatedEnrollments.Where(enrollment => enrollment.ApprovalStatus == ApprovalStatusEnum.Confirmed),
+                actualUpdatedEnrollments.Where(enrollment => enrollment.ApprovalStatus == ApprovalStatusEnum.Confirmed));
+            CollectionAssert.AreEquivalent(
+                testData.ExpectedUpdatedEnrollments.Where(enrollment => enrollment.ApprovalStatus == ApprovalStatusEnum.Declined),
+                actualUpdatedEnrollments.Where(enrollment => enrollment.ApprovalStatus == ApprovalStatusEnum.Declined));
         }
 
         private static IEnumerable<(short, short, IEnumerable<Enrollment>)> SeatsAvailableAndNumberOfApprovedEnrollmentsTestCases()

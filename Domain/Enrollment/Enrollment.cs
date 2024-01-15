@@ -2,7 +2,7 @@
 
 namespace Core.Domain
 {
-    public class Enrollment : IEntity
+    public class Enrollment : IEntity, IEquatable<Enrollment>
     {
         public Enrollment() { }
 
@@ -53,6 +53,28 @@ namespace Core.Domain
         {
             ApprovalStatus = status;
             UpdatedAt = DateTime.UtcNow;
+        }
+
+        public bool Equals(Enrollment other)
+        {
+            if (other is null)
+            {
+                return false;
+            }
+
+            return EnrollmentId == other.EnrollmentId;
+        }
+
+        public override bool Equals(object otherObj)
+        {
+            return Equals(otherObj as Enrollment);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(
+                EnrollmentId
+            );
         }
     }
 }
