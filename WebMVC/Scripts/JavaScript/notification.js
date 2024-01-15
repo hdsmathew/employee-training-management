@@ -32,7 +32,7 @@
             if (response.Success) {
                 $("#notificationList").empty();
                 response.Result.Notifications.forEach(function (notification) {
-                    addNotification("MOCK TITLE", notification.NotificationMessage, notification.SentAt);
+                    addNotification(notification.Title, notification.NotificationMessage, notification.SentAt);
                 });
             }
             checkIfNotificationListEmpty("You're up-to-date.");
