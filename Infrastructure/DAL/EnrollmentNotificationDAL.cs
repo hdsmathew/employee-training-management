@@ -56,7 +56,7 @@ namespace Infrastructure.DAL
 
                 parameters.Add(new SqlParameter($"@NotificationMessage{parameterIndex}", notification.NotificationMessage));
                 parameters.Add(new SqlParameter($"@RecipientId{parameterIndex}", notification.RecipientId));
-                parameters.Add(new SqlParameter($"@@Title{parameterIndex}", notification.Title));
+                parameters.Add(new SqlParameter($"@Title{parameterIndex}", notification.Title));
 
                 parameterIndex++;
             }
