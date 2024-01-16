@@ -40,7 +40,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                await _dataAccess.ExecuteNonQueryAsync(insertQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -89,7 +89,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                await _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
+                await _dataAccess.ExecuteNonQueryAsync(insertQuery.ToString(), parameters);
             }
             catch (Exception ex)
             {
@@ -107,7 +107,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                await _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
+                await _dataAccess.ExecuteNonQueryAsync(deleteQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -120,18 +120,17 @@ namespace Infrastructure.DAL
             string selectQuery = @"SELECT TOP 1 1 FROM Enrollment WHERE 
                                    EmployeeId = @EmployeeId AND 
                                    TrainingId = @TrainingId AND 
-                                   ApprovalStatusId = @ApprovalStatusId";
+                                   ApprovalStatusId NOT IN ('Confirmed', 'Declined')";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@EmployeeId", employeeId),
-                new SqlParameter("@TrainingId", trainingId),
-                new SqlParameter("@ApprovalStatusId", (byte)ApprovalStatusEnum.Pending)
+                new SqlParameter("@TrainingId", trainingId)
             };
             object scalarObject;
 
             try
             {
-                scalarObject = await _dataAccess.ExecuteScalar(selectQuery, parameters);
+                scalarObject = await _dataAccess.ExecuteScalarAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -272,7 +271,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                await _dataAccess.ExecuteNonQuery(updateQuery, parameters);
+                await _dataAccess.ExecuteNonQueryAsync(updateQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -328,7 +327,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                await _dataAccess.ExecuteNonQuery(updateQuery.ToString(), parameters);
+                await _dataAccess.ExecuteNonQueryAsync(updateQuery.ToString(), parameters);
             }
             catch (Exception ex)
             {

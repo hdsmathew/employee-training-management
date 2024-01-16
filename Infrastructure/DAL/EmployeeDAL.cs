@@ -39,7 +39,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                await _dataAccess.ExecuteNonQueryAsync(insertQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -57,7 +57,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                await _dataAccess.ExecuteNonQuery(deleteQuery, parameters);
+                await _dataAccess.ExecuteNonQueryAsync(deleteQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -79,7 +79,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                scalarObject = await _dataAccess.ExecuteScalar(selectQuery, parameters);
+                scalarObject = await _dataAccess.ExecuteScalarAsync(selectQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -217,7 +217,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                await _dataAccess.ExecuteNonQuery(updateQuery, parameters);
+                await _dataAccess.ExecuteNonQueryAsync(updateQuery, parameters);
             }
             catch (Exception ex)
             {

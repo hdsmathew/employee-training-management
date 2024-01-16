@@ -18,7 +18,7 @@ namespace Infrastructure.DAL
             _connection = new SqlConnection(_connectionString);
         }
 
-        public async Task<int> ExecuteNonQuery(string sqlQuery, List<SqlParameter> queryParameters)
+        public async Task<int> ExecuteNonQueryAsync(string sqlQuery, List<SqlParameter> queryParameters)
         {
             if (sqlQuery is null || queryParameters is null) throw new ArgumentNullException("Arguments cannot be null.");
 
@@ -70,7 +70,7 @@ namespace Infrastructure.DAL
             }
         }
 
-        public async Task<object> ExecuteScalar(string sqlQuery, List<SqlParameter> queryParameters)
+        public async Task<object> ExecuteScalarAsync(string sqlQuery, List<SqlParameter> queryParameters)
         {
             if (sqlQuery is null || queryParameters is null) throw new ArgumentNullException("Arguments cannot be null.");
 

@@ -35,7 +35,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                await _dataAccess.ExecuteNonQueryAsync(insertQuery, parameters);
             }
             catch (Exception ex)
             {
@@ -65,7 +65,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                await _dataAccess.ExecuteNonQuery(insertQuery.ToString(), parameters);
+                await _dataAccess.ExecuteNonQueryAsync(insertQuery.ToString(), parameters);
             }
             catch (Exception ex)
             {
@@ -110,7 +110,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                await _dataAccess.ExecuteNonQuery(updateQuery, parameters);
+                await _dataAccess.ExecuteNonQueryAsync(updateQuery, parameters);
             }
             catch (Exception ex)
             {

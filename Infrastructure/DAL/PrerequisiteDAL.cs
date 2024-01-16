@@ -32,7 +32,7 @@ namespace Infrastructure.DAL
 
             try
             {
-                await _dataAccess.ExecuteNonQuery(insertQuery, parameters);
+                await _dataAccess.ExecuteNonQueryAsync(insertQuery, parameters);
             }
             catch (Exception ex)
             {

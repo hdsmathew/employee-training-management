@@ -11,7 +11,7 @@ namespace Infrastructure.DAL.Interfaces
         Task AddWithPrerequisitesAsync(TrainingModel training, IEnumerable<PrerequisiteModel> prerequisites);
         Task DeleteAsync(short trainingId);
         Task<TrainingModel> GetAsync(short trainingId);
-        Task<bool> ExistsByNameAsync(string name);
+        Task<bool> ExistsByNameAsync(string trainingName);
         Task<IEnumerable<TrainingModel>> GetAllAsync();
         Task<IEnumerable<TrainingModel>> GetAllByRegistrationDeadlineDueAsync(DateTime registrationDeadline);
         Task UpdateAsync(TrainingModel training);
