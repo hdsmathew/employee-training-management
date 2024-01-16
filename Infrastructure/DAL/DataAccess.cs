@@ -80,7 +80,7 @@ namespace Infrastructure.DAL
                 using (SqlCommand sqlCommand = new SqlCommand(sqlQuery, _connection))
                 {
                     sqlCommand.Parameters.AddRange(queryParameters.ToArray());
-                    return sqlCommand.ExecuteScalarAsync();
+                    return await sqlCommand.ExecuteScalarAsync();
                 }
             }
             finally
