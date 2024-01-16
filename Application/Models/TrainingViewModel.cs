@@ -16,7 +16,6 @@ namespace Core.Application.Models
         [Required(ErrorMessage = "Seats Available is required")]
         [Range(1, short.MaxValue, ErrorMessage = "Seats Available must be greater than 0")]
         public short SeatsAvailable { get; set; }
-        [Required(ErrorMessage = "Training Description is required")]
         public string TrainingDescription { get; set; }
         [Required(ErrorMessage = "Training Name is required")]
         public string TrainingName { get; set; }
