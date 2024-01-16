@@ -115,7 +115,7 @@ namespace WebMVC.Controllers
         [HttpPost]
         public async Task<JsonResult> ValidateApprovedEnrollments()
         {
-            ResultT<IEnumerable<Result>> result = await _enrollmentService.ValidateApprovedEnrollmentsAsync(AuthenticatedUser.AccountId);
+            ResultT<IEnumerable<(string, Result)>> result = await _enrollmentService.ValidateApprovedEnrollmentsAsync(AuthenticatedUser.AccountId);
             return Json(
                 new
                 {

@@ -168,6 +168,17 @@ namespace Core.Application.Services
                     return Result.Failure(new Error($"User already has a current enrollment submission."));
                 }
 
+                Training training = await _trainingRepository.GetAsync(enrollmentSubmissionViewModel.TrainingId);
+                if (training is null)
+                {
+                    return Result.Failure(new Error("Could not send notification."));
+                }
+
+                if (training.RegistrationDeadline <= DateTime.Now)
+                {
+                    return Result.Failure(new Error("Registration deadline for training is due."));
+                }
+
                 if (enrollmentSubmissionViewModel.EmployeeUploads is null)
                 {
                     await _enrollmentRepository.Add(new Enrollment()
@@ -196,12 +207,6 @@ namespace Core.Application.Services
                 }
 
                 // Assume both enrollment and notification inserted
-                Training training = await _trainingRepository.GetAsync(enrollmentSubmissionViewModel.TrainingId);
-                if (training is null)
-                {
-                    return Result.Failure(new Error("Could not send notification."));
-                }
-
                 Employee employee = await _employeeRepository.GetAsync(employeeId);
                 if (employee is null)
                 {
@@ -232,7 +237,7 @@ namespace Core.Application.Services
             return ResultT<Result>.Failure(new Error("Training registration failed. Try again later."));
         }
 
-        public async Task<ResultT<IEnumerable<Result>>> ValidateApprovedEnrollmentsAsync(short? approverAccountId)
+        public async Task<ResultT<IEnumerable<(string, Result)>>> ValidateApprovedEnrollmentsAsync(short? approverAccountId)
         {
             try
             {
@@ -241,27 +246,27 @@ namespace Core.Application.Services
                 IEnumerable<Training> trainings = await _trainingRepository.GetAllByRegistrationDeadlineDueAsync(DateTime.Now);
                 if (trainings.Count() == 0)
                 {
-                    return ResultT<IEnumerable<Result>>.Failure(new Error("No trainings with registration deadline due found."));
+                    return ResultT<IEnumerable<(string, Result)>>.Failure(new Error("No trainings with registration deadline due found."));
                 }
 
-                List<Result> trainingEnrollmentsResults = new List<Result>();
+                List<(string, Result)> trainingEnrollmentsResults = new List<(string, Result)>();
                 foreach (Training training in trainings)
                 {
-                    trainingEnrollmentsResults.Add(await ValidateApprovedEnrollmentsByTrainingAsync(accountId, training));
+                    trainingEnrollmentsResults.Add((training.TrainingName, await ValidateApprovedEnrollmentsByTrainingAsync(accountId, training)));
                 }
 
-                return ResultT<IEnumerable<Result>>.Success(trainingEnrollmentsResults);
+                return ResultT<IEnumerable<(string, Result)>>.Success(trainingEnrollmentsResults);
             }
             catch (DALException dalEx)
             {
-                _logger.LogError(dalEx, "Error in retrieving trainings with due registration deadline");
+                _logger.LogError(dalEx, "Error in validating approved enrollment applications.");
             }
             catch (MapperException mapperEx)
             {
                 _logger.LogError(mapperEx, "Error in mapper");
             }
 
-            return ResultT<IEnumerable<Result>>.Failure(new Error("Unable to validate approved enrollment applications. Try again later."));
+            return ResultT<IEnumerable<(string, Result)>>.Failure(new Error("Unable to validate approved enrollment applications. Try again later."));
         }
 
         public async Task<Result> ValidateApprovedEnrollmentsByTrainingAsync(short approverAccountId, short trainingId)

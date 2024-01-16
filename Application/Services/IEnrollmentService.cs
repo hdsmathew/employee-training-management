@@ -11,7 +11,7 @@ namespace Core.Application.Services
         Task<ResultT<IEnumerable<EnrollmentViewModel>>> GetEnrollmentsAsync(short employeeId);
         Task<ResultT<IEnumerable<EnrollmentViewModel>>> GetEnrollmentSubmissionsForApprovalAsync(short managerId);
         Task<Result> SubmitAsync(short employeeId, EnrollmentSubmissionViewModel enrollmentSubmissionViewModel);
-        Task<ResultT<IEnumerable<Result>>> ValidateApprovedEnrollmentsAsync(short? approverAccountId);
+        Task<ResultT<IEnumerable<(string, Result)>>> ValidateApprovedEnrollmentsAsync(short? approverAccountId);
         Task<Result> ValidateApprovedEnrollmentsByTrainingAsync(short approverAccountId, short trainingId);
     }
 }
