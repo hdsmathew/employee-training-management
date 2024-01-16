@@ -118,7 +118,8 @@ namespace Infrastructure.DAL
         public async Task<bool> ExistsByNameAsync(string trainingName)
         {
             string selectQuery = @"SELECT TOP 1 1 FROM Training WHERE 
-                                   TrainingName = @TrainingName";
+                                   TrainingName = @TrainingName AND
+                                   IsActive = 1";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@TrainingName", trainingName)
