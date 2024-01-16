@@ -9,9 +9,9 @@ namespace Infrastructure.DAL.Interfaces
     {
         Task AddAsync(EnrollmentModel enrollment);
         Task AddWithEmployeeUploadsAsync(EnrollmentModel enrollment, IEnumerable<EmployeeUploadModel> employeeUploads);
-        Task DeleteAsync(int enrollmentID);
-        Task<bool> ExistsAsync(short employeeID, short trainingID);
-        Task<EnrollmentModel> GetAsync(int enrollmentID);
+        Task DeleteAsync(int enrollmentId);
+        Task<bool> ExistsAsync(short employeeId, short trainingId);
+        Task<EnrollmentModel> GetAsync(int enrollmentId);
         Task<IEnumerable<EnrollmentModel>> GetAllAsync();
         Task<IEnumerable<EnrollmentModel>> GetAllByTrainingIdAndApprovalStatusAsync(short trainingId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);
         Task<IEnumerable<EnrollmentModel>> GetAllByEmployeeIdAndApprovalStatusAsync(short employeeId, IEnumerable<ApprovalStatusEnum> approvalStatusEnums);

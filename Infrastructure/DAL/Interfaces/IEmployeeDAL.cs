@@ -7,9 +7,9 @@ namespace Infrastructure.DAL.Interfaces
     public interface IEmployeeDAL
     {
         Task AddAsync(EmployeeModel user);
-        Task DeleteAsync(int userID);
+        Task DeleteAsync(int userId);
         Task<bool> ExistsByNationalIdOrMobileNumberAsync(string mobileNumber, string nationalId);
-        Task<EmployeeModel> GetAsync(int userID);
+        Task<EmployeeModel> GetAsync(int userId);
         Task<IEnumerable<EmployeeModel>> GetAllAsync();
         Task<IEnumerable<EmployeeModel>> GetAllByAccountTypeAsync(byte accountTypeId);
         Task<IEnumerable<EmployeeModel>> GetAllByEmployeeIdsAsync(IEnumerable<short> employeeIds);

@@ -6,9 +6,9 @@ namespace Infrastructure.DAL.Interfaces
 {
     public interface IUserNotificationDAL
     {
-        Task AddAsync(UserNotificationModel model);
-        Task AddBatchAsync(IEnumerable<UserNotificationModel> models);
+        Task AddAsync(UserNotificationModel notification);
+        Task AddBatchAsync(IEnumerable<UserNotificationModel> notifications);
         Task<IEnumerable<UserNotificationModel>> GetAllByRecipientIdAndSeenStatusAsync(short recipientId, bool hasSeen);
-        Task UpdateAsync(UserNotificationModel model);
+        Task UpdateAsync(UserNotificationModel notification);
     }
 }

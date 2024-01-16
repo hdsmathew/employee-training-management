@@ -1,6 +1,5 @@
 ﻿using Core.Domain;
 using Infrastructure.Models;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Infrastructure.DAL.Interfaces
