@@ -3,7 +3,7 @@
     let managers = JSON.parse(sessionStorage.getItem("Managers"));
     let populateManagersDropDownList = (managers) => {
         $.each(managers, function (index, manager) {
-            managersDropdownlist.append(`<option value="${manager.EmployeeId}">${manager.FirstName + manager.LastName}</option>`);
+            managersDropdownlist.append(`<option value="${manager.EmployeeId}">${manager.FirstName} ${manager.LastName}</option>`);
         });
 
         managersDropdownlist.find("option:first").prop("selected", true);

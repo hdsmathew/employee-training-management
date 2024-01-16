@@ -47,7 +47,7 @@
                 contentType: false,
                 processData: false,
                 success: function (response) {
-                    $("span[data-valmsg]").empty();
+                    $("span[data-valmsg-for]").empty();
 
                     if (!response.Success) {
                         $.each(response.Errors, function (key, value) {

@@ -65,7 +65,6 @@
             "form": "declineForm",
             "type": "button",
             "class": "btn btn-primary declineEnrollment",
-            "data-dismiss": "modal",
             "text": "Decline"
         });
 
@@ -84,6 +83,7 @@
                     if (response.Success) {
                         removeTableRow($(`#tr_${enrollmentId}`));
                         checkIfTableEmpty("No pending enrollments");
+                        $("#templateModal").modal("hide");
                     }
                     showToastrNotification(response.Message, response.Success ? "success" : "error");
                 },
@@ -93,7 +93,6 @@
                 }
             });
             hideOverlay(500);
-            $("#templateModal").modal("hide");
         });
 
         $(".modal-footer").append(declineEnrollmentBtn);

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web;
 
-namespace WebMVC.ViewModels
+namespace Core.Application.Models
 {
     public class EnrollmentSubmissionViewModel
     {

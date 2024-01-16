@@ -3,8 +3,11 @@ using Core.Application.Repositories;
 using Core.Domain;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace Core.Application.Services
 {
@@ -156,73 +159,44 @@ namespace Core.Application.Services
             return ResultT<IEnumerable<EnrollmentViewModel>>.Failure(new Error("Unable to retrieve enrollments."));
         }
 
-        public async Task<Result> SubmitAsync(short employeeId, short trainingId)
+        public async Task<Result> SubmitAsync(short employeeId, EnrollmentSubmissionViewModel enrollmentSubmissionViewModel)
         {
             try
             {
-                if (await _enrollmentRepository.Exists(employeeId, trainingId))
+                if (await _enrollmentRepository.Exists(employeeId, enrollmentSubmissionViewModel.TrainingId))
                 {
-                    return Result.Failure(new Error($"User already has a pending enrollment submission."));
+                    return Result.Failure(new Error($"User already has a current enrollment submission."));
                 }
 
-                await _enrollmentRepository.Add(new Enrollment()
+                if (enrollmentSubmissionViewModel.EmployeeUploads is null)
                 {
-                    ApprovalStatus = ApprovalStatusEnum.Pending,
-                    EmployeeId = employeeId,
-                    TrainingId = trainingId
-                });
+                    await _enrollmentRepository.Add(new Enrollment()
+                    {
+                        ApprovalStatus = ApprovalStatusEnum.Pending,
+                        EmployeeId = employeeId,
+                        TrainingId = enrollmentSubmissionViewModel.TrainingId
+                    });
+                }
+                else
+                {
+                    // TODO: Move validation logic to Domain layer
+                    // TODO: Return which file was invalid
+                    if (!IsValidFiles(enrollmentSubmissionViewModel.EmployeeUploads))
+                    {
+                        return Result.Failure(new Error("Invalid files uploaded."));
+                    }
+                    // TODO: Handle exceptions
+                    IEnumerable<EmployeeUpload> employeeUploads = SaveUploadedFiles(enrollmentSubmissionViewModel.EmployeeUploads, enrollmentSubmissionViewModel.PrerequisiteIds);
+                    await _enrollmentRepository.AddWithEmployeeUploads(new Enrollment()
+                    {
+                        ApprovalStatus = ApprovalStatusEnum.Pending,
+                        EmployeeId = employeeId,
+                        TrainingId = enrollmentSubmissionViewModel.TrainingId
+                    }, employeeUploads);
+                }
 
                 // Assume both enrollment and notification inserted
-                Training training = await _trainingRepository.GetAsync(trainingId);
-                if (training is null)
-                {
-                    return Result.Failure(new Error("Could not send notification."));
-                }
-
-                Employee employee = await _employeeRepository.GetAsync(employeeId);
-                if (employee is null)
-                {
-                    return Result.Failure(new Error("Could not send notification."));
-                }
-
-                await _userNotificationRepository.Add(new UserNotification(
-                    "ENROLLMENT REQUEST",
-                    $"{employee.GetFullName()} has submitted an enrollment application for training: {training.TrainingName}",
-                    employee.ManagerId)
-                );
-
-                return Result.Success();
-            }
-            catch (DALException dalEx)
-            {
-                _logger.LogError(dalEx, "Error in submitting enrollment application");
-            }
-            catch (MapperException mapperEx)
-            {
-                _logger.LogError(mapperEx, "Error in mapper");
-            }
-
-            return Result.Failure(new Error("Training registration failed. Try again later."));
-        }
-
-        public async Task<Result> SubmitAsync(short employeeId, short trainingId, IEnumerable<EmployeeUpload> employeeUploads)
-        {
-            try
-            {
-                if (await _enrollmentRepository.Exists(employeeId, trainingId))
-                {
-                    return Result.Failure(new Error($"User already has a pending enrollment submission."));
-                }
-
-                await _enrollmentRepository.AddWithEmployeeUploads(new Enrollment()
-                {
-                    ApprovalStatus = ApprovalStatusEnum.Pending,
-                    EmployeeId = employeeId,
-                    TrainingId = trainingId
-                }, employeeUploads);
-
-                // Assume both enrollment and notification inserted
-                Training training = await _trainingRepository.GetAsync(trainingId);
+                Training training = await _trainingRepository.GetAsync(enrollmentSubmissionViewModel.TrainingId);
                 if (training is null)
                 {
                     return Result.Failure(new Error("Could not send notification."));
@@ -241,6 +215,10 @@ namespace Core.Application.Services
                 );
 
                 return Result.Success();
+            }
+            catch (ConfigurationErrorsException configEx)
+            {
+                _logger.LogError(configEx, "Error in configuration");
             }
             catch (DALException dalEx)
             {
@@ -312,7 +290,61 @@ namespace Core.Application.Services
                 _logger.LogError(mapperEx, "Error in mapper");
             }
 
-            return Result.Failure(new Error("UUnable to validate approved enrollment applications for training. Try again later."));
+            return Result.Failure(new Error("Unable to validate approved enrollment applications for training. Try again later."));
+        }
+
+        private IEnumerable<EmployeeUpload> SaveUploadedFiles(IEnumerable<HttpPostedFileBase> uploadedFiles, IEnumerable<byte> prerequisiteIds)
+        {
+            string uploadsFolder = ConfigurationManager.AppSettings["UploadFolderPath"] ?? throw new ConfigurationErrorsException("Invalid or missing configuration for 'UploadFolderPath'.");
+
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            return uploadedFiles
+                .Zip(prerequisiteIds, (file, prerequisiteId) => new { File = file, PrerequisiteId = prerequisiteId })
+                .Select(data => SaveUploadedFile(data.File, data.PrerequisiteId, uploadsFolder))
+                .ToList();
+        }
+
+        private string GenerateUniqueFileName(string originalFileName)
+        {
+            string uniqueIdentifier = Guid.NewGuid().ToString("N");
+            string fileExtension = Path.GetExtension(originalFileName);
+            return $"{uniqueIdentifier}_{DateTime.Now:yyyyMMddHHmmss}{fileExtension}";
+        }
+
+        private bool IsValidFiles(IEnumerable<HttpPostedFileBase> files)
+        {
+            return files.All(file => IsValidFile(file));
+        }
+
+        private bool IsValidFile(HttpPostedFileBase file)
+        {
+            return file != null && IsValidFileSize(file) && IsValidFileType(file);
+        }
+
+        private bool IsValidFileSize(HttpPostedFileBase file)
+        {
+            return file.ContentLength > 0 && file.ContentLength <= (1024 * 1024);
+        }
+
+        private bool IsValidFileType(HttpPostedFileBase file)
+        {
+            List<string> allowedMimeTypes = new List<string> { "image/png", "application/pdf" };
+
+            return allowedMimeTypes.Contains(file.ContentType);
+        }
+
+        private EmployeeUpload SaveUploadedFile(HttpPostedFileBase uploadedFile, byte prerequisiteId, string uploadsFolder)
+        {
+            string fileName = Path.GetFileName(uploadedFile.FileName);
+            string uniqueFileName = GenerateUniqueFileName(fileName);
+            string filePath = Path.Combine(uploadsFolder, uniqueFileName);
+            uploadedFile.SaveAs(filePath);
+
+            return new EmployeeUpload() { PrerequisiteId = prerequisiteId, UploadedFileName = uniqueFileName };
         }
 
         private async Task<Result> ValidateApprovedEnrollmentsByTrainingAsync(short? approverAccountId, Training training)

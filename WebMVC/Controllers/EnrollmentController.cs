@@ -3,12 +3,11 @@ using Core.Application.Services;
 using Core.Domain;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using WebMVC.ViewModels;
 
 namespace WebMVC.Controllers
 {
@@ -87,7 +86,7 @@ namespace WebMVC.Controllers
         public FileContentResult GetDocumentUpload(string uploadedFileName)
         {
             // TODO: Add validation
-            string uploadsFolder = Server.MapPath("~/App_Data/Employee_Uploads");
+            string uploadsFolder = ConfigurationManager.AppSettings["UploadFolderPath"];
             string filePath = Path.Combine(uploadsFolder, uploadedFileName);
             byte[] fileContents = System.IO.File.ReadAllBytes(filePath);
             string mimeType = MimeMapping.GetMimeMapping(uploadedFileName);
@@ -98,20 +97,8 @@ namespace WebMVC.Controllers
         [HttpPost]
         public async Task<JsonResult> SubmitEnrollment(EnrollmentSubmissionViewModel enrollmentSubmissionViewModel)
         {
-            // Refactor: Redo logic to remove additional method for submitting enrollments without uploads
-            // Refactor: Move upload functionality to service
             // TODO : Validate file input
-            Result result;
-            if (enrollmentSubmissionViewModel.EmployeeUploads is null)
-            {
-                result = await _enrollmentService.SubmitAsync(AuthenticatedUser.EmployeeId, enrollmentSubmissionViewModel.TrainingId);
-            }
-            else
-            {
-                IEnumerable<EmployeeUpload> employeeUploads = SaveUploadedFiles(enrollmentSubmissionViewModel.EmployeeUploads, enrollmentSubmissionViewModel.PrerequisiteIds);
-                result = await _enrollmentService.SubmitAsync(AuthenticatedUser.EmployeeId, enrollmentSubmissionViewModel.TrainingId, employeeUploads);
-            }
-
+            Result result = await _enrollmentService.SubmitAsync(AuthenticatedUser.EmployeeId, enrollmentSubmissionViewModel);
             return Json(
                 new
                 {
@@ -172,31 +159,6 @@ namespace WebMVC.Controllers
                 default:
                     return null;
             }
-        }
-
-        private IEnumerable<EmployeeUpload> SaveUploadedFiles(IEnumerable<HttpPostedFileBase> uploadedFiles, IEnumerable<byte> prerequisiteIds)
-        {
-            string uploadsFolder = Server.MapPath("~/App_Data/Employee_Uploads");
-
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-
-            return uploadedFiles
-                .Zip(prerequisiteIds, (file, prerequisiteId) => new { File = file, PrerequisiteId = prerequisiteId })
-                .Select(data => SaveUploadedFile(data.File, data.PrerequisiteId, uploadsFolder))
-                .ToList();
-        }
-
-        private EmployeeUpload SaveUploadedFile(HttpPostedFileBase uploadedFile, byte prerequisiteId, string uploadsFolder)
-        {
-            // TODO: Generate unique filename
-            string fileName = Path.GetFileName(uploadedFile.FileName);
-            string filePath = Path.Combine(uploadsFolder, fileName);
-            uploadedFile.SaveAs(filePath);
-
-            return new EmployeeUpload() { PrerequisiteId = prerequisiteId, UploadedFileName = fileName };
         }
     }
 }

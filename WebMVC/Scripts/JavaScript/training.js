@@ -47,8 +47,9 @@
         requiredPrerequisites.forEach((prerequisite, i) => {
             const label = createLabel("col-md-4", `fileUpload_${i}`, `${prerequisite.DocumentName}:`);
             const fileInput = createFileInput("form-control", "EmployeeUploads", `fileUpload_${i}`, prerequisite.PrerequisiteId, true);
-            const formGroupDiv = $("<div>").addClass("d-flex");
-            const fileInputDiv = $("<div>").addClass("col-md-8").append(fileInput);
+            const validationErrorSpan = $("<span>").addClass("text-danger").attr({ "data-valmsg-for": `${prerequisite.PrerequisiteId}` });
+            const formGroupDiv = $("<div>").addClass("row");
+            const fileInputDiv = $("<div>").addClass("col-md-8").append(fileInput, validationErrorSpan);
 
             formGroupDiv.append(label, fileInputDiv);
             enrollForm.append(formGroupDiv);
@@ -123,42 +124,84 @@
         $("#templateModal").modal("hide");
     });
 
+    function isValidFile(file, prerequisiteId) {
+        if (!file) {
+            $(`[data-valmsg-for="${prerequisiteId}"]`).text("You need to upload something.");
+            return false;
+        }
+
+        const maxSize = 1024 * 1024;
+        if (!(file.size > 0)) {
+            $(`[data-valmsg-for="${prerequisiteId}"]`).text("File size should be greater than 0 bytes.");
+            return false;
+        }
+
+        if (file.size > maxSize) {
+            $(`[data-valmsg-for="${prerequisiteId}"]`).text("File size cannot be greater than 1MB.");
+            return false;
+        }
+
+        const allowedTypes = ["image/png", "application/pdf"];
+        if (!allowedTypes.includes(file.type)) {
+            $(`[data-valmsg-for="${prerequisiteId}"]`).text("Only png and pdf allowed.");
+            return false;
+        }
+
+        return true;
+    }
+
     $(".submitEnrollment").on("click", function (event) {
         event.preventDefault();
 
         const trainingId = $("#TrainingId").val();
         let formData = new FormData();
+        let isValidFiles = true;
+
         formData.append("TrainingId", trainingId);
         $("input[type='file']").each(function (index, fileInput) {
             let file = fileInput.files[0];
             let prerequisiteId = $(fileInput).attr("data-prerequisiteid");
 
+            if (!isValidFile(file, prerequisiteId)) {
+                isValidFiles = false;
+                return;
+            }
+
             formData.append("EmployeeUploads", file);
             formData.append("PrerequisiteIds", prerequisiteId);
         });
 
-        showOverlay(0);
-        $.ajax({
-            url: "/Enrollment/SubmitEnrollment",
-            type: "POST",
-            data: formData,
-            processData: false, // Don't convert to query string
-            contentType: false, // Let browser set to delimit form fields in request body
-            dataType: "json",
-            success: function (response) {
-                if (response.Success) {
-                    $(`#tr_${trainingId}`).remove();
-                    checkIfTableEmpty("No available trainings.");
+        if (isValidFiles) {
+            showOverlay(0);
+            $.ajax({
+                url: "/Enrollment/SubmitEnrollment",
+                type: "POST",
+                data: formData,
+                processData: false, // Don't convert to query string
+                contentType: false, // Let browser set to delimit form fields in request body
+                dataType: "json",
+                success: function (response) {
+                    $("span[data-valmsg-for]").empty();
+
+                    if (response.Success) {
+                        $(`#tr_${trainingId}`).remove();
+
+                        checkIfTableEmpty("No available trainings.");
+                        $("#templateModal").modal("hide");
+                    } else {
+                        $.each(response.Errors, function (key, value) {
+                            $(`[data-valmsg-for="${key}"]`).text(value.join(' '));
+                        });
+                    }
+                    showToastrNotification(response.Message, response.Success ? "success" : "error");
+                },
+                error: function (error) {
+                    showToastrNotification("Cannot enroll at this moment. Please try again later.", "error");
+                    console.error("Error:", error);
                 }
-                showToastrNotification(response.Message, response.Success ? "success" : "error");
-            },
-            error: function (error) {
-                showToastrNotification("Cannot enroll at this moment. Please try again later.", "error");
-                console.error("Error:", error);
-            }
-        });
-        hideOverlay(500);
-        $("#templateModal").modal("hide");
+            });
+            hideOverlay(500);
+        }
     });
 
     $(".deleteTraining").on("click", function () {

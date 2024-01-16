@@ -35,8 +35,8 @@
                         if (!authenticatedUser.IsInRole(AccountTypeEnum.Admin))
                         {
                             <li>@Html.ActionLink("Enrollments", "Index", "Enrollment", new { area = "" }, new { @class = "nav-link" })</li>
+                            <li>@Html.ActionLink("Notifications", "Index", "Notification", new { area = "" }, new { @class = "nav-link" })</li>
                         }
-                        <li>@Html.ActionLink("Notifications", "Index", "Notification", new { area = "" }, new { @class = "nav-link" })</li>
                     }
                 </ul>
                 <ul class="navbar-nav">
