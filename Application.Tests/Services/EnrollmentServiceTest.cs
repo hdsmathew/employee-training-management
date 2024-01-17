@@ -18,9 +18,11 @@ namespace Application.Tests.Services
         private Mock<IAccountRepository> _stubAccountRepository;
         private Mock<IEmployeeRepository> _stubEmployeeRepository;
         private Mock<IEnrollmentRepository> _stubEnrollmentRepository;
-        private Mock<ILogger> _stubLogger;
         private Mock<ITrainingRepository> _stubTrainingRepository;
         private Mock<IUserNotificationRepository> _stubUserNotificationRepository;
+
+        private Mock<ILogger> _stubLogger;
+        private Mock<IReportGenerationService> _stubReportGenerationService;
 
         private IEnrollmentService _enrollmentService;
 
@@ -148,9 +150,10 @@ namespace Application.Tests.Services
             _stubAccountRepository = new Mock<IAccountRepository>();
             _stubEmployeeRepository = new Mock<IEmployeeRepository>();
             _stubEnrollmentRepository = new Mock<IEnrollmentRepository>();
-            _stubLogger = new Mock<ILogger>();
             _stubTrainingRepository = new Mock<ITrainingRepository>();
             _stubUserNotificationRepository = new Mock<IUserNotificationRepository>();
+            _stubLogger = new Mock<ILogger>();
+            _stubReportGenerationService = new Mock<IReportGenerationService>();
 
             _stubAccountRepository
                 .Setup(iAccountRepository => iAccountRepository.GetAccountIdByAccountType(It.IsAny<AccountTypeEnum>()))
@@ -196,7 +199,8 @@ namespace Application.Tests.Services
                 _stubLogger.Object,
                 _stubTrainingRepository.Object,
                 _stubAccountRepository.Object,
-                _stubUserNotificationRepository.Object);
+                _stubUserNotificationRepository.Object,
+                _stubReportGenerationService.Object);
         }
 
         [TestCase(1, 1)]

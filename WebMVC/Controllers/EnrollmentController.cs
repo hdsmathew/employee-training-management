@@ -1,7 +1,6 @@
 ﻿using Core.Application.Models;
 using Core.Application.Services;
 using Core.Domain;
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
@@ -49,7 +48,6 @@ namespace WebMVC.Controllers
         }
 
         [CustomAuthorize(AccountTypeEnum.Manager)]
-        [HttpPost]
         public async Task<JsonResult> Decline(DeclineEnrollmentViewModel declineEnrollmentViewModel)
         {
             // TODO: Validate decline reason message
@@ -67,19 +65,17 @@ namespace WebMVC.Controllers
         }
 
         [CustomAuthorize(AccountTypeEnum.Admin)]
-        [HttpPost]
-        public async Task<JsonResult> GenerateEnrollmentsReport(short trainingId)
+        public async Task<FileStreamResult> GenerateEnrollmentReport(string fileName)
         {
-            // TODO: Implmenent Excel report
-            throw new NotImplementedException();
+            ResultT<Stream> result = await _enrollmentService.GenerateEnrollmentReportAsync();
+            return File(result.Value, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         [CustomAuthorize(AccountTypeEnum.Admin)]
-        [HttpPost]
-        public async Task<JsonResult> GenerateEnrollmentsReportByTraining(short trainingId)
+        public async Task<FileStreamResult> GenerateEnrollmentReportByTraining(short trainingId, string fileName)
         {
-            // TODO: Implmenent Excel report
-            throw new NotImplementedException();
+            ResultT<Stream> result = await _enrollmentService.GenerateEnrollmentReportByTrainingAsync(trainingId);
+            return File(result.Value, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         [CustomAuthorize(AccountTypeEnum.Manager, AccountTypeEnum.Employee)]

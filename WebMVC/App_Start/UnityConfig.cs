@@ -5,6 +5,7 @@ using Infrastructure.AppLogger;
 using Infrastructure.DAL;
 using Infrastructure.DAL.Interfaces;
 using Infrastructure.Models;
+using Infrastructure.ReportGeneration;
 using Infrastructure.Repositories;
 using System;
 using Unity;
@@ -87,6 +88,7 @@ namespace WebMVC
             container.RegisterType<IEmployeeService, EmployeeService>(TypeLifetime.Singleton);
             container.RegisterType<IEnrollmentService, EnrollmentService>(TypeLifetime.Singleton);
             container.RegisterType<INotificationService, NotificationService>(TypeLifetime.Singleton);
+            container.RegisterType<IReportGenerationService, ExcelReportGenerationService>(TypeLifetime.Singleton);
             container.RegisterType<ITrainingService, TrainingService>(TypeLifetime.Singleton);
         }
     }

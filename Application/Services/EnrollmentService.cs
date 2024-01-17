@@ -17,10 +17,12 @@ namespace Core.Application.Services
         private readonly IEmployeeRepository _employeeRepository;
         private readonly IEnrollmentRepository _enrollmentRepository;
         private readonly IUserNotificationRepository _userNotificationRepository;
-        private readonly ILogger _logger;
         private readonly ITrainingRepository _trainingRepository;
 
-        public EnrollmentService(IEnrollmentRepository enrollmentRepository, IEmployeeRepository employeeRepository, ILogger logger, ITrainingRepository trainingRepository, IAccountRepository accountRepository, IUserNotificationRepository userNotificationRepository)
+        private readonly ILogger _logger;
+        private readonly IReportGenerationService _reportGenerationService;
+
+        public EnrollmentService(IEnrollmentRepository enrollmentRepository, IEmployeeRepository employeeRepository, ILogger logger, ITrainingRepository trainingRepository, IAccountRepository accountRepository, IUserNotificationRepository userNotificationRepository, IReportGenerationService reportGenerationService)
         {
             _enrollmentRepository = enrollmentRepository;
             _employeeRepository = employeeRepository;
@@ -28,6 +30,7 @@ namespace Core.Application.Services
             _trainingRepository = trainingRepository;
             _accountRepository = accountRepository;
             _userNotificationRepository = userNotificationRepository;
+            _reportGenerationService = reportGenerationService;
         }
 
         public async Task<Result> ApproveAsync(int enrollmentId, short approverAccountId)
@@ -88,6 +91,114 @@ namespace Core.Application.Services
             }
 
             return Result.Failure(new Error("Unable to process enrollment. Try again later."));
+        }
+
+        public async Task<ResultT<Stream>> GenerateEnrollmentReportAsync()
+        {
+            try
+            {
+                IEnumerable<Training> trainings = await _trainingRepository.GetAllByRegistrationDeadlineDueAsync(DateTime.Now);
+                if (trainings.Count() == 0)
+                {
+                    return ResultT<Stream>.Failure(new Error("No trainings with registration deadline due found."));
+                }
+
+                Stream outputStream = new MemoryStream();
+                foreach (Training training in trainings)
+                {
+                    await GenerateEnrollmentReportByTrainingAsync(training, outputStream);
+                }
+
+                outputStream.Position = 0;
+                return ResultT<Stream>.Success(outputStream);
+            }
+            catch (DALException dalEx)
+            {
+                _logger.LogError(dalEx, $"Error in generating enrollment report.");
+            }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return ResultT<Stream>.Failure(new Error("Unable to generate enrollment report. Try again later."));
+        }
+
+        public async Task<ResultT<Stream>> GenerateEnrollmentReportByTrainingAsync(short trainingId)
+        {
+            try
+            {
+                Training training = await _trainingRepository.GetAsync(trainingId);
+                if (training is null)
+                {
+                    return ResultT<Stream>.Failure(new Error("Could not retrieve training."));
+                }
+
+                if (training.RegistrationDeadline >= DateTime.Now)
+                {
+                    return ResultT<Stream>.Failure(new Error("Registration deadline for training is not due yet."));
+                }
+
+                ResultT<Stream> result = await GenerateEnrollmentReportByTrainingAsync(training, new MemoryStream());
+                if (result.IsSuccess)
+                {
+                    result.Value.Position = 0;
+                }
+                return result;
+            }
+            catch (DALException dalEx)
+            {
+                _logger.LogError(dalEx, $"Error in retrieving training with id {trainingId}");
+            }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return ResultT<Stream>.Failure(new Error("Unable to generate enrollment report for training. Try again later."));
+        }
+
+        private async Task<ResultT<Stream>> GenerateEnrollmentReportByTrainingAsync(Training training, Stream outputStream)
+        {
+            try
+            {
+                IEnumerable<Enrollment> confirmedEnrollments = await _enrollmentRepository.GetAllByTrainingIdAndApprovalStatusAsync(
+                    training.TrainingId,
+                    new List<ApprovalStatusEnum>() { ApprovalStatusEnum.Confirmed });
+                if (confirmedEnrollments.Count() == 0)
+                {
+                    return ResultT<Stream>.Failure(new Error($"No confirmed enrollments for {training.TrainingName}."));
+                }
+
+                IEnumerable<Employee> confirmedEmployees = await _employeeRepository.GetAllByEmployeeIdsAsync(confirmedEnrollments.Select(enrollment => enrollment.EmployeeId));
+                IEnumerable<Employee> managers = await _employeeRepository.GetAllByEmployeeIdsAsync(confirmedEmployees.Select(employee => employee.ManagerId).Distinct());
+
+                IEnumerable<object[]> reportRows = confirmedEmployees.Join(managers,
+                                                         confirmedEmployee => confirmedEmployee.ManagerId,
+                                                         manager => manager.EmployeeId,
+                                                         (confirmedEmployee, manager) =>
+                                                            new object[]
+                                                            {
+                                                                confirmedEmployee.GetFullName(),
+                                                                confirmedEmployee.MobileNumber,
+                                                                manager.GetFullName()
+                                                            });
+                string[] rowHeaders = new string[] { "Employee FullName", "Employee Mobile Number", "Manager FullName" };
+
+                await _reportGenerationService.GenerateReportAsync(rowHeaders, reportRows, training.TrainingName, outputStream);
+
+                return ResultT<Stream>.Success(outputStream);
+            }
+            catch (DALException dalEx)
+            {
+                _logger.LogError(dalEx, $"Error in generating enrollment report for training with id {training.TrainingId}");
+            }
+            catch (MapperException mapperEx)
+            {
+                _logger.LogError(mapperEx, "Error in mapper");
+            }
+
+            return ResultT<Stream>.Failure(new Error("Unable to generate enrollment report for training. Try again later."));
         }
 
         public async Task<ResultT<IEnumerable<EnrollmentViewModel>>> GetEnrollmentSubmissionsForApprovalAsync(short managerId)

@@ -75,7 +75,7 @@ namespace Infrastructure.DAL
 
         public async Task<IEnumerable<UserNotificationModel>> GetAllByRecipientIdAndSeenStatusAsync(short recipientId, bool hasSeen)
         {
-            string selectQuery = @"SELECT UserNotificationId, NotificationMessage, SentAt, TItle
+            string selectQuery = @"SELECT UserNotificationId, NotificationMessage, SentAt, Title
                                    FROM UserNotification
                                    WHERE RecipientId = @RecipientId AND HasSeen = @HasSeen";
             List<SqlParameter> parameters = new List<SqlParameter>()

@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="DALException.cs" />
     <Compile Include="ILogger.cs" />
+    <Compile Include="IReportGenerationService.cs" />
     <Compile Include="MapperException.cs" />
     <Compile Include="Models\AuthenticatedUser.cs" />
     <Compile Include="Models\DeclineEnrollmentViewModel.cs" />

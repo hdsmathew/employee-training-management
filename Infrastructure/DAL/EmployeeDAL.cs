@@ -152,7 +152,7 @@ namespace Infrastructure.DAL
 
         public async Task<IEnumerable<EmployeeModel>> GetAllByEmployeeIdsAsync(IEnumerable<short> employeeIds)
         {
-            string selectQuery = $"SELECT EmployeeId, DepartmentId FROM Employee WHERE EmployeeId IN ({string.Join(", ", employeeIds.ToList())})";
+            string selectQuery = $"SELECT EmployeeId, FirstName, LastName, MobileNumber, DepartmentId, ManagerId FROM Employee WHERE EmployeeId IN ({string.Join(", ", employeeIds.ToList())})";
             List<SqlParameter> parameters = new List<SqlParameter>();
             IEnumerable<(string, object)[]> entityValueTuplesArrays;
 

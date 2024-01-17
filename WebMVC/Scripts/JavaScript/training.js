@@ -228,19 +228,30 @@
         hideOverlay(500);
     });
 
-    $(".generateEnrollmentsReport").on("click", function () {
-        const trainingId = $(this).attr("data-trainingId");
+    function generateReportFileName(currentDate) {
+        const formattedDate = currentDate.toLocaleDateString().replace(/\//g, '_');
+        const fileName = 'EnrollmentReport-' + formattedDate + '.xlsx';
+        return fileName;
+    }
 
+    $(".generateAllEnrollmentReport").on("click", function () {
+        const fileName = generateReportFileName(new Date());
+        window.location = `/Enrollment/GenerateEnrollmentReport?fileName=${fileName}`;
+    });
+
+    $(".generateEnrollmentReport").on("click", function () {
+        const trainingId = $(this).attr("data-trainingId");
+        const fileName = generateReportFileName(new Date());
+        window.location = `/Enrollment/GenerateEnrollmentReportByTraining?trainingId=${trainingId}&fileName=${fileName}`;
+    });
+
+    $(".processAllEnrollments").on("click", function () {
         showOverlay(0);
         $.ajax({
-            url: "/Enrollment/GenerateEnrollmentsReportByTraining",
+            url: "/Enrollment/ValidateApprovedEnrollments",
             type: "POST",
-            data: { trainingId: trainingId },
             dataType: "json",
             success: function (response) {
-                if (response.Success) {
-                    $(".processEnrollments").prop("disabled", true);
-                }
                 showToastrNotification(response.Message, response.Success ? "success" : "error");
             },
             error: function (error) {
@@ -261,9 +272,6 @@
             data: { trainingId: trainingId },
             dataType: "json",
             success: function (response) {
-                if (response.Success) {
-                    $(".processEnrollments").prop("disabled", true);
-                }
                 showToastrNotification(response.Message, response.Success ? "success" : "error");
             },
             error: function (error) {

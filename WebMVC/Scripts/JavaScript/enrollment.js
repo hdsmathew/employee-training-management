@@ -144,7 +144,7 @@
             const downloadLink = $("<a>")
                 .attr({
                     href: `/Enrollment/GetDocumentUpload?uploadedFileName=${encodeURIComponent(documentUpload.UploadedFileName)}`,
-                    download: documentUpload.FileName
+                    download: documentUpload.UploadedFileName
                 })
                 .text("Download");
 

@@ -22,8 +22,8 @@
             <th class="d-flex justify-content-between">
                 @if (authenticatedUser.IsInRole(AccountTypeEnum.Admin))
                 {
-                    @Html.ActionLink("All Reports", "GenerateEnrollmentsReport", "Enrollment", new { }, new { @class = "btn btn-primary" })
-                    @Html.ActionLink("Process All Enrollments", "ValidateApprovedEnrollments", "Enrollment", new { }, new { @class = "btn btn-primary" })
+                    <button type="button" class="btn btn-primary generateAllEnrollmentReport">All Reports</button>
+                    <button type="button" class="btn btn-primary processAllEnrollments">Process All Enrollments</button>
                     @Html.ActionLink("Create Training", "Create", "Training", new { }, new { @class = "btn btn-primary" })
                 }
             </th>
@@ -39,7 +39,7 @@
                     @{
                         if (authenticatedUser.IsInRole(AccountTypeEnum.Admin))
                         {
-                            <button @if (training.RegistrationDeadline >= DateTime.Now) { <text>disabled</text> } type="button" class="btn btn-primary generateEnrollmentsReport" data-trainingId="@(training.TrainingId)">Enrollment Report</button>
+                            <button @if (training.RegistrationDeadline >= DateTime.Now) { <text>disabled</text> } type="button" class="btn btn-primary generateEnrollmentReport" data-trainingId="@(training.TrainingId)">Enrollment Report</button>
                             <button @if (training.RegistrationDeadline >= DateTime.Now) { <text>disabled</text> } type="button" class="btn btn-primary processEnrollments" data-trainingId="@(training.TrainingId)">Process Enrollments</button>
                             @Html.ActionLink("Edit", "Edit", "Training", new { trainingId = training.TrainingId }, new { @class = "btn btn-primary" })
                             <button type="button" class="btn btn-danger deleteTraining" data-trainingId="@(training.TrainingId)">Delete</button>

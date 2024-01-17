@@ -117,10 +117,11 @@ namespace Infrastructure.DAL
 
         public async Task<bool> ExistsAsync(short employeeId, short trainingId)
         {
-            string selectQuery = @"SELECT TOP 1 1 FROM Enrollment WHERE 
+            string selectQuery = @"SELECT TOP 1 1 FROM Enrollment enr
+                                   INNER JOIN ApprovalStatus appr ON enr.ApprovalStatusId = appr.ApprovalStatusId WHERE
                                    EmployeeId = @EmployeeId AND 
                                    TrainingId = @TrainingId AND 
-                                   ApprovalStatusId NOT IN ('Confirmed', 'Declined')";
+                                   StatusName NOT IN ('Confirmed', 'Declined')";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
                 new SqlParameter("@EmployeeId", employeeId),
