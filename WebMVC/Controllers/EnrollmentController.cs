@@ -4,6 +4,7 @@ using Core.Domain;
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -48,9 +49,26 @@ namespace WebMVC.Controllers
         }
 
         [CustomAuthorize(AccountTypeEnum.Manager)]
+        [HttpPost]
         public async Task<JsonResult> Decline(DeclineEnrollmentViewModel declineEnrollmentViewModel)
         {
-            // TODO: Validate decline reason message
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.ToDictionary(
+                    kvp => kvp.Key,
+                    kvp => kvp.Value.Errors.Select(e => e.ErrorMessage).ToList()
+                    );
+                return Json(
+                    new
+                    {
+                        Success = false,
+                        Message = "Validation failed",
+                        Errors = errors
+                    },
+                    "application/json",
+                    System.Text.Encoding.UTF8);
+            }
+
             Result result = await _enrollmentService.DeclineAsync(declineEnrollmentViewModel, AuthenticatedUser.AccountId);
             return Json(
                 new

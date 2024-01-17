@@ -43,8 +43,9 @@
 
         const label = createLabel("col-md-4", "ReasonMessage", "Reason");
         const textArea = createTextarea("form-control", "ReasonMessage", "ReasonMessage", 5, true);
+        const validationErrorSpan = $("<span>").addClass("text-danger").attr({ "data-valmsg-for": "ReasonMessage" });
         const formGroupDiv = $("<div>").addClass("row");
-        const textAreaDiv = $("<div>").addClass("col-md-8").append(textArea);
+        const textAreaDiv = $("<div>").addClass("col-md-8").append(textArea, validationErrorSpan);
 
         formGroupDiv.append(label, textAreaDiv);
         declineForm.append(formGroupDiv);
@@ -84,6 +85,10 @@
                         removeTableRow($(`#tr_${enrollmentId}`));
                         checkIfTableEmpty("No pending enrollments");
                         $("#templateModal").modal("hide");
+                    } else {
+                        $.each(response.Errors, function (key, value) {
+                            $(`[data-valmsg-for="${key}"]`).text(value.join(' '));
+                        });
                     }
                     showToastrNotification(response.Message, response.Success ? "success" : "error");
                 },
