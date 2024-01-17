@@ -8,7 +8,6 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.ModelBinding;
 
 namespace Core.Application.Services
 {
@@ -308,8 +307,8 @@ namespace Core.Application.Services
                     {
                         return Result.Failure(new Error("Invalid files uploaded."));
                     }
-                    // TODO: Handle exceptions
-                    IEnumerable<EmployeeUpload> employeeUploads = SaveUploadedFiles(enrollmentSubmissionViewModel.EmployeeUploads, enrollmentSubmissionViewModel.PrerequisiteIds);
+                    // TODO: Handle saving file exceptions
+                    IEnumerable<EmployeeUpload> employeeUploads = await SaveUploadedFilesAsync(enrollmentSubmissionViewModel.EmployeeUploads, enrollmentSubmissionViewModel.PrerequisiteIds);
                     await _enrollmentRepository.AddWithEmployeeUploads(new Enrollment()
                     {
                         ApprovalStatus = ApprovalStatusEnum.Pending,
@@ -410,21 +409,6 @@ namespace Core.Application.Services
             return Result.Failure(new Error("Unable to validate approved enrollment applications for training. Try again later."));
         }
 
-        private IEnumerable<EmployeeUpload> SaveUploadedFiles(IEnumerable<HttpPostedFileBase> uploadedFiles, IEnumerable<byte> prerequisiteIds)
-        {
-            string uploadsFolder = ConfigurationManager.AppSettings["UploadFolderPath"] ?? throw new ConfigurationErrorsException("Invalid or missing configuration for 'UploadFolderPath'.");
-
-            if (!Directory.Exists(uploadsFolder))
-            {
-                Directory.CreateDirectory(uploadsFolder);
-            }
-
-            return uploadedFiles
-                .Zip(prerequisiteIds, (file, prerequisiteId) => new { File = file, PrerequisiteId = prerequisiteId })
-                .Select(data => SaveUploadedFile(data.File, data.PrerequisiteId, uploadsFolder))
-                .ToList();
-        }
-
         private string GenerateUniqueFileName(string originalFileName)
         {
             string uniqueIdentifier = Guid.NewGuid().ToString("N");
@@ -454,12 +438,33 @@ namespace Core.Application.Services
             return allowedMimeTypes.Contains(file.ContentType);
         }
 
-        private EmployeeUpload SaveUploadedFile(HttpPostedFileBase uploadedFile, byte prerequisiteId, string uploadsFolder)
+        private async Task<IEnumerable<EmployeeUpload>> SaveUploadedFilesAsync(IEnumerable<HttpPostedFileBase> uploadedFiles, IEnumerable<byte> prerequisiteIds)
+        {
+            string uploadsFolder = ConfigurationManager.AppSettings["UploadFolderPath"] ?? throw new ConfigurationErrorsException("Invalid or missing configuration for 'UploadFolderPath'.");
+
+            if (!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            IEnumerable<Task<EmployeeUpload>> saveUploadedFileTasks = uploadedFiles
+                .Zip(prerequisiteIds, (file, prerequisiteId) => new { File = file, PrerequisiteId = prerequisiteId })
+                .Select(data => SaveUploadedFileAsync(data.File, data.PrerequisiteId, uploadsFolder));
+
+            return await Task.WhenAll(saveUploadedFileTasks);
+        }
+
+
+        private async Task<EmployeeUpload> SaveUploadedFileAsync(HttpPostedFileBase uploadedFile, byte prerequisiteId, string uploadsFolder)
         {
             string fileName = Path.GetFileName(uploadedFile.FileName);
             string uniqueFileName = GenerateUniqueFileName(fileName);
             string filePath = Path.Combine(uploadsFolder, uniqueFileName);
-            uploadedFile.SaveAs(filePath);
+
+            using (FileStream fileStream = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None, bufferSize: 4096, useAsync: true))
+            {
+                await uploadedFile.InputStream.CopyToAsync(fileStream);
+            }
 
             return new EmployeeUpload() { PrerequisiteId = prerequisiteId, UploadedFileName = uniqueFileName };
         }
