@@ -4,9 +4,12 @@ using Core.Application.Services;
 using Infrastructure.AppLogger;
 using Infrastructure.DAL;
 using Infrastructure.DAL.Interfaces;
+using Infrastructure.Jobs;
 using Infrastructure.Models;
 using Infrastructure.ReportGeneration;
 using Infrastructure.Repositories;
+using Quartz;
+using Quartz.Unity;
 using System;
 using Unity;
 
@@ -90,6 +93,9 @@ namespace WebMVC
             container.RegisterType<INotificationService, NotificationService>(TypeLifetime.Singleton);
             container.RegisterType<IReportGenerationService, ExcelReportGenerationService>(TypeLifetime.Singleton);
             container.RegisterType<ITrainingService, TrainingService>(TypeLifetime.Singleton);
+
+            container.RegisterType<JobConfig>();
+            container.AddNewExtension<QuartzUnityExtension>();
         }
     }
 }

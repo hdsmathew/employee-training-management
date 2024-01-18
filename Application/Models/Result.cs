@@ -20,6 +20,11 @@ namespace Core.Application.Models
         public bool IsSuccess { get; }
         public bool IsFailure => !IsSuccess;
 
+        public override string ToString()
+        {
+            return IsSuccess ? "Success" : $"Failure: {Error}";
+        }
+
         public static Result Success() => new Result(true, Error.None);
         public static Result Failure(Error error) => new Result(false, error);
     }

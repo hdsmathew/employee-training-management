@@ -199,7 +199,7 @@ namespace Infrastructure.DAL
                                    WHERE TypeName = @TypeName";
             List<SqlParameter> parameters = new List<SqlParameter>()
             {
-                new SqlParameter("@TypeName", accountType)
+                new SqlParameter("@TypeName", accountType.ToString())
             };
             object scalarObject;
 
