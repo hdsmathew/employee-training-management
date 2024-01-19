@@ -83,16 +83,30 @@ namespace WebMVC.Controllers
         }
 
         [CustomAuthorize(AccountTypeEnum.Admin)]
-        public async Task<FileStreamResult> GenerateEnrollmentReport(string fileName)
+        public async Task<ActionResult> GenerateEnrollmentReport(string fileName)
         {
             ResultT<Stream> result = await _enrollmentService.GenerateEnrollmentReportAsync();
+
+            if (result.IsFailure)
+            {
+                TempData["ErrorMessage"] = result.Error.Message;
+                return RedirectToRoute(new { controller = "Error", action = "Index" });
+            }
+
             return File(result.Value, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 
         [CustomAuthorize(AccountTypeEnum.Admin)]
-        public async Task<FileStreamResult> GenerateEnrollmentReportByTraining(short trainingId, string fileName)
+        public async Task<ActionResult> GenerateEnrollmentReportByTraining(short trainingId, string fileName)
         {
             ResultT<Stream> result = await _enrollmentService.GenerateEnrollmentReportByTrainingAsync(trainingId);
+
+            if (result.IsFailure)
+            {
+                TempData["ErrorMessage"] = result.Error.Message;
+                return RedirectToRoute(new { controller = "Error", action = "Index" });
+            }
+
             return File(result.Value, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", fileName);
         }
 

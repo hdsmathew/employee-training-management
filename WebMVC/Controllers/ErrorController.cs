@@ -11,6 +11,11 @@ namespace WebMVC.Controllers
 
         public ActionResult Index()
         {
+            if (TempData.ContainsKey("ErrorMessage"))
+            {
+                ViewBag.ErrorMessage = TempData["ErrorMessage"].ToString();
+            }
+
             return View();
         }
 
