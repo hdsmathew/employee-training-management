@@ -1,8 +1,14 @@
 ﻿$(function () {
-    let prerequisites = JSON.parse(sessionStorage.getItem("Prerequisites"));
-    let dropdownCounter = 1;
+    const prerequisites = JSON.parse(sessionStorage.getItem("Prerequisites"));
+    const prerequisitesLength = prerequisites.length;
+    let dropdownCounter = 0;
 
     $("#addPrerequisite").on("click", function () {
+        if (dropdownCounter == prerequisitesLength) {
+            showToastrNotification(`Only ${prerequisitesLength} prerequisites can be added`, "error");
+            return;
+        }
+
         let dropdown = $("<select>")
             .addClass("form-select")
             .attr({
@@ -21,6 +27,7 @@
             .addClass("btn btn-danger btn-sm")
             .text("Remove")
             .on("click", function () {
+                dropdownCounter--;
                 dropdownDiv.remove();
             });
 
@@ -35,6 +42,13 @@
 
     $("#createTraining").on("click", function (event) {
         event.preventDefault();
+        const formData = new FormData($("#createTrainingForm")[0]);
+        const selectedPrerequisiteIds = formData.getAll("SelectedPrerequisiteIds");
+
+        if (_.uniq(selectedPrerequisiteIds).length != selectedPrerequisiteIds.length) {
+            showToastrNotification(`Cannot select duplicate prerequisites`, "error");
+            return;
+        }
 
         let form = $("#createTrainingForm");
         if (form.valid()) {
@@ -42,7 +56,7 @@
             $.ajax({
                 url: "/Training/Create",
                 type: "POST",
-                data: new FormData($("#createTrainingForm")[0]),
+                data: formData,
                 dataType: "json",
                 contentType: false,
                 processData: false,
